@@ -6,6 +6,14 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
+---
+　　layout: default
+　　title: 你好，世界
+　　---
+　　<h2>{{ page.title }}</h2>
+　　<p>我的第一篇文章</p>
+　　<p>{{ page.date | date_to_string }}</p>
+
 ```markdown
 Syntax highlighted code block
 
