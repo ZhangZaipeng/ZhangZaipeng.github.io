@@ -1,10 +1,10 @@
 name: "张在鹏的博客"
-email: 282354184@qq.com
-author: Zzp
+email: "282354184@qq.com"
+author: "Zzp"
 url: "ZhangZaipeng.github.io"
 motto: "冰冻三尺非一日之寒"
 ### baseurl修改为项目名，如果项目是'***.github.io'，则设置为空''
 baseurl: ""
-resume_site: 个人简历网站
+resume_site: "个人简历网站"
 github: "https://github.com/ZhangZaipeng"
-github_username: ZhangZaipeng
+github_username: "ZhangZaipeng"
