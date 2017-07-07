@@ -2,7 +2,8 @@
 layout: post
 title:  "Welcome to Jekyll!"
 date:   2017-06-14 11:30:37 +0800
-categories: jekyll update
+categories: document
+tag: 标签
 ---
 ## 
 {{ page.title }}
