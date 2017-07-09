@@ -2,7 +2,7 @@
 <div class="banner">
   <div class="container">
   	{% if page.categories != null %}
-    	<a href="#{{page.categories}}-ref">{{page.categories}}</a>	/
+    	<a href="{{ '/' | prepend: site.baseurl }}#{{page.categories}}-ref">{{page.categories}}</a>	/
     	<a href="{{ page.url | prepend: site.baseurl }}">{{page.title}}</a>
     {% else %}
     	{{ site.banner }}
