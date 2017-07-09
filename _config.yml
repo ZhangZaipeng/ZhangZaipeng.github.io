@@ -8,3 +8,5 @@ baseurl: ""
 resume_site: "个人简历网站"
 github: "https://github.com/ZhangZaipeng"
 github_username: "ZhangZaipeng"
+### 指定时区
+timezone: Asia/Shanghai
