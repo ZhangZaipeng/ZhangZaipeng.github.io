@@ -102,22 +102,5 @@
 		set -e  若指令传回值不等于0，则立即退出shell，这句语句告诉bash如果任何语句的执行结果不是true则应该退出
 
 
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 shell学习博客
 http://blog.sina.com.cn/s/blog_5b1acf750101g9gn.html
