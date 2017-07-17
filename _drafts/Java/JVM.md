@@ -108,9 +108,7 @@ class Person {
     } 
 
 
-    public void show() 
-{ 
-System.out.println("name = "+name + "::"+"age = "+age); 
+    public void show() { System.out.println("name = "+name + "::"+"age = "+age); 
 } 
 
 
