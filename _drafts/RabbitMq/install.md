@@ -100,3 +100,6 @@ Java Api : https://www.rabbitmq.com/api-guide.html
     rabbitmq 使用文档
     https://www.rabbitmq.com/getstarted.html
 ```
+
+### RabbitMq应用场景
+http://www.cnblogs.com/saltlight-wangchao/p/6214334.html
