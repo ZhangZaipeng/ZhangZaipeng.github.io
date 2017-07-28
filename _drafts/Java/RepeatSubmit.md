@@ -1,3 +1,5 @@
+### 重复提交解决方案
+
 1.如果是页面可以通过js来防止
 ```javascript
     var isCommitted = false;//表单是否已经提交标识，默认为false

@@ -1,0 +1,219 @@
+一、软件版本
+	1.VMWare
+	2.linux
+	3.JDK
+二、安装教程
+	1.VMWare安装
+	2.linux安装
+	3.安装VMWare-Tools
+	4.用户创建
+		创建hadoop用户组
+		创建hduser用户  把hduser放入 hadoop组中
+		注意：hduser用户设置同住用户相同密码
+		为hadoop用户组添加root权限，在 /etc/sudoers文件  root  ALL=(ALL)ALL 下添加 hduser  ALL=(ALL)ALL
+		重启机器
+		切换到hduser用户登录
+	5.主机配置(Hadoop  集群中有  1个Master、2个Salve)
+		修改主节点 /etc/sysconfig/network   Master
+		修改从节点  /etc/sysconfig/network   Salve
+		修改后重启
+		hostname  查看是否修改成功
+
+		修改host文件   使集群中的主机与IP对应
+		用ping来检查是否配置成功
+	6.SSH无密码验证配置
+		安装ssh服务器  安装客户端，服务端
+		生成公钥和私钥  ssh-keygen -t rsa -P""
+		查看生成的公钥和私钥 	/home/hduser/.ssh/    id_rsa  id_rsa.pub
+		将公钥CP  给/home/hduser/.ssh/id_rsa.pub  >> /home/hduser/.ssh/authorized_keys
+		无密码登陆 ssh  localhost
+		无密码登陆Salve1，在Master上执行  ssh-copy-id Salve1 , 然后查看Salve1的/home/hduser/.ssh/是否有authorized_keys
+		在Master上执行 ssh Salve1   首次登陆需要输入密码，再次登陆无需密码
+		注意如果设置不成功    把authorized_keys文件权限改大   chmod 777
+	7.java环境配置
+		获取 /opt 文件夹权限   sudo chmod 777  /opt
+		将JDK   压缩包放在/opt
+		配置JDK的环境变量   修改文件 /etc/profile
+		执行  source  /etc/profile
+		执行命令  java -version   查看版本号
+	8 hadoop集群安装
+		将hadoop压缩包  hadoop-2.6.0.tar.gz 放到/home/hduser目录下，解压到本地重命名为hadoop
+		配置环境变量  vi  /etc/profile
+			#hadoop
+			export HADOOP_HOME=/home/hduser/hadoop
+			export PATH=$HADOOP_HOME/bin:$PATH
+		执行  source  /etc/profile
+		注意： 集群上都要配置
+
+		进去hadoop配置文件目录  etc/hadoop文件夹下
+
+		配置hadoop-env.sh文件 -->   修改JAVA_HOME
+		# The java implementation to use
+		export JAVA_HOME=/opt/jdk1.x.xx.xx
+
+		配置yarn-env.sh文件 -->  修改JAVA_HOME
+		# some Java parameters
+		export JAVA_HOME=/opt/jdk1.x.xx.xx
+
+		配置slaves 文件  --> 添加slave节点
+		（删除原来的localhost）
+		Master
+		Slave1
+
+		配置core-site.xml 文件 --> 添加hadoop核心配置
+		（hdfs文件端口是9000、file:/home/hduser/hadoop/tmp）
+		<configuration>
+		<property>
+		<name>fs.defaultFS</name>
+		<value>hdfs://Ubuntu1:9000</value>
+		</property>
+
+		<property>
+		<name>io.file.buffer.size</name>
+		<value>131072</value>
+		</property>
+
+		<property>
+		<name>hadoop.tmp.dir</name>
+		<value>file:/home/hduser/hadoop/tmp</value>
+		<description>Abasefor other temporay directories</description>
+		</property>
+		</configuration>
+
+		配置hdfs-site.xml文件  --> 添加hdfs配置信息
+		（namenode   datanode 端口和目录位子）
+		<configuration>
+		<property>
+		<name>dfs.namenode.secondary.http-address</name>
+		<value>Ubuntu1:9001</value>
+		</property>
+
+		<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>file:/home/hduser/hadoop/dfs/name</value>
+		</property>
+
+		<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>file:/home/hduser/hadoop/dfs/data</value>
+		</property>
+
+		<property>
+		<name>dfs.replication</name>
+		<value>2</value>
+		</property>
+
+		<property>
+		<name>dfs.webhdfs.enabled</name>
+		<value>true</value>
+		</property>
+
+		</configuration>
+
+		配置mapred-site.xml文件  -->  添加mapreduce配置
+		（使用yarn框架、jobhistory使用地址及web地址）
+		<configuration>
+		<property>
+		<name>mapreduce.framework.name</name>
+		<value>yarn</value>
+		</property>
+
+		<property>
+		<name>mapreduce.jobhistory.address</name>
+		<value>Ubuntu1:10020</value>
+		</property>
+
+		<property>
+		<name>mapreduce.jobhistory.webapp.address</name>
+		<value>Ubuntu1:19888</value>
+		</property>
+		</configuration>
+
+		配置yarn-site.xml文件  --> 添加yarn功能
+		<configuration>
+		<property>
+		<name>yarn.nodemanager.aux-services</name>
+		<value>mapreduce_shuffle</value>
+		</property>
+
+		<property>
+		<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+		<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+		</property>
+
+		<property>
+		<name>yarn.resourcemanager.address</name>
+		<value>Ubuntu1:8032</value>
+		</property>
+
+		<property>
+		<name>yarn.resourcemanager.scheduler.address</name>
+		<value>Ubuntu1:8030</value>
+		</property>
+
+		<property>
+		<name>yarn.resourcemanager.resource-tracker.address</name>
+		<value>Ubuntu1:8035</value>
+		</property>
+
+		<property>
+		<name>yarn.resourcemanager.admin.address</name>
+		<value>Ubuntu1:8033</value>
+		</property>
+
+		<property>
+		<name>yarn.resourcemanager.webapp.address</name>
+		<value>Ubuntu1:8088</value>
+		</property>
+		</configuration>
+
+		将配置好的Ubuntu1中 /hadoop/etc/hadoop文件夹复制到ubuntu2对应位子
+		（删除原来的文件夹）
+		scp -r /home/hduser/hadoop/etc/hadoop/   hduser@Ubuntu2:/home/hduser/hadoop/etc/hadoop/
+
+	9.验证hadoop的配置
+		验证hadoop配置是否正确
+		1 格式化namenode
+		进入hadoop安装文件夹
+		cd /home/hduser/hadoop/
+		运行   ./bin/hdfs namenode -format  (两台机器都要执行)
+
+		启动hdfs	./sbin/start-dfs.sh
+		查看进程  jps
+
+		停止hdfs ./sbin/stop-dfs.sh
+		查看进程  jps
+
+		启动yarn
+		./sbin/start-yarn.sh
+		查看进程  jps
+
+		停止yarn
+		./sbin/stop-yarn.sh
+		查看进程  jps
+
+		查看集群状态
+			首先启动集群./sbin/start-dfs.sh
+			./bin/hdfs  dfsadmin -report
+
+		从浏览器查看hdfs:  http://Ubuntu1:50070/
+
+
+三、运行wordcount程序
+	1.创建file目录  --->  mkdir file
+	2.在file创建file1.txt 、 file2.txt 并写内容   --->
+		touch  file1.txt        hello world hi HADOOP
+		touch  file2.txt	hello hadoop hi CHINA
+	3.在hdfs创建/input2 目录
+		./bin/hadoop fs -mkdir /input2
+		查看hdfs 目录
+		./bin/hadoop fs -ls /
+	4.将file1.txt 、file2.txt文件copy到 hdfs/input2目录
+		./bin/hadoop fs -put file/file*.txt  /input2
+		查看放入的文件
+		./bin/hadoop fs -ls /input2
+	5.执行wordcount程序
+		先启动hdfs和yarn
+		./bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0.jar  wordcount  /input2/  /output2/wordcount1
+	6.查看运行结果
+		./bin/hdfs  dfs -cat /output2/wordcount1/*

@@ -1,0 +1,51 @@
+一、HDFS的体系结构
+	NameNode:元数据节点用来管理文件系统的命名空间
+		1.管理文件系统的命名空间
+		2.纪录每个文件数据在各个DataNode上的位置和副本信息
+		3.协助客户端对文件的访问
+		文件解析：version   版本信息，文件系统标识符
+			seen_txid   事务管理文件
+			fsimage_*
+			fsimage_*.md5	元数据文件
+			edits_*
+	DataNode:
+		1.负责所在物理节点的存储管理
+		2.一次写入，多次读取（不修改）
+		3.文件有数据块组成，典型的块大小是64MB
+		4.数据块尽量散布到各个节点
+		文件解析：blk_<id>:HDFS的数据块，保存具体的二进制数据
+			blk_<id>.meta:数据块的属性信息：版本信息、类型信息
+	SecondaryNameNode
+		1.NameNode的一个快照
+		2.周期性备份namenode
+		3.纪录namenode中的metadata及其他数据
+		4.可以用来恢复NameNode
+二、HDFS的shell操作  命令行
+	在hadoop安装文件夹下的bin目录中
+	-ls	-ls <路径>	查看指定路径的当前目录结构
+	-lsr	-lsr <路径>	递归查看指定路径的目录结构
+	-du	-du <路径>	统计目录下个文件大小
+	-dus	-dus <路径>	汇总统计目录下文件(夹)大小
+	-count	-count [-q] <路径>	统计文件(夹)数量
+	-mv	-mv <源路径> <目的路径>	移动
+	-cp	-cp <源路径> <目的路径>	复制
+	-rm	-rm [-skipTrash] <路径>	删除文件/空白文件夹
+	-rmr	-rmr [-skipTrash] <路径>	递归删除
+	-put	-put <多个linux上的文件> <hdfs路径>	上传文件
+	-copyFromLocal	-copyFromLocal <多个linux上的文件> <hdfs路径>	从本地复制
+	-moveFromLocal	-moveFromLocal <多个linux上的文件> <hdfs路径>	从本地移动
+	-getmerge	-getmerge <源路径> <linux路径>	合并到本地
+	-cat	-cat <hdfs路径>	查看文件内容
+	-text	-text <hdfs路径>	查看文件内容
+	-copyToLocal	-copyToLocal [-ignoreCrc] [-crc] [hdfs源路径] [linux目的路径]	从本地复制
+	-moveToLocal	-moveToLocal [-crc] <hdfs源路径> <linux目的路径>	从本地移动
+	-mkdir	-mkdir <hdfs路径>	创建空白文件夹
+	-setrep	-setrep [-R] [-w] <副本数> <路径>	修改副本数量
+	-touchz	-touchz <文件路径>	创建空白文件
+	-stat	-stat [format] <路径>	显示文件统计信息
+	-tail	-tail [-f] <文件>	查看文件尾部信息
+	-chmod	-chmod [-R] <权限模式> [路径]	修改权限
+	-chown	-chown [-R] [属主][:[属组]] 路径	修改属主
+	chgrp	-chgrp [-R] 属组名称 路径	修改属组
+	-help	-help [命令选项]	帮助
+三、HDFS的API方式访问  java  API
