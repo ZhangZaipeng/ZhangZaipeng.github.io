@@ -17,3 +17,23 @@ Integer是引用类型，int是原生数据类型。
 <font color=red>值得注意的是：</font>
 - 1）对Integer对象，JVM会自动缓存-128~127范围内的值，所以所有在这个范围内的值相等的Integer对象都会共用一块内存，而不会开辟多个；
 - 2）超出这个范围内的值对应的Integer对象有多少个就开辟多少个内存。
+
+```java
+    public class T {
+        public static void main(String[] args){
+            Integer i01 = 59;
+            int i02 = 59;
+            Integer i03 =Integer.valueOf(59);   
+            Integer i04 = new Integer(59);      
+    
+            System.out.println(i01 == i02);     // --> true
+            System.out.println(i01 == i03);     // --> true
+            System.out.println(i01 == i04);     // --> false
+    
+            System.out.println(i02 == i03);     // --> true
+            System.out.println(i02 == i04);     // --> true
+            
+            System.out.println(i03 == i04);     // --> false
+        }
+    }
+```
