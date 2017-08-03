@@ -1,0 +1,19 @@
+一、添加用户
+	create user '用户名' @  '连接地址'   identified by password '加密密码' ；
+	select password('123456')；
+二、删除用户
+	drop user 'select'@'100.100.100.1'
+	drop user '用户名' @ '链接地址' ；
+三、重命名
+	rename user '用户名'@'链接地址' to '用户名'@'链接地址';
+	rename user 'test'@'100.100.100.1' to 'select'@'100.100.100.1';
+四、设置密码
+	给当前用户设置密码：set password = password('123456');
+	给其他用户设置密码：set password for '用户名'@'链接地址'=password('123456');
+五、忘记密码决解办法
+	1.跳过授权表对root重设密码
+		停止mysql服务进程  杀死
+		mysqd_safe --skip-grant-tables&  启动数据库
+		update mysql.user set password=password('123456') where user='root'
+		flush privilegers
+	2.直接修改授权表

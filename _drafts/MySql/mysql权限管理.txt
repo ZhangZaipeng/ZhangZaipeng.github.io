@@ -1,0 +1,21 @@
+一、查看权限
+	show grants for '用户名'@'链接地址'；
+	例子：show grants for 'select'@'100.100.100.1';
+二、添加权限
+	grant 权限列表 on 库名。表名 to '用户名'@'链接地址'  [identified by '密码']
+	例子：grant select on jm_test.test to 'select'@'100.100.100.1';
+三、撤销权限
+	revoke 权限列表 on 库名。表名 from '用户名'@'链接地址'
+	例子：revoke all on jm_test.test from 'select'@'100.100.100.1';
+四、权限列表
+	ALL: 设置除`grants option`之外的所有权限
+	CREATE USER：用户管理权限
+
+	ALTER: 修改表
+	CREATE:  创建表
+	DROP：删除表
+
+	DELETE ：INSERT：SELECT：UPDATE：增删改查
+
+	SHOW DATABASES： 显示所有数据库
+	REPLICATION SLAVE :从主服务器中的读取二进制日志事件

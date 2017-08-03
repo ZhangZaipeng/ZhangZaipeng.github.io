@@ -1,0 +1,50 @@
+一、DDL
+（数据库）
+	应用数据库 use jm_test
+	查看数据库 show databases ；
+	创建数据库 create database 数据库名称；
+	删除数据库 drop database 数据库名称 ;
+	修改数据库名称
+	1.创建需要改成新名的数据库。
+	2.mysqldum 导出要改名的数据库
+	3.删除原来的旧库（确定是否真的需要）
+	当然这种方法虽然安全，但是如果数据量大，会比较耗时
+-----------------------------------------------------------------------------------------------------------------
+（表，以及表中的字段）
+	查看表数据库中的所有表：use `数据库名` --->   show tables ;
+	查看表中字段：desc `表名`
+	创建表 ：
+	DROP TABLE IF EXISTS `tb_service_worker`;
+	CREATE TABLE `tb_service_worker` (
+		`service_worker_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
+		`area` VARCHAR(20) DEFAULT NULL COMMENT '技师所在地区',
+		`worker_code` VARCHAR(20) DEFAULT NULL COMMENT '技师编号',
+		`worker_position` VARCHAR(20) DEFAULT NULL COMMENT '技师职位',
+		`worker_name` VARCHAR(20) NOT NULL COMMENT '技师名称',
+		`worker_mobile` VARCHAR(20) NOT NULL COMMENT '技师电话',
+		`worker_status` SMALLINT(4) DEFAULT 1 COMMENT '技师状态 0=服务中 1=空闲' ,
+		`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+		`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+		PRIMARY KEY (`service_worker_id` )
+	)
+	COLLATE='utf8_general_ci'
+
+	ENGINE=INNODB
+	ROW_FORMAT=DEFAULT
+	COMMENT='技师表'
+	AUTO_INCREMENT=1
+	;
+
+	删除表：drop table tabname
+	修改表：
+		添加一个列：ALTER TABLE `表名` ADD COLUMN `字段名` INT(11) NULL COMMENT '备注' ;
+		删除一个列：
+		加主键：Alter table `表名` add primary key(col)
+		删除主键：Alter table tabname drop primary key(col)
+二、DML
+	insert into `表名` (`字段`,`字段`,...) values (`字段`,`字段`,...);
+	delete from `表名` where `字段`=`?`
+	update `表名` set `字段`=`?` , `字段`=`?` where 条件
+三、DQL
+	select * from `表名` where
+	连接查询

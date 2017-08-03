@@ -1,0 +1,53 @@
+1.准备工作 确认没有RPM方式安装的mysql-server
+     查看	rpm -qa | grep mysql
+2.安装光盘自带的 ncurses-devel-5.7-3.20090208.el6.x86_64.rpm 基础包
+     rpm -ivh  ncurses-devel-5.7-3.20090208.el6.x86_64.rpm
+3.mysql5.5安装cmake进行编译 ,mysql 5.6开始，需要使用g++进行编译（cmake  需要gcc ,gcc++支持）
+     tar -xf cmake-2.8.11.1.tar.gz -C /usr/src  ---->  ./configure  ----> make && make install
+4.创建mysql用户与组，相关目录
+      groupadd mysql
+      useradd -s /sbin/nologin  -g mysql mysql
+5.cmake编译安装
+     tar -xf mysql-5.5.36.tar.gz -C /usr/src
+
+     cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mysql  \ 安装路径
+> -DSYSCONFDIR=/etc 				配置文件
+> -DDEFAULT_CHARSET=utf8 			字符集
+> -DDEFAULT_COLLATION=utf8_general_ci \		字符集校验
+> -DWITH_EXTRA_CHARSETS=all
+
+
+     make && make install
+6.安装后的调整（优化操作）
+ 	对数据库目录进行权限设置
+		cd  切换到家目录
+		更改mysql目录的属主和属组，-R意思是循环遍历，如果当前目录下有子目录，同时更改那些子目录
+		chown -R mysql:mysql /usr/local/mysql
+		查看验证  ls -ld /usr/local/mysql
+	建立配置文件
+		rm -rf /etc/my.cnf
+		cp /usr/src/mysql-5.5.36/support-files/my-medium.cnf   /etc/my.cnf
+	初始化数据库
+		/usr/local/mysql/scripts/mysql_install~?~b  --user=mysql  --basedir=/usr/local/mysql
+		--datadir=/usr/local/mysql/data
+	设置环境变量
+		echo "PATH=$PATH:/usr/local/mysql/bin" >> /etc/profile
+		配置生效
+		source /etc/profile
+		查看
+		echo $PATH
+
+7.添加mysql系统服务 chkconfig进行管理
+	cp /usr/local/mysql/support-files/mysql.server    /etc/rc.d/init.d/mysqld
+	给文件夹
+	chmod +x /etc/rc.d/init.d/mysqld
+	添加开机启动
+	chkconfig --add mysqld
+	查看开机启动
+	chkconfig --list mysqld
+8.启动mysqld服务   并使mysql客户端登陆测试
+	/etc/rc.d/init.d/mysqld start
+	mysql -u root ,mysql的root管理员无密码
+	设置mysql用户的密码
+	mysqladmin -u root  password "123456" ; history -c  清楚命令历史
+	mysql -u root -p

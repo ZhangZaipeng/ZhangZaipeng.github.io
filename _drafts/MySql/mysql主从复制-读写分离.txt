@@ -1,0 +1,102 @@
+一、安装mysql数据库
+	1.保证mysql服务器之间能正常通信
+	2.关闭服务器防火墙
+	3.关闭服务器selinux
+二、mysql服务器时间同步
+	1.主服务器上安装NTP时间同步服务器
+		yum -y install ntp
+	2.rpm -ql ntp 可以查看 ntp安装信息
+	3.修改 vi /etc/ntp.conf  -->去掉restrict 192.168.1.0 mask 255.255.255.0 nomodify注释
+			-->删除ntp官网地址    3行
+			--->  加上 :   server 127.127.1.0   +
+				     fudge 127.127.1.0 straum 8
+	4.启动ntp服务 /etc/init.d/ntpd start
+	5.查看是否启动 netstat -utpn | grep ntp
+
+	6.从服务器上安装	yum -y install ntpdate
+	7.跟mysql主服务器同步时间  /usr/sbin/ntpdate   主服务器地址
+	8.设置时间定时任务  echo '*/30 * * * *  /usr/sbin/ntpdate   主服务器地址 '   >> /var/spool/cron/root
+	9.查看定时任务 crontab -l
+三、主服务器Master配置
+	1.修改 /etc/my.cnf
+		server-id = 11
+		log-bin=master-bin
+		log-slave-uptdates=true
+	2.授权所有从服务器复制二进制日志文件
+		grant replication slave on *.* to 'adm'@'192.168.1.%' identified by '123456';
+		flush privileges; 刷新权限
+	3.查看主服务器的状态
+		show master status;    position
+四、从服务器配置
+	1.修改/etc/my.cnf配置文件
+		server-id = 22
+		relay-log=relay-log-bin  （中继）
+		relay-log-index=slave-relay-bin.index
+	2.保存，重启服务器
+	3.登陆mysql     修改mysql的主
+		change master to master_host='192.168.17.1' , master_user='adm',  master_password='123456',
+		master_log_file='master-bin.000002',  master_log_pos=334;
+	4.启动slave
+		start slave;
+	5.查看Slave状态，保证Slave_IO_Running 和Slave_SQL_Running 为 yes
+		show slave status\G
+五、测试
+
+六、读写分离
+	读写分离种类：1.基于程序代码,  2.基于中间层的分离
+	特点：1.读写分离就是在主服务器上写，只在从服务器上查
+	          2.主数据库处理事务性查询，从处理select查询
+	          3.数据库复制被用来把事务性查询导致的变更同步到集群中
+七、Amoeba : 主要为应用层访问Mysql的时充当SQL路由功能
+	特点：1负载，高可用，SQL过滤，读写分离，并发请求多台数据库
+	安装
+	1.jdk1.6配置环境 ,  --->  得到文件夹    ----> 配置环境变量   soure /etc/profile
+		---->   检查环境变量 echo $JAVA_HOME
+	2.Amoeba-mysql-binary
+		---->创建目录 mkdir /usr/local/amoeba
+		--->  解压  tar zxvf Amoeba包  -C /usr/local/amoeba
+		--->  chmod 755 /usr/local/amoeba -R
+		--->  验证上面命令  /usr/local/amoeba/bin/amoeba   出现start | stop
+	3.读写分离配置
+		--->  在主服务器、两台从服务器上授权给Amoeba 访问权限
+			主从服务器   都要执行该文件
+			grant all on *.* to 'admin'@'192.168.1.%' identified by '123456';
+			刷新 flush privileges;
+		--->  编辑amoeba.xml配置文件  实现读写分离
+			进入/usr/local/amoeba/conf     找到amoeba.xml
+
+			找到<property name='authenticator'>
+			<bean>中  <property name="user">amoeba   <property name="password">123456
+
+			<property name="defaultPool">master
+			<property name="writePool">master
+			<property name="readPool">slaves
+		--->  编辑dbServers.xml 配置文件  以配置两个从服务器读负载2
+			<dbServer name="abstracti....">中<factoryConfig>中
+			<property name="user">admin
+			<property name="password">123456
+		主mysql
+			<bdServer name="server">   ---> <bdServer name="master">
+			<factoryConfig>中 <property name="ipaddress">主mysql IP
+		从1mysql
+			<bdServer name="slave1">   ---> <bdServer name="master">
+			<factoryConfig>中 <property name="ipaddress">从1mysql IP
+		从2mysql
+			<bdServer name="slaver2">   ---> <bdServer name="master">
+			<factoryConfig>中 <property name="ipaddress">从2mysql IP
+
+			<dbServer name="multiPool" >  ---> <dbServer name="slaves" >
+			<factoryConfig>中 <property name="poolNmae">slave1,slave2
+		--->  测试
+			启动amoeba  /usr/local/amoeba/bin/amoeba start &   后台运行
+			netstat -utpln |grep 8066
+
+			1.在Client主机上安装mysql  客户端工具
+				yum -y install mysql
+				mysql -uamoeba -p -h Amoeba服务器地址 -P 8066
+			2.在Master上创建一个表，同步到各从服务器上，（主从有没有同步）
+				然后关掉各从服务的Slave功能，再插入区别语句
+				查看三台服务器（验证往那个库插入）
+
+			3.关掉各从服务的Slave功能，分别手动在3台服务器上插入其他内容
+				用客户机查询（验证查询）

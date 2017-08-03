@@ -1,0 +1,112 @@
+一、MMM介绍
+	1.mysql主主复制管理器
+	2.是一套灵活的脚本程序，用来对mysql replication进行监控和故障迁移
+	3.监管端会提供多个虚拟IP，包括一个写VIP，多个可读VIP，通过监管这
+		些IP会绑定在可用mysql之上，当某一台mysql宕机时，会将VIP迁移至其他mysql
+	4.mmm_mond:监控进程，负责所有的监控工作，决定和处理所有节点角色活动。该脚本需要在监管机上运行
+	5.mmm_agentd:运行在每个mysql服务器上的代理进程，完成监控的探针工作和执行简单的远端服务设置。
+			运行在被监控端。
+	6.mmm_control:一个简单的脚本，提供管理mmm_mond进程的命令。
+
+二、多主多从配置
+	1.安装 wget  --->   yum -y install wget
+	2.查看 echo $http_proxy   如果有值 --> unset http_porxy ;  unset https_proxy
+	3.wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+	4.yum -y install epel-release
+	5.wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-6.repo
+	6.yum -y install openssh-clients
+	7.安装yum -y install mysql-mmm*
+	8.yum -y install mysql mysql-server mysql-devel
+		配置文件修改
+	9.用scp 分别往其他主机复制mysql  配置文件
+		scp /etc/my.cnf root@192.168.10.52:/etc/my.cnf
+	10.主主复制配置
+		查看master1状态   show master status
+		在master1, master2访问权限  grant replication slave on *.* to 'replication'@'192.168.1.%' identified by '123456';
+		改变master1, master2  (master1主机的master改为master2 ，master2主机的master改为master1   )
+			change master to master_host='master的ip' , master_user='replication',  master_password='123456',
+		master_log_file='master-bin.000002',  master_log_pos=334;
+		启动slave
+			start slave;
+		查看Slave
+			show slave status\G
+		验证主主同步
+			互相在两台mysql上创建表，然后查看
+	11.主从复制配置
+		在从服务器上改变从服务器的master（视频中两台从服务器的master是master1,当master1宕机主从断开
+		怎么办？）
+
+	12.在没有安装MySQL-MMM
+		修改/etc/mysql-mmm/mmm_common.conf
+			所有主机都需要修改mmm_common.conf文件
+			<host default>
+			cluster_interface
+			replication_user   授权主从同步的用户
+			replication_password 授权主从同步的用户密码
+			agent_user    mmm_agent
+			agent_password 123456
+
+			<host db1>
+			ip 192.168.17.1
+			mode master
+			peer db2
+
+			<host db2>
+			ip 192.168.17.2
+			mode master
+			peer db1
+
+			<host db3>
+			ip 192.168.17.3
+			mode slave
+
+
+			<host db4>
+			ip 192.168.17.4
+			mode slave
+
+			<role writer>
+			hosts db1,db2
+			ips 	192.168.17.11
+			mode exclusive
+
+			<role writer>
+			hosts db3,db4
+			ips 	192.168.17.12,192.168.17.13
+			mode 	balanced
+
+			复制到每台主机上
+			scp /etc/mysql-mmm/mmm_common.conf  root@192.168.17.?:/etc/mysql-mmm/
+			确认是否复制过去
+
+		修改/etc/mysql-mmm/mmm_mon.conf
+			只在监控端上修改  （注意账号，要和mysql授权账号一样）
+			<host default>    monitor_password 123456
+			给每一台mysql主机上都执行
+			grant super ,replication client,process on *.* to 'mmm_agent'@'192.168.17.%' identified by '123456';
+			grant replication client on *.* to 'mmm_monitor'@'192.168.17.%' identified by '123456';
+			flush privileges;
+		修改/etc/mysql-mmm/mmm_agent.conf
+			每一台机器都修改
+			this is ?   是哪台机器就哪台
+			每一台机器都执行
+			设置完之后 /etc/init.d/mysql-mmm-agent start
+			设置开机启动 chkconfig mysql-mmm-agent on
+		再修改/etc/mysql-mmm/mmm_mon.conf
+			只在监控端上修改
+			<monitor> ping_ips   192.168.17.1,192.168.17.2,192.168.17.3,192.168.17.4
+			auto_set_online   10
+		启动代理，启动监控
+			/etc/init.d/mysql-mmm-monitor start
+
+			mmm_control show
+			mmm_control checks all
+		测试集群
+			停掉集群中的一个主数据库，查看mmm_control show  或者看IP
+			写操作
+				在mmm_control  主机中 远程连接 mysql
+				mysql -uroot -p -h 虚拟IP
+				给主数据库  root用户 在192.168.17网段权限
+				insert into
+				查看其他数据库
+			停掉集群中的一个从数据库  ，查看mmm_control show
