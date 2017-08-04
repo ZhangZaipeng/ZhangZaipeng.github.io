@@ -8,12 +8,7 @@
 	2.git 学习 (完成，待深入)
 	3.日志切面 + 注解
 	4.rabbitMq demo (完成，待深入)
-	5.swagger搭建 (完成)
-	
-	
-（2）  晚上 学习运维
-	1.自动化shell
-	2.git + maven + j自动化发布
+
 	
 - 要求文件上传以对象的形式返回数据  （访问路径，真实路径，文件名，文件大小）
 
@@ -41,28 +36,3 @@
 -----------------------------------------------------------------------------------------------
 
 -23中设计模式  java实现(5)
-
-
-
-
-
-
-复习计划
-	databases --> 每个星期的星期一复习一次
-
-session 文件
-http://blog.csdn.net/fangaoxin/article/details/6952954/
-
-重构文档
-http://www.ixueshu.com/document/856c6d5923ccd95c318947a18e7f9386.html
-https://wenku.baidu.com/view/7f52f4ff951ea76e58fafab069dc5022aaea46e3.html
-
-
-
-
-
-
-
-
-
-

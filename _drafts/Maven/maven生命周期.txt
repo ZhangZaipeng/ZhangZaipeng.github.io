@@ -1,0 +1,27 @@
+一、clean生命周期：清理项目
+    1)pre-clean 执行一些清理前需要完成的工作
+    2)clean 清理上一次构建生成的文件
+    3)post-clean 执行一些清理后需要完成的工作
+
+
+二、default生命周期：核心构建步骤
+    1)process-resources			maven-resoures-plugin：resources			复制主资源文件至主输出目录
+    2)compile					maven-compile-plugin:compile			编译主代码至主输出目录
+    3)process-test-resources	maven-resources-plugin:testResources	复制测试资源文件至测试输出目录
+    4)test-compile				maven-compile-plugin:testCompile		编译测试代码至测试输出目录
+    5)test						maven-surefire-plugin:test				执行测试用例
+    6)package					maven-jar-plugin:jar					创建项目jar包
+    7)install					maven-install-plugin:install			将项目输出构建安装到本地仓库
+    8)deploy					maven-deploy-plugin:deploy				将项目输出构建部署到远程仓库
+
+
+三、site生命周期
+
+
+四、Maven内置变量说明：
+  	${basedir} 项目根目录
+  	${project.build.directory} 构建目录，缺省为target
+  	${project.build.outputDirectory} 构建过程输出目录，缺省为target/classes
+  	${project.build.finalName} 产出物名称，缺省为${project.artifactId}-${project.version}
+  	${project.packaging} 打包类型，缺省为jar
+  	${project.xxx} 当前pom文件的任意节点的内容
