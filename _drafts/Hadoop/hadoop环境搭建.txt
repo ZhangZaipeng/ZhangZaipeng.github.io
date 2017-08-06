@@ -1,7 +1,12 @@
-一、软件版本
-	1.VMWare
-	2.linux
-	3.JDK
+所有软件下载地址
+    http://archive.cloudera.com/cdh5/cdh/5/
+
+一、安装目录规则
+	1.software: 存放所有安装的软件包
+    2.data：存放所有的测试数据
+    3.app: 所有软件的安装目录
+    4.source: 存放所有源码的目录
+
 二、安装教程
 	1.VMWare安装
 	2.linux安装
@@ -22,20 +27,16 @@
 		修改host文件   使集群中的主机与IP对应
 		用ping来检查是否配置成功
 	6.SSH无密码验证配置
-		安装ssh服务器  安装客户端，服务端
-		生成公钥和私钥  ssh-keygen -t rsa -P""
+		安装ssh服务器  默认安装了ssh客户端：sudo apt-get install openssh-server
+		生成公钥和私钥  ssh-keygen -t rsa -P ""
 		查看生成的公钥和私钥 	/home/hduser/.ssh/    id_rsa  id_rsa.pub
 		将公钥CP  给/home/hduser/.ssh/id_rsa.pub  >> /home/hduser/.ssh/authorized_keys
-		无密码登陆 ssh  localhost
+		无密码登陆 ssh  localhost  -->  yes
 		无密码登陆Salve1，在Master上执行  ssh-copy-id Salve1 , 然后查看Salve1的/home/hduser/.ssh/是否有authorized_keys
 		在Master上执行 ssh Salve1   首次登陆需要输入密码，再次登陆无需密码
 		注意如果设置不成功    把authorized_keys文件权限改大   chmod 777
 	7.java环境配置
-		获取 /opt 文件夹权限   sudo chmod 777  /opt
-		将JDK   压缩包放在/opt
-		配置JDK的环境变量   修改文件 /etc/profile
-		执行  source  /etc/profile
-		执行命令  java -version   查看版本号
+		hadoop相关软件 都放在$home/app文件夹
 	8 hadoop集群安装
 		将hadoop压缩包  hadoop-2.6.0.tar.gz 放到/home/hduser目录下，解压到本地重命名为hadoop
 		配置环境变量  vi  /etc/profile
@@ -44,159 +45,167 @@
 			export PATH=$HADOOP_HOME/bin:$PATH
 		执行  source  /etc/profile
 		注意： 集群上都要配置
+    9.配置：主要涉及的配置文件有7个：都在/hadoop/etc/hadoop文件夹下，可以用gedit命令对其进行编辑。
+	    (1)进去hadoop配置文件目录  etc/hadoop文件夹下
+		cd  /home/hduser/app/etc/hadoop/
 
-		进去hadoop配置文件目录  etc/hadoop文件夹下
-
-		配置hadoop-env.sh文件 -->   修改JAVA_HOME
+        (2)配置hadoop-env.sh文件 -->   修改JAVA_HOME
+        添加如下内容
 		# The java implementation to use
 		export JAVA_HOME=/opt/jdk1.x.xx.xx
 
-		配置yarn-env.sh文件 -->  修改JAVA_HOME
+        (3)配置yarn-env.sh文件 -->  修改JAVA_HOME
+		添加如下内容
 		# some Java parameters
 		export JAVA_HOME=/opt/jdk1.x.xx.xx
 
-		配置slaves 文件  --> 添加slave节点
-		（删除原来的localhost）
-		Master
-		Slave1
+		（4）配置slaves文件  --> 添加slave节点（删除原来的localhost）
+		添加如下内容
+		hadoop1
+        hadoop2
 
-		配置core-site.xml 文件 --> 添加hadoop核心配置
+		（5）配置core-site.xml 文件 --> 添加hadoop核心配置
 		（hdfs文件端口是9000、file:/home/hduser/hadoop/tmp）
+		添加如下内容
 		<configuration>
-		<property>
-		<name>fs.defaultFS</name>
-		<value>hdfs://Ubuntu1:9000</value>
-		</property>
+         <property>
+          <name>fs.defaultFS</name>
+          <value>hdfs://hadoop1:9000</value>  设置fsURI标识
+         </property>
+         <property>
+          <name>io.file.buffer.size</name>
+          <value>131072</value>
+         </property>
+         <property>
+          <name>hadoop.tmp.dir</name>
+          <value>file:/home/hduser/app/tmp</value>  设置hdfs文件系统存储数据的目录
+          <description>Abasefor other temporary directories.</description>
+         </property>
+        <property>
+         <name>hadoop.native.lib</name>
+          <value>true</value>
+          <description>Should native hadoop libraries, if present, be used.</description>
+        </property>
+        </configuration>
 
-		<property>
-		<name>io.file.buffer.size</name>
-		<value>131072</value>
-		</property>
-
-		<property>
-		<name>hadoop.tmp.dir</name>
-		<value>file:/home/hduser/hadoop/tmp</value>
-		<description>Abasefor other temporay directories</description>
-		</property>
-		</configuration>
-
-		配置hdfs-site.xml文件  --> 添加hdfs配置信息
+		(6)配置hdfs-site.xml文件  --> 添加hdfs配置信息
 		（namenode   datanode 端口和目录位子）
 		<configuration>
-		<property>
-		<name>dfs.namenode.secondary.http-address</name>
-		<value>Ubuntu1:9001</value>
-		</property>
+         <property>
+          <name>dfs.namenode.secondary.http-address</name>
+          <value>Ubuntu1:9001</value>
+         </property>
 
-		<property>
-		<name>dfs.namenode.name.dir</name>
-		<value>file:/home/hduser/hadoop/dfs/name</value>
-		</property>
+          <property>
+           <name>dfs.namenode.name.dir</name>
+           <value>file:/home/hduser/app/dfs/name</value>
+         </property>
 
-		<property>
-		<name>dfs.datanode.data.dir</name>
-		<value>file:/home/hduser/hadoop/dfs/data</value>
-		</property>
+         <property>
+          <name>dfs.datanode.data.dir</name>
+          <value> file:/home/hduser/app/dfs/data</value>
+          </property>
 
-		<property>
-		<name>dfs.replication</name>
-		<value>2</value>
-		</property>
+         <property>
+          <name>dfs.replication</name>
+          <value>2</value>  block副本系数
+         </property>
 
-		<property>
-		<name>dfs.webhdfs.enabled</name>
-		<value>true</value>
-		</property>
+         <property>
+          <name>dfs.webhdfs.enabled</name>
+          <value>true</value>
+         </property>
+        </configuration>
 
-		</configuration>
-
-		配置mapred-site.xml文件  -->  添加mapreduce配置
+		(7)配置mapred-site.xml文件  -->  添加mapreduce配置
 		（使用yarn框架、jobhistory使用地址及web地址）
 		<configuration>
-		<property>
-		<name>mapreduce.framework.name</name>
-		<value>yarn</value>
-		</property>
+          <property>
+           <name>mapreduce.framework.name</name>
+           <value>yarn</value>
+         </property>
+         <property>
+          <name>mapreduce.jobhistory.address</name>
+          <value>hadoop1:10020</value>
+         </property>
+         <property>
+          <name>mapreduce.jobhistory.webapp.address</name>
+          <value> hadoop1:19888</value>
+         </property>
+        </configuration>
 
-		<property>
-		<name>mapreduce.jobhistory.address</name>
-		<value>Ubuntu1:10020</value>
-		</property>
-
-		<property>
-		<name>mapreduce.jobhistory.webapp.address</name>
-		<value>Ubuntu1:19888</value>
-		</property>
-		</configuration>
-
-		配置yarn-site.xml文件  --> 添加yarn功能
+		(8)配置yarn-site.xml文件  --> 添加yarn功能
 		<configuration>
-		<property>
-		<name>yarn.nodemanager.aux-services</name>
-		<value>mapreduce_shuffle</value>
-		</property>
+          <property>
+           <name>yarn.nodemanager.aux-services</name>
+           <value>mapreduce_shuffle</value>
+          </property>
+          <property>
+           <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+           <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+          </property>
+          <property>
+           <name>yarn.resourcemanager.address</name>
+           <value>hadoop1:8032</value>
+          </property>
+          <property>
+           <name>yarn.resourcemanager.scheduler.address</name>
+           <value>hadoop1:8030</value>
+          </property>
+          <property>
+           <name>yarn.resourcemanager.resource-tracker.address</name>
+           <value>hadoop1:8035</value>
+          </property>
+          <property>
+           <name>yarn.resourcemanager.admin.address</name>
+           <value>hadoop1:8033</value>
+          </property>
+          <property>
+           <name>yarn.resourcemanager.webapp.address</name>
+           <value>hadoop1:8088</value>
+          </property>
 
-		<property>
-		<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
-		<value>org.apache.hadoop.mapred.ShuffleHandler</value>
-		</property>
+        </configuration>
 
-		<property>
-		<name>yarn.resourcemanager.address</name>
-		<value>Ubuntu1:8032</value>
-		</property>
-
-		<property>
-		<name>yarn.resourcemanager.scheduler.address</name>
-		<value>Ubuntu1:8030</value>
-		</property>
-
-		<property>
-		<name>yarn.resourcemanager.resource-tracker.address</name>
-		<value>Ubuntu1:8035</value>
-		</property>
-
-		<property>
-		<name>yarn.resourcemanager.admin.address</name>
-		<value>Ubuntu1:8033</value>
-		</property>
-
-		<property>
-		<name>yarn.resourcemanager.webapp.address</name>
-		<value>Ubuntu1:8088</value>
-		</property>
-		</configuration>
-
-		将配置好的Ubuntu1中 /hadoop/etc/hadoop文件夹复制到ubuntu2对应位子
+		(9)将配置好的Ubuntu1中 /hadoop/etc/hadoop文件夹复制到ubuntu2对应位子
 		（删除原来的文件夹）
-		scp -r /home/hduser/hadoop/etc/hadoop/   hduser@Ubuntu2:/home/hduser/hadoop/etc/hadoop/
+		scp -r /home/hduser/app/hadoop-2.6.0-cdh5.7.0/etc/hadoop/ hduser@hadoop2:/home/hduser/app/hadoop-2.6.0-cdh5.7.0/etc/
 
-	9.验证hadoop的配置
+	10.验证hadoop的配置
 		验证hadoop配置是否正确
-		1 格式化namenode
-		进入hadoop安装文件夹
-		cd /home/hduser/hadoop/
-		运行   ./bin/hdfs namenode -format  (两台机器都要执行)
+		1) 格式化namenode
+		hduser@Ubuntu1:~$ cd hadoop
+        hduser@Ubuntu1:~/hadoop$ ./bin/hdfs namenode -format
+        hduser@Ubuntu2:~$ cd hadoop
+        hduser@Ubuntu2:~/hadoop$ ./bin/hdfs namenode -format
+        注意：上面只要出现“successfully formatted”就表示成功了。  (两台机器都要执行)
 
-		启动hdfs	./sbin/start-dfs.sh
-		查看进程  jps
+        2)启动hdfs
+		    ./sbin/start-dfs.sh
+		    查看进程  jps
+                8008 NameNode
+                8443 Jps
+                8158 DataNode
+                8314 SecondaryNameNode
+		3)停止hdfs
+		    ./sbin/stop-dfs.sh
+		    查看进程  jps
+		        无
+		4)启动yarn
+		    ./sbin/start-yarn.sh
+		    查看进程  jps
+		        8911 ResourceManager
+                9247 Jps
+                9034 NodeManager
+		5)停止yarn
+		    ./sbin/stop-yarn.sh
+		    查看进程  jps
 
-		停止hdfs ./sbin/stop-dfs.sh
-		查看进程  jps
-
-		启动yarn
-		./sbin/start-yarn.sh
-		查看进程  jps
-
-		停止yarn
-		./sbin/stop-yarn.sh
-		查看进程  jps
-
-		查看集群状态
+		6)查看集群状态
 			首先启动集群./sbin/start-dfs.sh
 			./bin/hdfs  dfsadmin -report
 
-		从浏览器查看hdfs:  http://Ubuntu1:50070/
+		7)从浏览器查看hdfs:  http://Ubuntu1:50070/
 
 
 三、运行wordcount程序

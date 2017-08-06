@@ -54,3 +54,6 @@
 
 2.数据库结构优化
 3.系统配置优化
+
+数据库工作原理
+http://blog.jobbole.com/100349/?from=timeline
