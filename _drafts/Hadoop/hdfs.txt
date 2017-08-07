@@ -1,3 +1,8 @@
+Hadoop三大核心设计
+    MapReduce Map:任务分解 Reduce：结果汇总
+    HDFS NameNode：管理里文件元数据 DataNode：存储物理文件 Client：获取文件的各种API
+    Hbase 列式内存数据库
+
 一、HDFS的体系结构
 	NameNode:元数据节点用来管理文件系统的命名空间
 		1.管理文件系统的命名空间
@@ -20,32 +25,436 @@
 		2.周期性备份namenode
 		3.纪录namenode中的metadata及其他数据
 		4.可以用来恢复NameNode
+    dfs.namenode.name.dir/current/文件夹的几个文件：
+        1.VERSION：存放的是版本信息，文件系统的标示符
+        2.seen_txid：存放事务ID的文件，它里面的数字要与edits的尾数一致，也就是与edits_inprogress_000000000*后边的数字一致，inprogress是正在使用的edits文件
+        3.fsimage_*、fsimage_*.md5、edits_*：存放的是文件的元数据信息。
+    HDFS文件读取的过程如下：
+        1).使用HDFS提供的客户端开发库Client，向远程的Namenode发起RPC请求；
+        2).Namenode会视情况返回文件的部分或者全部block列表，对于每个block，Namenode都会返回有该block拷贝的DataNode地址；
+        3).客户端开发库Client会选取离客户端最接近的DataNode来读取block；如果客户端本身就是DataNode,那么将从本地直接获取数据.
+        4).读取完当前block的数据后，关闭与当前的DataNode连接，并为读取下一个block寻找最佳的DataNode；
+        5).当读完列表的block后，且文件读取还没有结束，客户端开发库会继续向Namenode获取下一批的block列表。
+        6).读取完一个block都会进行checksum验证，如果读取datanode时出现错误，客户端会通知Namenode，然后再从下一个拥有该block拷贝的datanode继续读。
+    HDFS写入文件的过程：
+        1).使用HDFS提供的客户端开发库Client，向远程的Namenode发起RPC请求；
+        2).Namenode会检查要创建的文件是否已经存在，创建者是否有权限进行操作，成功则会为文件创建一个记录，否则会让客户端抛出异常；
+        4).当客户端开始写入文件的时候，开发库会将文件切分成多个packets，并在内部以数据队列"data queue"的形式管理这些packets，并向Namenode申请新的blocks，
+            获取用来存储replicas的合适的datanodes列表，列表的大小根据在Namenode中对replication的设置而定。开始以pipeline（管道）的形式将packet写入所有的replicas中。
+            开发库把packet以流的方式写入第一个datanode，该datanode把该packet存储之后，再将其传递给在此pipeline中的下一个datanode，
+            直到最后一个datanode，这种写数据的方式呈流水线的形式。
+        5).最后一个datanode成功存储之后会返回一个ack packet，在pipeline里传递至客户端，在客户端的开发库内部维护着"ack queue"，
+            成功收到datanode返回的ack packet后会从"ack queue"移除相应的packet。
+        6).如果传输过程中，有某个datanode出现了故障，那么当前的pipeline会被关闭，出现故障的datanode会从当前的pipeline中移除，
+            剩余的block会继续剩下的datanode中继续以pipeline的形式传输，同时Namenode会分配一个新的datanode，保持replicas设定的数量。
+
 二、HDFS的shell操作  命令行
 	在hadoop安装文件夹下的bin目录中
-	-ls	-ls <路径>	查看指定路径的当前目录结构
-	-lsr	-lsr <路径>	递归查看指定路径的目录结构
-	-du	-du <路径>	统计目录下个文件大小
-	-dus	-dus <路径>	汇总统计目录下文件(夹)大小
-	-count	-count [-q] <路径>	统计文件(夹)数量
-	-mv	-mv <源路径> <目的路径>	移动
-	-cp	-cp <源路径> <目的路径>	复制
-	-rm	-rm [-skipTrash] <路径>	删除文件/空白文件夹
-	-rmr	-rmr [-skipTrash] <路径>	递归删除
-	-put	-put <多个linux上的文件> <hdfs路径>	上传文件
-	-copyFromLocal	-copyFromLocal <多个linux上的文件> <hdfs路径>	从本地复制
-	-moveFromLocal	-moveFromLocal <多个linux上的文件> <hdfs路径>	从本地移动
-	-getmerge	-getmerge <源路径> <linux路径>	合并到本地
-	-cat	-cat <hdfs路径>	查看文件内容
-	-text	-text <hdfs路径>	查看文件内容
-	-copyToLocal	-copyToLocal [-ignoreCrc] [-crc] [hdfs源路径] [linux目的路径]	从本地复制
-	-moveToLocal	-moveToLocal [-crc] <hdfs源路径> <linux目的路径>	从本地移动
-	-mkdir	-mkdir <hdfs路径>	创建空白文件夹
-	-setrep	-setrep [-R] [-w] <副本数> <路径>	修改副本数量
-	-touchz	-touchz <文件路径>	创建空白文件
-	-stat	-stat [format] <路径>	显示文件统计信息
-	-tail	-tail [-f] <文件>	查看文件尾部信息
-	-chmod	-chmod [-R] <权限模式> [路径]	修改权限
-	-chown	-chown [-R] [属主][:[属组]] 路径	修改属主
-	chgrp	-chgrp [-R] 属组名称 路径	修改属组
-	-help	-help [命令选项]	帮助
-三、HDFS的API方式访问  java  API
+	语法：hadoop   fs  -cmd    <args>，eg: hadoop fs -ls /
+
+    mkdir 使用方法：hadoop fs -mkdir <paths>
+    示例：hadoop fs -mkdir /user
+
+    ls 列出path目录下的内容，包括文件名，权限，所有者，大小和修改时间
+    hadoop fs -ls /
+    hadoop fs -ls -R /
+
+    put 使用方法：hadoop fs -put <localsrc> ... <dst>
+    从本地文件系统中复制单个或多个源路径到目标文件系统。也支持从标准输入中读取输入写入目标文件系统。
+    hadoop fs -put localfile /user/ 拷贝localfile文件到hdfs的user目录下
+    hadoop fs -put localfile1 localfile2 /user/ 同时拷贝localfile1和localfile2文件到hdfs的user目录下
+    hadoop fs -put - /user/hadoopfile 在hadoopfile文件里手工录入内容（录入之前hadoopfile文件不存在），按Ctrl+C键录入结束
+    hadoop fs -ls /user/hadoopfile 查看文件内容
+    hadoop fs -ls /user/read.txt 删除文件
+
+    get 使用方法：hadoop fs -get [-ignorecrc] [-crc]
+    <src> <localdst> 复制文件到本地文件系统
+    示例：hadoop fs -get /user/hadoop/file localfile
+
+    cat 使用方法：hadoop fs -cat URI [URI ...]
+    示例：hadoop fs -cat /user/hadoop/file
+
+    rm 使用方法：hadoop fs -rm URI [URI ...]
+    删除指定的文件。只删除非空目录和文件。请参考rmr命令了解递归删除。
+    示例：hadoop fs -rm /emptydir
+
+    rmr 使用方法：hadoop fs -rmr URI [URI ...]
+    delete的递归版本。
+    示例：hadoop fs -rm -r /user/hadoop/dir
+
+    getmerge 使用方法：hadoop fs -getmerge <src> <localdst> [addnl]
+    接受一个源目录和一个目标文件作为输入，并且将源目录中所有的文件连接成本地目标文件。addnl是可选的，用于指定在每个文件结尾添加一个换行符。
+    示例：hadoop fs -getmerge /input2 file2.txt
+
+    mv 使用方法：hadoop fs -mv URI [URI ...] <dest>
+    将文件从源路径移动到目标路径。这个命令允许有多个源路径，此时目标路径必须是一个目录。
+    不允许在不同的文件系统间移动文件。
+    示例：hadoop fs -mv /hadoop/file1 /hadoop/file2
+
+    stat 使用方法：hadoop fs -stat URI [URI ...]
+    返回指定路径的统计信息。
+    示例：hadoop fs -stat /input2
+
+    tail 使用方法：hadoop fs -tail [-f] URI
+    将文件尾部1k字节的呢绒输出到stdout。支持-f选项，行为和Unix中一致。
+    示例：hadoop fs -tail pathname
+
+    chmod 使用方法：hadoop fs -chmod [-R] <MODE[,MODE]... | OCTALMODE> URI [URI ...]
+    设为所有人皆可读取
+    chmod a+r file1.txt
+
+    chown 使用方法：hadoop fs -chown [-R] [OWNER][:[GROUP]] URI [URI]
+
+    touchz 使用方法：hadoop fs -touchz URI [URI ...]
+    创建一个0字节的空文件。
+    示例：hadoop fs -touchz pathname
+
+    copyToLocal 使用方法：hadoop fs -copyToLocal [ignorecrc] [-crc] URI <localdst>
+    除了限定目标路径是一个本地文件外，和get命令类似。
+
+    copyFromLocal 使用方法：hadoop fs -copyFromLocal <localsrc> URI
+    除了限定源路径是一个本地文件外，和put命令相似。
+
+    cp 使用方法：hadoop fs -cp URI [URI ...] <dest>
+    将文件从源路径复制到目标路径。这个命令允许有多个源路径，此时目标路径必须是一个目录。
+    hadoop fs -cp /user/hadoop/file1 /user/hadoop/file2
+
+    du 使用方法：hadoop fs -du URI [URI ...]
+    显示目录中所有文件的大小
+    示例：hadoop fs -du /user/hadoop/dir1
+
+    du -s 使用方法：hadoop fs -du -s <args>
+    显示文件的大小
+
+    expunge 使用方法：hadoop fs -expunge
+    清空回收站
+
+三、Hadoop的命令解析：
+    1.put命令只能从本地的文件复制到HDFS上；get命令将HDFS上的文件复制到本地；cp命令只能在相同的文件系统上互相复制文件。
+        这三个命令都可以复制多个文件。复制单个文件时，目标路径可以是目录也可以是文件，目标路径是目录时，文件名不改变，
+        目标路径是文件时，可以修改文件名；复制多个文件时，目标路径必须是目录，文件名不能修改。
+    2.copyFromLocal命令，此命令与put命令相似，区别是此命令只能复制一个文件。
+        目标路径是目录时，文件名不改变，目标路径是文件时，可以修改文件名。
+    3.copyToLocal命令，此命令与get命令相似，区别是此命令只能复制一个文件。
+        目标路径是目录时，文件名不改变，目标路径是文件时，可以修改文件名。
+    4.mv命令只能在相同的文件系统上移动文件，可以移动多个文件。
+        标路径是目录时，文件名不改变，目标路径是文件时，可以修改文件名。
+    以上所有目录必须是存在的。
+
+四、HDFS的API方式访问  java  API
+    Configuration类：该类的对象封装了客户端或者服务端的配置。
+    FileSystem类：该类的对象是一个文件系统对象，可以用该队想的一些方法来对文件进行操作。
+    FSDataInputStream和FSDataOutputStream：这两个类是HDFS中的输入输出流。
+
+    基本流程：
+    得到Configuration对象
+    得到FileSystem对象
+    进行文件操作（读写、删除、改名）
+
+    所需引入的库
+    import org.apache.hadoop.conf.Configuration;
+    import org.apache.hadoop.fs.FSDataOutputStream;
+    import org.apache.hadoop.fs.FileStatus;
+    import org.apache.hadoop.fs.FileSystem;
+    import org.apache.hadoop.fs.Path;
+    import org.apache.hadoop.io.IOUtils;
+
+    文件操作前的准备工作
+    获取配置信息
+    Configuration conf = new Configuration();
+    建立文件系统对象
+    FileSystem fs = FileSystem.get(conf);
+
+    写文件
+    Path dstPath = new Path(dst);//目标路径
+    FSDataOutputStream outputStream = fs.create(dstPath);//打开一个输出流
+    outputStream.write(contents);
+    outputStream.close();
+    fs.close();
+
+    读文件
+    InputStream in = null;
+    in = fs.open(srcPath);
+    IOUtils.copyBytes(in,System.out,4096,false);//复制到标准输出流
+    IOUtils.closeStream(in);
+
+    上传文件到HDFS
+    Path srcPath = new Path(src);//原路径
+    Path dstPath = new Path(dst);//目标路径
+    fs.copyFromLocalFile(false,srcPath,dstPath);
+    前面参数是指是否删除原文件，true为删除，默认为false
+
+    获取指定文件信息
+    FileStatus[] fileStatus = fs.listStatus(dstPath);
+    boolean isok=fs.rename(oldPath,newPath);
+    boolean isok=fs.deleteOnExit(path);
+    boolean isok=fs.mkdirs(srcPath);
+
+===============================================================================================================
+
+    HDFS API具体操作：
+    打开eclipse建立一个工程，将代码copy，逐步运行。
+    在工程中建立一个conf目录，注意先将相关的配置文件拷贝过去主要是三个文件core-site.xml , mapred-site.xml,hdfs-site.xml
+    并在project属性中设置java build path 单击addfolder 将conf目录加上
+    import java.io.FileInputStream;
+    import java.io.IOException;
+    import java.io.InputStream;
+    import org.apache.hadoop.conf.Configuration;
+    import org.apache.hadoop.fs.FSDataOutputStream;
+    import org.apache.hadoop.fs.FileStatus;
+    import org.apache.hadoop.fs.FileSystem;
+    import org.apache.hadoop.fs.Path;
+    import org.apache.hadoop.io.IOUtils;
+
+    public class HdfsFile {
+
+        //创建新文件
+        public static void createFile(String dst , byte[] contents) throws IOException{
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(conf);
+            Path dstPath = new Path(dst); //目标路径
+            //打开一个输出流
+            FSDataOutputStream outputStream = fs.create(dstPath);
+            outputStream.write(contents);
+            outputStream.close();
+            fs.close();
+            System.out.println("文件创建成功！");
+        }
+
+        //上传本地文件
+        public static void uploadFile(String src,String dst) throws IOException{
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(conf);
+            Path srcPath = new Path(src); //原路径
+            Path dstPath = new Path(dst); //目标路径
+            //调用文件系统的文件复制函数,前面参数是指是否删除原文件，true为删除，默认为false
+            fs.copyFromLocalFile(false,srcPath, dstPath);
+
+            //打印文件路径
+            System.out.println("Upload to "+conf.get("fs.default.name"));
+            System.out.println("------------list files------------"+"\n");
+            FileStatus [] fileStatus = fs.listStatus(dstPath);
+            for (FileStatus file : fileStatus)
+            {
+                System.out.println(file.getPath());
+            }
+            fs.close();
+        }
+
+        //文件重命名
+        public static void rename(String oldName,String newName) throws IOException{
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(conf);
+            Path oldPath = new Path(oldName);
+            Path newPath = new Path(newName);
+            boolean isok = fs.rename(oldPath, newPath);
+            if(isok){
+                System.out.println("rename ok!");
+            }else{
+                System.out.println("rename failure");
+            }
+            fs.close();
+        }
+        //删除文件
+        public static void delete(String filePath) throws IOException{
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(conf);
+            Path path = new Path(filePath);
+            boolean isok = fs.deleteOnExit(path);
+            if(isok){
+                System.out.println("delete ok!");
+            }else{
+                System.out.println("delete failure");
+            }
+            fs.close();
+        }
+
+        //创建目录
+        public static void mkdir(String path) throws IOException{
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(conf);
+            Path srcPath = new Path(path);
+            boolean isok = fs.mkdirs(srcPath);
+            if(isok){
+                System.out.println("create dir ok!");
+            }else{
+                System.out.println("create dir failure");
+            }
+            fs.close();
+        }
+
+        //读取文件的内容
+        public static void readFile(String filePath) throws IOException{
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(conf);
+            Path srcPath = new Path(filePath);
+            InputStream in = null;
+            try {
+                in = fs.open(srcPath);
+                IOUtils.copyBytes(in, System.out, 4096, false); //复制到标准输出流
+            } finally {
+                IOUtils.closeStream(in);
+            }
+        }
+
+
+        public static void main(String[] args) throws IOException {
+            //测试上传文件
+            //uploadFile("/home/hadoop/music1.txt","hdfs://master:9000/user/hadoop/test.txt");
+            //测试创建文件
+          //byte[] contents =  "hello world 世界你好\n".getBytes();
+           //createFile("hdfs://master:9000/user/hadoop/test1/d.txt",contents);
+            //测试重命名
+            //rename("hdfs://master:9000/user/hadoop/test1/d.txt", "hdfs://master:9000/user/hadoop/test1/dd.txt");
+            //测试删除文件
+            //delete("hdfs://master:9000/user/hadoop/test1/d.txt"); //使用相对路径
+           //delete("hdfs://master:9000/user/hadoop/test1");    //删除目录
+            //测试新建目录
+           // mkdir("hdfs://master:9000/user/hadoop/test1");
+            //测试读取文件
+            //readFile("hdfs://master:9000/user/hadoop/test1/d.txt");
+        }
+
+    }
+
+===================================================================================================================
+    idea + junit
+
+    import java.io.*;
+    import org.apache.hadoop.conf.Configuration;
+    import org.apache.hadoop.fs.*;
+    import org.apache.hadoop.io.IOUtils;
+    import org.apache.hadoop.util.Progressable;
+    import org.junit.After;
+    import org.junit.Before;
+    import org.junit.Test;
+    import java.net.URI;
+
+    /**
+     * Created by ZhangZaipeng on 2017/8/7 0007.
+     * Hadoop HDFS Java API使用
+     */
+    public class HDFSApi {
+
+        // hdfs://hadoop1:9000
+        public static final String HDFS_PATH = "hdfs://123.206.174.58:9000";
+
+        FileSystem fileSystem = null;
+        Configuration configuration = null;
+
+        @Before
+        public void setUp() throws Exception {
+            System.out.println("HDFSApp.setUp()");
+            configuration = new Configuration();
+            fileSystem = FileSystem.get(new URI(HDFS_PATH), configuration, "hduser");
+        }
+
+        /**
+         * 创建文件
+         */
+        @Test
+        public void create() throws IOException {
+            FSDataOutputStream output = fileSystem.create(new Path("/hdfsapi/test/a.txt"));
+            output.write("hello world".getBytes());
+            output.flush();
+            output.close();
+        }
+
+        /**
+         * 查看hdfs上文件的内容
+         * @throws IOException
+         */
+        @Test
+        public void cat() throws IOException {
+            FSDataInputStream in = fileSystem.open(new Path("/hdfsapi/test/a.txt"));
+            IOUtils.copyBytes(in, System.out, 1024);
+        }
+
+        /**
+         * 重命名
+         */
+        @Test
+        public void rename() throws IOException {
+            Path oldPath = new Path("/hdfsapi/test/a.txt");
+            Path newPath = new Path("/hdfsapi/test/b.txt");
+            System.out.println(fileSystem.rename(oldPath, newPath));
+        }
+
+        /**
+         * 上传本地文件到HDFS
+         */
+        @Test
+        public void copyFromLocalFile() throws IOException {
+            Path localPath = new Path("F:\\ccc.txt");
+            Path hdfsPath = new Path("/hdfsapi/test/");
+            fileSystem.copyFromLocalFile(localPath,hdfsPath);
+        }
+
+
+        /**
+         * 上传本地文件到HDFS
+         */
+        @Test
+        public void copyFromLocalFileWithProgress() throws IOException {
+            InputStream in = new BufferedInputStream(new FileInputStream(
+                    new File("/Users/rocky/source/spark-1.6.1/spark-1.6.1-bin-2.6.0-cdh5.5.0.tgz")));
+
+            FSDataOutputStream output = fileSystem.create(
+                    new Path("/hdfsapi/test/spark-1.6.1.tgz"),
+                    new Progressable(){
+                        public void progress() {
+                            System.out.print(".");  //带进度提醒信息
+                        }
+                    });
+
+            IOUtils.copyBytes(in, output, 4096);
+        }
+
+
+        /**
+         * 下载HDFS文件
+         */
+        @Test
+        public void copyToLocalFile() throws IOException {
+            Path localPath = new Path("F:\\b.txt");
+            Path hdfsPath = new Path("/hdfsapi/test/b.txt");
+            fileSystem.copyToLocalFile(false,hdfsPath, localPath,true);
+        }
+
+        /**
+         * 查看某个目录下的所有文件
+         */
+        @Test
+        public void listFiles() throws IOException {
+            FileStatus[] fileStatus = fileSystem.listStatus(new Path("/hdfsapi/test"));
+
+            for(FileStatus file : fileStatus) {
+                String isDir = file.isDirectory() ? "文件夹" : "文件";
+                String permission = file.getPermission().toString();
+                short replication = file.getReplication();
+                long len = file.getLen();
+                String path = file.getPath().toString();
+
+                System.out.println(isDir + "\t" + permission + "\t"
+                        + replication + "\t" + len + "\t" + path);
+            }
+        }
+
+        /**
+         * 删除
+         */
+        @Test
+        public void delete() throws IOException {
+            fileSystem.delete(new Path("/hdfsapi"), true);
+        }
+
+        @After
+        public void tearDown(){
+            configuration = null;
+            fileSystem = null;
+            System.out.println();
+            System.out.println("HDFSApp.tearDown()");
+        }
+
+    }
+
