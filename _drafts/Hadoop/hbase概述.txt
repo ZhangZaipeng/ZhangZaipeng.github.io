@@ -19,12 +19,12 @@
     Row key行健（Row key）可以是任意字符串（最大长度是63KB，实际应用中长度一般为10-100bytes），在hbase内部，row key保存为字节数组。
     存储时，数据按照Row key的字典序（byte order）排序村存储。
 
-三、
+三、Hbase列族
 
-四、
+四、Hbase的数据单元cell
 
-五、
+五、Hbase的数据存储
 
-六、
+六、Hbase的物理存储
 
-七、
+七、Hbase的存储
