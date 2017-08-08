@@ -1,0 +1,29 @@
+一、Hbase shell
+    1、create命令
+        创建一个具有两个列族“grad”和“course”的表“scores”。其中表名、行和列都要用单引号括起来，并以逗号隔开。
+        create 'scores','name','grad','course'
+
+    2、list命令
+        查看当前HBase中具有哪些表。
+        list 'scores'
+
+    3、put命令
+        put 'scores','xiapi','grad:','1'
+        put 'scores','xiapi','course:china','97'
+        put 'scores','xiapi','course:math','128'
+        put 'scores','xiapi','course:english','85'
+        put 'scores','xiaoxue','grad:','2'
+        put 'scores','xiaoxue','course:china','90'
+        put 'scores','xiaoxue','course:math','120'
+        put 'scores','xiaoxue','course:english','90'
+
+    4、get命令
+        get 'scores','xiapi'
+        get 'scores','xiaoxue'
+        查询学生xiapi的数学成绩
+        get 'scores','xiapi','course:math'
+
+    5、scan命令
+        scan 'scores'
+
+二、Java Api操作
