@@ -93,7 +93,7 @@
 		<configuration>
          <property>
           <name>dfs.namenode.secondary.http-address</name>
-          <value>Ubuntu1:9001</value>
+          <value>hadoop1:9001</value>
          </property>
 
           <property>
@@ -167,17 +167,17 @@
 
         </configuration>
 
-		(9)将配置好的Ubuntu1中 /hadoop/etc/hadoop文件夹复制到ubuntu2对应位子
+		(9)将配置好的hadoop1中 /hadoop/etc/hadoop文件夹复制到ubuntu2对应位子
 		（删除原来的文件夹）
 		scp -r /home/hduser/app/hadoop-2.6.0-cdh5.7.0/etc/hadoop/ hduser@hadoop2:/home/hduser/app/hadoop-2.6.0-cdh5.7.0/etc/
 
 	10.验证hadoop的配置
 		验证hadoop配置是否正确
 		1) 格式化namenode
-		hduser@Ubuntu1:~$ cd hadoop
-        hduser@Ubuntu1:~/hadoop$ ./bin/hdfs namenode -format
-        hduser@Ubuntu2:~$ cd hadoop
-        hduser@Ubuntu2:~/hadoop$ ./bin/hdfs namenode -format
+		hduser@hadoop1:~$ cd hadoop
+        hduser@hadoop1:~/hadoop$ ./bin/hdfs namenode -format
+        hduser@hadoop2:~$ cd hadoop
+        hduser@hadoop2:~/hadoop$ ./bin/hdfs namenode -format
         注意：上面只要出现“successfully formatted”就表示成功了。  (两台机器都要执行)
 
         2)启动hdfs
@@ -205,7 +205,7 @@
 			首先启动集群./sbin/start-dfs.sh
 			./bin/hdfs  dfsadmin -report
 
-		7)从浏览器查看hdfs:  http://Ubuntu1:50070/
+		7)从浏览器查看hdfs:  http://hadoop1:50070/
 
 
 三、运行wordcount程序

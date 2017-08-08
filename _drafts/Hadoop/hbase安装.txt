@@ -1,51 +1,59 @@
 一、复制hbase-1.0.0-bin.tar.gz 到/home/hduser  并解压
-二、配置的修改 conf/hbase-site.xml文件
+    配置Hbase环境变量
+        # hbase
+        export HBASE_HOME=/home/hduser/app/hbase-1.2.0-cdh5.7.0
+        export PATH=$HBASE_HOME/bin:$PATH
 
+二、配置的修改 conf/hbase-site.xml文件
 	hbase 基于  HDFS
 	<property>
-	<name>hbase.rootdir</name>
-	<value>hdfs://Ubuntu1:9000/hbase</value>
-	</property>
-	分布式模式配置
-	<property>
-	<name>hbase.cluster.distributed</name>
-	<value>false</value>
-	</property>
-	指明zookeeper
-	<property>
-	<name>hbase.zookeeper.property.clientPort</name>
-	<value>2181</value>
-	</property>
-	zookeeper协调主机
-	<property>
-	<name>hbase.zookeeper.property.quorun</name>
-	<value>Ubuntu1</value>
-	</property>
-	内置zookeeper  还是外置  可有可无
-	<property>
-	<name>hbase.zookeeper.property.dataDir</name>
-	<value>/home/hduser/zookeeper</value>
-	</property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://hadoop1:9000/hbase</value>
+    </property>
+    分布式模式配置
+    <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.property.clientPort</name>
+        <value>2181</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>hadoop1,hadoop2,hadoop3</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.property.dataDir</name>
+        <value>/home/hduser/app/tmp/zookeeper</value>
+    </property>
+    <property>
+        <name>dfs.support.append</name>
+        <value>true</value>
+    </property>
 
-	<property>
-	<name>dfs.support.append</name>
-	<value>true</value>
-	</property>
+
 三、修改 conf/regionservers
-	添加  Ubuntu1
+	添加  hadoop2
+	     hadoop3
 四、修改conf/hbase-env.sh
 	export JAVA_HOME=....
 	export HBASE_MANAGES_ZK=true(zookeeper 内置还是外置，分布式安装改为false)
 	export HBASE_HOME= hbase安装目录
 	export HADOOP_HOME= hadoop安装目录
-五、修改各节点Hadoop 的 hdfs-site.xml
+
+五、将配置好的hadoop1中 /home/hduser/app/hbase-1.2.0-cdh5.7.0/conf文件夹复制到hadoop2,hadoop3对应位子
+    （删除原来的文件夹）
+    scp -r /home/hduser/app/hbase-1.2.0-cdh5.7.0/conf hduser@hadoop2:/home/hduser/app/hbase-1.2.0-cdh5.7.0/
+
+六、修改各节点Hadoop 的 hdfs-site.xml
 	<property>
 	<name>dfs.datanode.max.xcievers</name>
 	<value>4096</value>
 	</property>
 	注  该参数限制了datanode所允许同时执行的发送和接受任务的数量  缺省为256
 
-六、测试
+七、测试
 	启动顺序：hadoop->Zookeeper->Hbase  结束Hbase -> Zookeeper->hadoop(分布式安装单独启动Zookeeper)
 	启动Hbase  start-hase.sh
 	jps查看
