@@ -28,6 +28,8 @@
         （即在每个节点上新建并设置文件myid，其内容与zoo.cfg中的id相对应）这里hadoop1节点为 1
     5.其他节点执行相同操作，不同点是myid写入的值为不同。
 
+    6.查看状态：jps查看： QuorumPeerMain
+            bin/zkServer.sh status
 
 参考博客
 http://www.cnblogs.com/hxsyl/p/6113251.html

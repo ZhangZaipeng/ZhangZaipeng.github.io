@@ -1,0 +1,7 @@
+一、本地事务
+二、分布式事务
+    2pc:二阶提交协议
+    http://blog.jobbole.com/95632/
+三、微服务事务
+    最终一致性有三种模式：可靠事件模式、业务补偿模式、TCC模式。
+    https://yq.aliyun.com/articles/66109

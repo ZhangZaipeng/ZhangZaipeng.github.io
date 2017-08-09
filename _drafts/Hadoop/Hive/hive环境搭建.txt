@@ -4,3 +4,75 @@
     hive-1.1.0-cdh5.7.0
     sqoop-1.4.6-cdh5.7.0
     hue-3.9.0-cdh5.7.0
+
+二、Hive环境搭建流程
+    1.使用命令yum install mysql-server安装mysql
+
+    2.使用命令service mysqld start 启动mysql
+
+    3.解压hive的压缩包，命令tar -zxvf hive-1.1.0-cdh5.7.0.tar.gz，解压后得到hive-1.1.0-cdh5.7.0
+
+    4.进入hive安装目录下的conf文件夹 配置hive-site.xml
+    <configuration>
+      <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:mysql://localhost:3306/hive?createDatabaseIfNotExist=true</value>
+      </property>
+      <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+      </property>
+      <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>root</value>
+      </property>
+      <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>root</value>
+      </property>
+    </configuration>
+
+    5.拷贝mysql驱动
+    将下载好的mysql的驱动mysql-connector-java-5.1.27-bin.jar拷贝到hive安装目录下的lib目录中
+
+    6.配置环境变量
+    export HIVE_HOME=/home/hadoop/app/hive-1.1.0-cdh5.7.0
+    export PATH=$HIVE_HOME/bin:$PATH
+
+    7.启动hive（启动hive之前要先启动mysql和hadoop）
+    进入hive安装目录下的bin目录中，执行命令./hive启动hive
+
+三、Hive表测试操作
+    1.创建表helloworld：
+        create table helloworld(id int,name string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
+
+    2.将本地数据插入到表helloworld中：
+        load data local inpath '/home/hadoop/data/helloworld.txt' overwrite into table helloworld;
+        （此命令会将表中原有的数据覆盖掉）
+
+    3.查看表helloworld的内容：
+        select * from helloworld;
+
+    4.查看helloworld的信息：
+        desc helloworld;
+
+    5.查看hdfs上hive表的信息：
+        hadoop fs -ls /user/hive/warehouse
+
+    6.将本地数据追加到helloworld表中：
+        load data local inpath '/home/hadoop/data/helloworld.txt' into table helloworld;
+        （此命令在不影响表中原有的数据的情况下，会将数据加载到表的尾部）
+
+    7.查看数据库：show databases;
+
+    8.创建一个名为a的数据库：create database a;
+
+    9.显示当前所用的数据库是哪个：set hive.cli.print.current.db=true;（这个设置只对本次启动hive有效，下次启动时此设置失效）
+        要想每次启动时都显示所在的数据库，可在hive的配置文件hive-site.xml中添加如下内容：
+        <property>
+            <name>hive.cli.print.current.db</name>
+            <value>true</value>
+        </property>
+    此设置完成后再次启动hive测显示所在的数据库名。
+
+    切换到a数据库：use a;

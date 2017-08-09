@@ -2,8 +2,12 @@
 	show grants for '用户名'@'链接地址'；
 	例子：show grants for 'select'@'100.100.100.1';
 二、添加权限
-	grant 权限列表 on 库名。表名 to '用户名'@'链接地址'  [identified by '密码']
+	grant 权限列表 on 库名.表名 to '用户名'@'链接地址'  [identified by '密码']
+
 	例子：grant select on jm_test.test to 'select'@'100.100.100.1';
+	    grant all on *.* to 'hadoop3'@'%';
+	flush privilegers;
+
 三、撤销权限
 	revoke 权限列表 on 库名。表名 from '用户名'@'链接地址'
 	例子：revoke all on jm_test.test from 'select'@'100.100.100.1';
