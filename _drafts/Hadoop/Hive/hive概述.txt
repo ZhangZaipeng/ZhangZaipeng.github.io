@@ -13,7 +13,8 @@
     3.统一的元数据管理(可与Pig、Presto、Impala、SparkSQL等共享元数据）
 
 三、Hive的体系架构
-
+    图
 四、Hive与RDBMS的关系
-
+    图
 五、Hive部署架构
+    图
