@@ -1,0 +1,38 @@
+一、hiveserver2 + beeline的使用
+    启动hiveserver2：hiveserver2
+    启动beeline: beeline -u jdbc:hive2://hadoop000:10000/default -n hadoop
+
+    修改默认的10000端口号：
+    hiveserver2 --hiveconf hive.server2.thrift.port=14000
+    beeline -u jdbc:hive2://hadoop000:14000/default -n hadoop
+
+    注意：-u是连接，-n是当前linux用户
+二、使用Java API访问Hive表
+三、自定义函数
+    1.函数种类：UDF（一进一出  upper lower），UDAF（多进一出），UDTF（多进一出）
+    2.使用方式一
+        add jar /home/hadoop/lib/hive-1.0-SNAPSHOT.jar;
+        CREATE TEMPORARY FUNCTION sayHello AS 'com.kgc.hadoop.HelloUDF';
+        弊端：只能当前session有效
+    3.使用方式二
+        $HIVE_HOME/auxlib，将jar拷贝到该目录下
+        CREATE TEMPORARY FUNCTION sayHello AS 'com.kgc.hadoop.HelloUDF';
+        弊端：还是当前session有效
+
+    方式一和二都是临时函数
+
+    4.UDF使用方式三：永久函数
+        CREATE FUNCTION sayHello2 AS 'com.kgc.hadoop.HelloUDF'
+        USING JAR 'hdfs://hadoop000:8020/lib/hive-1.0-SNAPSHOT.jar' ;
+        创建完function以后，通过show functions并没有看到我们自定义的函数sayHello2；
+        但是我们却能使用！！！！！
+        优点：只要在一个地方创建完FUNCTION，在任意客户端都能使用！！！
+    5.UDF使用方式四：将自定义UDF函数集成到Hive源码中
+        修改FunctionRegistry.java
+        1）把我们的UDF代码拷贝到某个路径下；
+        2）在FunctionRegistry.java
+        	A)import
+        	B)通过system.registerUDF方法把我们自己实现的UDF函数和处理类关联上
+        3）编译Hive源码
+        	mvn clean package -Phadoop-2,dist -DskipTests
+四、

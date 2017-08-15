@@ -1,0 +1,142 @@
+一、Hive的存储格式（配图）
+    行式：TextFile、SequenceFile
+    列式：RCFile、ORC（RCFile的基础之上做了优化，有较高的压缩比）、Parquet
+
+    CREATE TABLE t1(id int,name string) stored as textfile;创建一个存储格式为TextFile的表，默认的存储格式就是TextFile。
+
+    DESC formatted t1;查看表t1的详细信息。
+    # Storage Information
+    SerDe Library:      	org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+    InputFormat:        	org.apache.hadoop.mapred.TextInputFormat
+    OutputFormat:       	org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+二、行式存储vs列式存储
+    行式存储的特点
+    1）一行记录的所有字段都存放在一个bolck里（每一行的数据类型可能是不相同的）；
+    2）每一行中混合多种不同类型的值（列），不容易获得一个极高的压缩比；
+    3）不能支持快速的查询。
+
+    列式存储的特点
+    1）列式存储不能保证一行数据的多列都存储在一个block里（查询一行的数据时增加了IO的开销）；
+    2）查询时能够避免读取不必要的列（查询某一列时减少磁盘IO的开销）；
+    3）每一列的数据类型肯定是相同的，可以针对每列选择适合自己的压缩方式，能够达到较高的压缩比；
+    4）重构。
+
+    行式存储vs列式存储
+    1）减少磁盘IO
+    2）磁盘空间
+    查询性能：向量化查询
+三、Storage Format详解
+    1.TextFile是Hive默认的存储格式，是一种纯文本的存储格式；
+    SequenceFile以键值对的形式存储，支持压缩（RECORD、BLOCK）和不压缩
+        创建一个以键值对形式存储的表
+        create table page_views_seq(
+            track_time string,
+            url string,
+            session_id string,
+            referer string,
+            ip string,
+            end_user_id string,
+            city_id string
+        )
+        ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+        stored as sequencefile;
+
+        加载本地纯文本数据到page_views_seq表中
+        load data local inpath '/home/hadoop/data/page_views.dat' into table page_views_seq;
+        出现如下错误：
+        Loading data to table default.page_views_seq
+        Failed with exception Wrong file format. Please check the file's format.
+        FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.MoveTask
+
+        解决办法：先把纯文本的数据存到纯文本的存储格式的表中，在将查询的表数据插入到键值对形式存储格式的表中。
+
+
+        查询表数据并插入到表page_views_seq中
+        insert into table page_views_seq select * from page_views;
+
+        查询表page_views在hdfs上占用空间的大小
+        hadoop fs -du -h /user/hive/warehouse/page_views
+
+        查询表page_views_seq在hdfs上占用空间的大小
+        hadoop fs -du -h /user/hive/warehouse/page_views_seq
+
+    2.RCFile使用行列混合存储格式，比默认的存储格式节省10%的存储空间
+
+        创建一个以RCFile格式存储的表
+        create table page_views_rcfile(
+            track_time string,
+            url string,
+            session_id string,
+            referer string,
+            ip string,
+            end_user_id string,
+            city_id string
+        )
+        ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+        stored as rcfile;
+
+        查询表数据并插入到表page_views_rcfile中
+        insert into table page_views_rcfile select * from page_views_rcfile;
+
+        查询表page_views_rcfile在hdfs上占用空间的大小
+        hadoop fs -du -h /user/hive/warehouse/page_views_rcfile
+
+
+        ORC在RCFile的基础之上做了优化，有较高的压缩比
+
+        创建一个以RCFile格式存储的不压缩表
+        create table page_views_orcfile(
+            track_time string,
+            url string,
+            session_id string,
+            referer string,
+            ip string,
+            end_user_id string,
+            city_id string
+        )
+        ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+        stored as orc tblproperties("orc.compress"="NONE");
+
+        查询表数据并插入到表page_views_orcfile中
+        insert into table page_views_orcfile select * from page_views;
+
+        查询表page_views_orcfile在hdfs上占用空间的大小
+        hadoop fs -du -h /user/hive/warehouse/page_views_orcfile
+
+
+        查询表page_views中id为'T82C9WBFB1N8EW14YF2E2GY8AC9K5M5P'的数据
+         select count(1) from page_views where session_id='T82C9WBFB1N8EW14YF2E2GY8AC9K5M5P';
+
+        查询表page_views_orcfile中的数据
+        select count(1) from page_views_orcfile where session_id='T82C9WBFB1N8EW14YF2E2GY8AC9K5M5P';
+        在纯文本数据表page_views中读取的字节数       HDFS Read: 19022721
+        在ORC数据表page_views_orcfile中读取的字节数 HDFS Read: 1810102
+
+    3.Parquet高效的列式存储、内嵌的表达、多元的相互操作性
+        create table page_views_parquet1(
+            track_time string,
+            url string,
+            session_id string,
+            referer string,
+            ip string,
+            end_user_id string,
+            city_id string
+        )
+        ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+        stored as parquet;
+
+        查询表数据并插入到表page_views_parquet 中
+        insert into table page_views_parquet select * from page_views;
+
+        查询表page_views_parquet在hdfs上占用空间的大小
+        hadoop fs -du -h /user/hive/warehouse/page_views_parquet
+
+
+        设置parquet的压缩格式为GZIP
+        set parquet.compression=GZIP;
+
+        查询表数据并插入到表page_views_parquet_gzip 中
+        create table page_views_parquet_gzip ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' stored as parquet as select * from page_views;
+
+        查询表page_views_parquet_gzip在hdfs上占用空间的大小
+        hadoop fs -du -h /user/hive/warehouse/page_views_parquet_gzip

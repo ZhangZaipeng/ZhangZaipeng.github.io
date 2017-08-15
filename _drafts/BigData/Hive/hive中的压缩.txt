@@ -1,0 +1,109 @@
+一、压缩的种类
+    1.数据压缩的类型
+        Lossless compression  无损的压缩 --> 文本
+        Lossy compression  有损的压缩    --> 图片，音频
+    2.常用的压缩
+        压缩类型：gzip、bzip2、LZO、Snappy
+        文件后缀：.gz、.bz2、.lzo、.snappy
+二、压缩的优缺点
+    压缩的优点、减少存储的空间，加速网络传输的速度
+    压缩的缺点：增加CPU的利用率
+
+    压缩比与压缩速度成反比
+    注意：根据系统cpu的利用率，来衡量是否要使用压缩，以及选中那种压缩
+
+三、压缩在hadoop中的使用
+    1.Hadoop默认是是不支持压缩的，想要是hadoop支持压缩，需要编译Hadoop源码
+        编译hadoop
+        1.下载hadoop源码包hadoop-2.6.0-cdh5.7.0-src.tar.gz
+        2.解压hadoop源码包tar -zxvf hadoop-2.6.0-cdh5.7.0-src.tar.gz
+        3.进入解压后的目录执行如下命令：
+        export MAVEN_OPTS="-Xms256m -Xmx512m"
+        mvn package -Pdist,native -DskipTests -Dtar
+        4.进入hadoop-dist目录，进入target目录，在该目录下，hadoop-2.6.0-cdh5.7.0是编译后可以直接使用的hadoop
+
+        注意：BUILDING.txt中Requirements要求
+
+    2.检查Hadoop是否支持压缩的命令：bin/hadoop checknative
+
+四、压缩在MapReduce中的应用（配图）
+
+    压缩格式的选择：
+    在map的输入过程需要选择能够支持分割的压缩格式：bzip2
+    在map的输出过程需要选择能够减少磁盘的写和网络传输的压缩格式（压缩速度快的）：LZO
+    在reduce的输出过程需要选择高压缩比的压缩格式：bzip2
+
+    想要在mapreduce过程中使用压缩，则需要修改hadoop的两个配置文件core-site.xml和mapred-site.xml，配置内容如下：
+    // core-site.xml
+    <property>
+        <name>io.compression.codecs</name>
+        <value>
+          org.apache.hadoop.io.compress.GzipCodec,
+          org.apache.hadoop.io.compress.DefaultCodec,
+          org.apache.hadoop.io.compress.BZip2Codec
+        </value>
+    </property>
+
+    //mapred-site.xml
+    <property>
+        <name>mapreduce.output.fileoutputformat.compress</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>mapreduce.output.fileoutputformat.compress.codec</name>
+        <value>org.apache.hadoop.io.compress.BZip2Codec</value>
+    </property>
+
+    <property>
+        <name>mapreduce.map.output.compress</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>mapreduce.map.output.compress.codec</name>
+        <value>org.apache.hadoop.io.compress.BZip2Codec</value>
+    </property>
+
+    不使用压缩：
+    [hadoop@hadoop000 mapreduce]$ hadoop fs -ls /wcout
+    Found 2 items
+    -rw-r--r--   1 hadoop supergroup          0 2016-09-10 14:46 /wcout/_SUCCESS
+    -rw-r--r--   1 hadoop supergroup         35 2016-09-10 14:46 /wcout/part-r-00000
+
+    使用BZip2压缩：
+    [hadoop@hadoop000 mapreduce]$ hadoop fs -ls /wcout2
+    Found 2 items
+    -rw-r--r--   1 hadoop supergroup          0 2016-09-10 14:49 /wcout2/_SUCCESS
+    -rw-r--r--   1 hadoop supergroup         67 2016-09-10 14:49 /wcout2/part-r-00000.bz2
+五、压缩的Hive中的应用
+    在hive中创建表page_views
+    create table page_views(
+    track_time string,
+    url string,
+    session_id string,
+    referer string,
+    ip string,
+    end_user_id string,
+    city_id string
+    )
+    ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n';
+
+    加载本地数据到hive表中
+    LOAD DATA LOCAL INPATH '/home/hadoop/data/page_views.dat' OVERWRITE INTO TABLE page_views;
+
+    查看hdfs上文件的大小
+    [hadoop@hadoop000 data]$ hadoop fs -du -h /user/hive/warehouse/page_views
+    18.1 M  18.1 M  /user/hive/warehouse/page_views/page_views.dat
+
+    在hive中使用压缩，需要设置如下按两个参数
+    设置是否压缩和使用的压缩格式
+    SET hive.exec.compress.output=true;
+    set mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.BZip2Codec;
+
+    再创建一张表page_views2并将表page_views中的数据拷贝进去
+    create table page_views2  ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' as select * from page_views;
+
+    查看使用压缩后hdfs上文件的大小
+    [hadoop@hadoop000 data]$ hadoop fs -du -h /user/hive/warehouse/page_views2
+    3.6 M  3.6 M  /user/hive/warehouse/page_views2/000000_0.bz2
