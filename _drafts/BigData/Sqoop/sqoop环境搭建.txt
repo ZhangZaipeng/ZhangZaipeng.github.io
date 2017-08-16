@@ -1,0 +1,12 @@
+一、搭建流程
+    1.解压安装包
+    2.Sqoop配置，在$SQOOP_HOME/conf目录下的sqoop-env.sh文件中添加如下内容：
+        export HADOOP_COMMON_HOME=/home/hadoop/app/hadoop-2.6.0-cdh5.7.0
+        export HADOOP_MAPRED_HOME=/home/hadoop/app/hadoop-2.6.0-cdh5.7.0
+        export HIVE_HOME=/home/hadoop/app/hive-1.1.0-cdh5.7.0
+    3.添加mysql驱动
+    4.添加JSONObject jar包
+    5.报错：
+     tool.ImportTool: Encountered IOException running import job: java.io.IOException: java.lang.ClassNotFoundException: org.apache.hadoop.hive.conf.HiveConf
+     解决方案：
+     将hive中的hive-shim*.jar和hive-common....jar拷贝到sqoop的lib下。

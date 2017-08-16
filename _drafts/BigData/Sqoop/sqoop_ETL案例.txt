@@ -1,0 +1,57 @@
+目的：统计mysql数据库中员工的平均工资
+步骤：
+    1.Hive&MySQL表准备
+    2.抽取MySQL表数据到Hive表中
+    3.将统计结果写到Hive结果表中
+    4.将Hive结果表数据导出到MySQL中
+
+//创建Hive表：Sqoop将RDBMS=>Hive
+    create table emp_etl(
+    empno int,
+    ename string,
+    job string,
+    mgr int,
+    hiredate string,
+    sal double,
+    comm double,
+    deptno int
+    )
+    row format delimited fields terminated by '\t' lines terminated by '\n';
+
+//创建Hive统计分析结果表
+    create table result_etl(
+    deptno int,
+    avg_sal double
+    )
+    row format delimited fields terminated by '\t' lines terminated by '\n';
+
+
+//将RDBMS表导入到Hive中的Sqoop脚本
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --table EMP \
+    --delete-target-dir  \
+    --fields-terminated-by '\t' --lines-terminated-by '\n' \
+    --hive-import --hive-table emp_etl --hive-overwrite  \
+    -m 1
+
+//Hive统计分析语句
+    insert overwrite table result_etl
+    select deptno, avg(sal) from emp_etl group by deptno;
+
+
+//在MySQL中创建Hive统计分析结果表
+    create table result_etl(
+    deptno int,
+    avg_sal double
+    );
+
+//将Hive统计分析结果导出到MySQL中
+    sqoop export \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --table result_etl \
+    --fields-terminated-by '\t' \
+    --export-dir /user/hive/warehouse/result_etl \
+    -m 1

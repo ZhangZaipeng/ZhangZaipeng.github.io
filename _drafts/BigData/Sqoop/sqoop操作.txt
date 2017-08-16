@@ -1,0 +1,187 @@
+//通过sqoop查看所有数据库
+//并不需要跑mr作业，直接通过MySQLManager获取即可
+    sqoop list-databases \
+    --connect jdbc:mysql://localhost:3306 \
+    --username root \
+    --password root
+
+//通过sqoop查看指定数据库的所有表
+    sqoop list-tables \
+    --connect jdbc:mysql://localhost:3306/hive \
+    --username root \
+    --password root
+
+// MYSQL数据导入HDFS
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --table EMP -m 1
+
+// 再次导入数据时报错：
+    tool.ImportTool: Encountered IOException running import job:
+    org.apache.hadoop.mapred.FileAlreadyExistsException:
+    Output directory hdfs://hadoop000:8020/user/hadoop/EMP already exists
+// 如何解决：
+    1）手工把存在的目录删除
+    2）sqoop有参数控制 ( --delete-target-dir )
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --delete-target-dir \
+    --table EMP -m 1
+
+// 导入数据并设置mapreduce作业的名字( --mapreduce-job-name )
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --delete-target-dir \
+    --mapreduce-job-name FromMySQLToHDFS \
+    --table EMP -m 1
+
+// 默认导入HDFS路径：/user/用户名/表名
+// 导入指定的列的数据 ( --columns ) --> 指定列
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --delete-target-dir \
+    --target-dir EMP_COLUMN \
+    --columns "EMPNO,ENAME,JOB,SAL,COMM" \
+    --mapreduce-job-name FromMySQLToHDFS \
+    --table EMP -m 1
+
+// 导入数据并以parquet的格式存储，并指定两个map作业(--as-parquetfile,-m 2)
+    sqoop import \
+    --connect jdbc:mysql://139.199.59.176:3306/sqoop \
+    --username hadoop3 --password hadoop3 \
+    --delete-target-dir \
+    --target-dir EMP_COLUMN_PARQUET \
+    --as-parquetfile  \
+    --columns "EMPNO,ENAME,JOB,SAL,COMM" \
+    --mapreduce-job-name FromMySQLToHDFS \
+    --table EMP -m 2
+
+// 导入数据并设置分隔符 ( --fields-terminated-by '\t'  --lines-terminated-by '\n' )
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --delete-target-dir \
+    --target-dir EMP_COLUMN_SPLIT \
+    --columns "EMPNO,ENAME,JOB,SAL,COMM" \
+    --mapreduce-job-name FromMySQLToHDFS \
+    --fields-terminated-by '\t'  --lines-terminated-by '\n'  \
+    --table EMP -m 2
+
+// 条件导入方式一：使用where
+// 导入工资大于2000的数据
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --delete-target-dir \
+    --target-dir EMP_COLUMN_WHERE \
+    --columns "EMPNO,ENAME,JOB,SAL,COMM" \
+    --mapreduce-job-name FromMySQLToHDFS \
+    --where 'SAL>2000' \
+    --fields-terminated-by '\t'  --lines-terminated-by '\n'  \
+    --table EMP -m 2
+
+// 条件导入方式二：--query
+// 导入sql查询的结果
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --delete-target-dir \
+    --target-dir EMP_COLUMN_QUERY \
+    --query 'select * from EMP where SAL>2000' \
+    --mapreduce-job-name FromMySQLToHDFS \
+    --fields-terminated-by '\t'  --lines-terminated-by '\n'  \
+    --table EMP -m 2
+
+    注意：--query: 里面不仅支持单表，也支持多表的（比如： select * from a join b join c on  a.x=b.x and b.x=c.x）
+
+
+// 执行命令：sqoop --options-file emp.opt
+    vi emp.opt，将如下内容写入到该文件中
+    import
+    --connect
+    jdbc:mysql://localhost:3306/sqoop
+    --username
+    root
+    --password
+    root
+    --delete-target-dir
+    --target-dir
+    EMP_OPTIONS_FILE
+    --mapreduce-job-name
+    FromMySQLToHDFS
+    --table
+    EMP
+    -m
+    1
+
+// MYSQL数据导入Hive中 （--hive-import --create-hive-table --hive-table emp_import） 自动创建hive表
+    sqoop import \
+    --connect jdbc:mysql://139.199.59.176:3306/sqoop \
+    --username hadoop3 --password hadoop3 \
+    --table EMP \
+    --delete-target-dir  \
+    --hive-import --create-hive-table --hive-table emp_import \
+    -m 1
+
+    报错：
+    tool.ImportTool: Encountered IOException running import job: java.io.IOException: java.lang.ClassNotFoundException: org.apache.hadoop.hive.conf.HiveConf
+
+    解决方案：
+    将hive中的hive-shim*.jar和hive-common....jar拷贝到sqoop的lib下。
+
+// 导入指定hive表
+    create table emp_column(
+        empno int,
+        ename string,
+        job string,
+        mgr int,
+        hiredate string,
+        sal double,
+        comm double,
+        deptno int
+    )
+    row format delimited fields terminated by '\t' lines terminated by '\n';
+
+    sqoop import \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --table EMP \
+    --delete-target-dir  \
+    --columns "EMPNO,ENAME,JOB,SAL,COMM" \
+    --fields-terminated-by '\t' --lines-terminated-by '\n' \
+    --hive-import --hive-table emp_column --hive-overwrite  \
+    -m 1
+
+// HDFS数据导出MYSQL
+
+    创建对应数据库：。。。
+    sqoop export \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --table EMP_DEMO \
+    --export-dir /user/hadoop/EMP \
+    -m 1
+
+// HDFS对应列的数据 导出MYSQ( --columns )
+    sqoop export \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --table EMP_DEMO \
+    --columns "EMPNO,ENAME,JOB,SAL,COMM" \
+    --export-dir /user/hadoop/EMP_COLUMN \
+    -m 1
+
+// HDFS对应列的数据 导出MYSQ 指定分隔符( --fields-terminated-by '\t' --lines-terminated-by '\n' )
+    sqoop export \
+    --connect jdbc:mysql://localhost:3306/sqoop \
+    --username root --password root \
+    --table EMP_DEMO \
+    --columns "EMPNO,ENAME,JOB,SAL,COMM" \
+    --fields-terminated-by '\t' --lines-terminated-by '\n' \
+    --export-dir /user/hadoop/EMP_COLUMN_SPLIT \
+    -m 1
+
