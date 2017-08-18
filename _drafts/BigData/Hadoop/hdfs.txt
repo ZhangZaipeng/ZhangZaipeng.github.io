@@ -1,8 +1,3 @@
-Hadoop三大核心设计
-    MapReduce Map:任务分解 Reduce：结果汇总
-    HDFS NameNode：管理里文件元数据 DataNode：存储物理文件 Client：获取文件的各种API
-    Hbase 列式内存数据库
-
 一、HDFS的体系结构
 	NameNode:元数据节点用来管理文件系统的命名空间
 		1.管理文件系统的命名空间

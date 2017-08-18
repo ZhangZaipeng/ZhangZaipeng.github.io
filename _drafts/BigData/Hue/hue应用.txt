@@ -1,0 +1,89 @@
+一、HUE整合HDFS：
+    修改hadoop的配置文件hdfs-site.xml，添加如下内容
+        <property>
+                <name>dfs.webhdfs.enabled</name>
+                <value>true</value>
+        </property>
+    修改hadoop的配置文件core-site.xml，添加如下内容(hadoop为linux用户名)
+        <property>
+            <name>hadoop.proxyuser.hduser.hosts</name>
+            <value>*</value>
+        </property>
+        <property>
+            <name>hadoop.proxyuser.hduser.groups</name>
+            <value>*</value>
+        </property>
+    修改完成后，重启hdfs
+
+    在hue的主目录下，进入目录desktop/conf，修改文件hue.ini中的如下内容
+        default_hdfs_superuser=hadoop
+        fs_defaultfs=hdfs://hadoop000:8020
+        webhdfs_url=http://hadoop000:50070/webhdfs/v1
+        hadoop_conf_dir=/home/hadoop/app/hadoop-2.6.0-cdh5.7.0/etc/hadoop
+
+        注意：hue默认用户组为：
+            # Webserver runs as this user
+            ## server_user=hue
+            ## server_group=hue
+
+            在修改core-site.xml 一定要与hue 中 server_group，server_name 保持一致
+            <property>
+                <name>hadoop.proxyuser.hue.hosts</name>
+                <value>*</value>
+            </property>
+            <property>
+                <name>hadoop.proxyuser.hduser.groups</name>
+                <value>*</value>
+            </property>
+二、HUE整合YARN：
+    修改hadoop的配置文件mapred-site.xml，添加如下内容
+    <property>
+            <name>mapreduce.jobhistory.address</name>
+            <value>hadoop000:10020</value>
+            <description>MapReduce JobHistory Server IPC host:port</description>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.webapp.address</name>
+        <value>hadoop000:19888</value>
+        <description>MapReduce JobHistory Server Web UI host:port</description>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.done-dir</name>
+        <value>/history/done</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.intermediate-done-dir</name>
+        <value>/history/done_intermediate</value>
+    </property>
+
+    修改hadoop的配置文件yarn-site.xml，添加如下内容
+    <property>
+        <name>yarn.log-aggregation-enable</name>
+        <value>true</value>
+    </property>
+
+    修改完成后，重启yarn
+    启动进程：./mr-jobhistory-daemon.sh start jobhistoryserver
+
+    在hue的主目录下，进入目录desktop/conf，修改文件hue.ini中的如下内容
+        resourcemanager_host=hadoop000
+        resourcemanager_api_url=http://hadoop000:8088
+        proxy_api_url=http://hadoop000:8088
+        history_server_api_url=http://hadoop000:19888
+三、HUE整合MySQL
+    在hue的主目录下，进入目录desktop/conf，修改文件hue.ini中的如下内容
+        nice_name="My SQL DB"
+        name=hive
+        engine=mysql
+        host=localhost
+        port=3306
+        user=root
+        password=root
+四、HUE整合Hive
+    在hue的主目录下，进入目录desktop/conf，修改文件hue.ini中的如下内容
+        hive_server_host=hadoop000
+        hive_server_port=10000
+        hive_conf_dir=/home/hadoop/app/hive-1.1.0-cdh5.7.0/conf
+    注意事项：HUE整合Hive必须要先启动HiveServer2
+        可能是hadoop /tmp文件访问权限问题
+        hadoop fs -chmod 777 /tmp

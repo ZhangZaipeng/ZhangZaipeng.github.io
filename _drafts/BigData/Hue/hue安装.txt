@@ -1,0 +1,13 @@
+一、HUE安装在linux上安装依赖
+    yum -y install ant asciidoc cyrus-sasl-devel cyrus-sasl-gssapi gcc gcc-c++ krb5-devel libtidy libxml2-devel libxslt-devel make mvn mysql
+    mysql-devel openldap-devel python-devel sqlite-devel openssl-devel gmp-devel
+二、进入hue解压后的主目录
+    make apps
+三、在hue的主目录下，进入目录desktop/conf，修改文件hue.ini
+    [desktop]
+        secret_key=jFE93j;2[290-eiw.KEiwN2s3['d;/.q[eIW^y#e=+Iei*@Mn<qW5o
+        http_host=hadoop000
+        http_port=8888
+        time_zone=Asia/Shanghai
+
+    启动HUE： build/env/bin/supervisor

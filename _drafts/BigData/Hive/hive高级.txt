@@ -35,4 +35,50 @@
         	B)通过system.registerUDF方法把我们自己实现的UDF函数和处理类关联上
         3）编译Hive源码
         	mvn clean package -Phadoop-2,dist -DskipTests
-四、
+四、hive中的元数据
+    VERSION：存放hive的版本信息
+    如果VERSION表没有记录，那么就没办法进入Hive-CLi，会报错：
+    Table 'hive.version' doesn't exist.
+
+    DBS：存放hive中数据库的相关信息
+    DATABASE_PARAMS：
+    	WITH DBPROPERTIES(property_name=property_value,...)
+    	create database test_hive_meta WITH DBPROPERTIES('creator'='hadoop');
+    DATABASE_PARAMS和DBS表是通过DB_ID进行关联的；
+
+    数据相关的表：
+    TBLS：TBL_ID、DB_ID、SD_ID、TBL_NAME、TBL_TYPE  存放数据库表的相关信息
+    TABLE_PARAMS：存储表/视图的属性信息
+    TBL_PRIVS：存储的是表/视图的权限信息，一般不用hive的权限，而使用sentry来进行权限控制；
+    SDS：保存文件存储的基本信息，比如：INPUT_FORMAT、OUTPUT_FORMAT、是否压缩；
+    COLUMNS_V2：存储表对应的字段信息
+    PARTITIONS：存储分区表的基本基础
+    PARTITION_KEYS：存放分区的字段信息
+    PARTITION_KEY_VALS：存放分区字段值
+    PARTITION_PARAMS：存放分区下面文件的统计信息
+    FUNCS：用户注册的函数信息
+
+五、hive执行计划
+    exlpain query(查询语句)   返在不执行查询的前提下返回该查询的执行计划，
+    exlpain extended query(查询语句) 返在不执行查询的前提下返回该查询的执行计划，增加了抽象语法树的部分
+
+六、hive中的join
+    内连接 外连接（左、右、全）的区别
+    map join与普通join 执行原理：
+    图
+
+    如果是一个带多个小表，那么就非常适合使用mapjoin
+    mapjoin会将小表的数据加载到内存，并将小表的数据广播到其他节点的机器上去；
+    在读取大表时的map操作中，每读取一条大表的数据就立刻和内存中已经有的小表的数据进行join操作；
+    好处：没有shuffle阶段，所有的join操作都是在map端完成的！！！
+
+    前提：集群中所有的节点都要能够存的下小表的数据，换句话说就是小表的数据不要太大；
+
+    现在的hive版本默认就是mapjoin
+    不使用默认的mapjoin
+    set hive.auto.convert.join=false;
+
+    explain select e.empno, e.ename, e.deptno, d.dname from emp e join dept d on e.deptno = d.deptno;
+
+七、SQL转换为MapReduce作业的过程
+    图

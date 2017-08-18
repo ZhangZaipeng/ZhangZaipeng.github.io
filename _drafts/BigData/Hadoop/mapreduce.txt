@@ -1,0 +1,31 @@
+一、YARN体系结构
+    ResourceManager：全局资源管理器，负责整个系统的资源管理和分配。两个组件构成
+        1.调度器（Scheduler）
+        2.应用程序管理器（Applications Manager）
+    NodeManager：每个节点上的资源和任务管理器
+        1.定时地向RM汇报本节点上的资源使用情况和各个Container的运行状态
+        2.处理来自AM的Container启动/停止等各种请求。
+    ApplicationMaster：
+
+    Container：
+        Container是YARN中的资源抽象，它封装了某个节点上的多维度资源，
+        如内存、CPU、磁盘、网络等，当AM向RM申请资源时，RM为AM返回的资源便是用Container表示的。
+        YARN会为每个任务分配一个Container，且该任务只能使用该Container中描述的资源。
+
+二、执行YARN作业的流程
+
+三、map函数与reduce函数中Key,Value,context代表的是什么
+
+    map中的(Object key):偏移量
+    map中的(Text value)：是文件中的一行一行的数据。
+    map中的(Context context):是map函数处理完数据的输出。以<key,value>
+
+    map与reduce中间有一个shuffle过程：把map输出的结果中key相同的数据整合到一起。
+
+    reduce中的(Text key):其实就是map输出的key。
+    reduce中的(Iterable<IntWritable> values):shuffle过后同一个key数据的数量。
+    reduce中的(Context context):reduce处理完数据的输出。以<key,value>
+
+
+Hadoop Yarn 框架原理及运作机制
+http://blog.csdn.net/liuwenbo0920/article/details/43304243
