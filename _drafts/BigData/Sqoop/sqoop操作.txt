@@ -125,9 +125,9 @@
     --table EMP \
     --delete-target-dir  \
     --hive-import --create-hive-table --hive-table emp_import \
+    报错：
     -m 1
 
-    报错：
     tool.ImportTool: Encountered IOException running import job: java.io.IOException: java.lang.ClassNotFoundException: org.apache.hadoop.hive.conf.HiveConf
 
     解决方案：
