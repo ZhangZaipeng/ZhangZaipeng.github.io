@@ -1,0 +1,107 @@
+Spark启动方式
+    Local模式：spark-shell脚本
+    Standalone模式：
+        修改Spark配置文件
+            conf目录
+                spark-env.sh
+                    export SPARK_MASTER_IP=
+                slaves
+
+        修改主机配置文件
+            修改hosts文件
+            配置ssh
+        配置worker节点
+            保证master节点与worker节点有相同的目录结构和配置文件
+        使用启动脚本
+            sbin目录：start-all.sh启动集群中所用机器
+        通过web工具验证是否启动成功
+Spark交互式开发 (spark-shell)
+    spark日志级别调整：conf目录下
+    scala-wordcount实例
+        val textFile = sc.textFile(.../spark../README.md)    读取文件
+
+        val wordcount = textFile.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceBykey((a,b) => a+b)
+
+        wordcount.collect()
+
+    java-wordcount实例
+    public static void main(){
+        String logFile = "";
+        String outputFile = "";
+        SparkConf = new SparkConf().setAppName("word count");
+        JavaSparkContext sc = new JavaSparkContext(conf);
+        JavaRDD<String> input = sc.textFile(logFile);
+
+        JavaRDD<String> words = input.flatMap(
+            new FlatMapFunction<String,String>(){
+                public Iterable<String> call(String x) {
+                    return Arrays.asList(x.splist(" "));
+                }
+            }
+        );
+
+        JavaPairRDD<String,Integer> counts = words.mapToPair(
+            new PairFunction<String, String, Integer>(){
+                public Tuple2<String,Integer> call(String x){
+                    return new Tuple2(x, 1);
+                }
+            }
+        ).reduceByKey(new Function2<Integer, Integer, Integer>() {
+            public Integer, call(Integer x , Integer y) { return x+y;}
+        });
+
+        counts.saveAsTextFile(outputFile);
+    }
+
+发布独立应用程序
+    1.spark-submit提交内置example
+        run-example jar包名称
+    2.spark-submit提交自己打包的程序 (spark-submit)
+        exec "${SPARK_HOME}"/bin/spark-submit --master local[*] --class "org.apache.spark.examples.SparkPi" \
+          "$SPARK_EXAMPLES_JAR" \ jar包位子
+        使用mvn打包java程序提交
+
+        使用sbt打包scala程序提交
+            http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Linux.html
+
+            curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
+            sudo yum install sbt
+        提交Python编写的程序
+
+        安装IDEA
+        IDEA打包程序
+
+
+RDD的基本概念
+    RDD是什么？
+        RDD是弹性分布式数据集
+        是Spark对数据的抽象
+        Spark的本质就是对RDD的创建、转化、处理
+    对RDD一般都执行哪些操作
+        创建  转化  行动
+        输入 --> RDD --> RDD --> 输出  （RDD与RDD之间进行转化）
+
+如何创建RDD
+    从集合创建
+        scala> val input = sc.parallelize(List("aa","bb"))
+        parallelCollectionRDD
+
+    从文件创建
+        本地 scala> val input = sc.textFile("file:// ... ")
+        MapPartitionRDD
+
+        HDFS scala> val input = sc.textFile("hdfs://hostname:9000/filename")
+        MapPartitionRDD
+    作业： 大小文件加载速度？是否加载成功？
+RDD的转化操作(没有真正执行)
+    RDD filter()方法
+    scala> val filter_a_RDD = input.filter(line => line.contains("a"))
+
+    scala> val filter_b_RDD = input.filter(line => line.contains("b"))
+
+    scala> val filter_d_RDD = filter_a_RDD.filter(line => line.contains("d"))
+    注：RDD转化谱系图
+        只在必要的时候读取数据，避免交互大量的数据
+        更容易从结果逆向构建计算过程
+RDD的行动操作（开始运行）
+    filter_a_RDD.first()读取首行
