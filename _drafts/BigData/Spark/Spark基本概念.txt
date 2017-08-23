@@ -1,0 +1,101 @@
+一、了解Spark的组件和应用场景
+    1.Spark是什么
+        Spark是快速通用的集群计算平台
+    2.Spark在大数据中的角色（数据处理）
+        数据采集 --> 数据转换 --> 数据处理 --> 数据展示
+    3.Spark框架的组成部分
+        Spark SQL()
+        Spark Streaming(内存流式计算)
+        MLlib(机器学习)
+        GraphX(图计算)
+    4.Spark应用领域
+        数据计算
+        数据处理应用
+        集群化机器学习
+    5.Spark与其他大数据框架的区别
+        Spark与Hadoop
+            Hadoop处理数据时会把中间结果存储在磁盘中（离线）
+            Spark基于内存计算（事时）
+        Spark与Storm的区别
+            Storm适合处理大量小块数据
+            Spark结构化全量数据
+
+二、部署Spark Standalone模式
+    1.Spark安装
+        安装Java
+        安装Scala
+        安装Spark
+        安装python
+        修改环境变量
+        测试
+    2.Spark启动方式
+        Local模式：spark-shell脚本
+        Standalone模式：
+            修改Spark配置文件
+                conf目录
+                    spark-env.sh
+                        export SPARK_MASTER_IP=
+                    slaves
+
+            修改主机配置文件
+                修改hosts文件
+                配置ssh
+            配置worker节点
+                保证master节点与worker节点有相同的目录结构和配置文件
+            使用启动脚本
+                sbin目录：start-all.sh启动集群中所用机器
+            通过web工具验证是否启动成功
+三、能够使用Spark进行交互式开发
+    spark日志级别调整：conf目录下
+    scala-wordcount实例
+        val textFile = sc.textFile(.../spark../README.md)    读取文件
+
+        val wordcount = textFile.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceBykey((a,b) => a+b)
+
+        wordcount.collect()
+
+    java-wordcount实例
+    public static void main(){
+        String logFile = "";
+        String outputFile = "";
+        SparkConf = new SparkConf().setAppName("word count");
+        JavaSparkContext sc = new JavaSparkContext(conf);
+        JavaRDD<String> input = sc.textFile(logFile);
+
+        JavaRDD<String> words = input.flatMap(
+            new FlatMapFunction<String,String>(){
+                public Iterable<String> call(String x) {
+                    return Arrays.asList(x.splist(" "));
+                }
+            }
+        );
+
+        JavaPairRDD<String,Integer> counts = words.mapToPair(
+            new PairFunction<String, String, Integer>(){
+                public Tuple2<String,Integer> call(String x){
+                    return new Tuple2(x, 1);
+                }
+            }
+        ).reduceByKey(new Function2<Integer, Integer, Integer>() {
+            public Integer, call(Integer x , Integer y) { return x+y;}
+        });
+
+        counts.saveAsTextFile(outputFile);
+    }
+四、能够发布独立应用程序并使用spark-submit提交
+    1.spark-submit提交内置example
+        run-example jar包名称
+    2.spark-submit提交自己打包的程序 (spark-submit)
+        exec "${SPARK_HOME}"/bin/spark-submit --master local[*] --class "org.apache.spark.examples.SparkPi" \
+          "$SPARK_EXAMPLES_JAR" \ jar包位子
+        使用mvn打包java程序提交
+
+        使用sbt打包scala程序提交
+            http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Linux.html
+
+            curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
+            sudo yum install sbt
+        提交Python编写的程序
+
+        安装IDEA
+        IDEA打包程序

@@ -1,0 +1,117 @@
+一、RDD的基本概
+    RDD是什么？
+        RDD是弹性分布式数据集
+        是Spark对数据的抽象
+        Spark的本质就是对RDD的创建、转化、处理
+    对RDD一般都执行哪些操作
+        创建  转化  行动
+        输入 --> RDD --> RDD --> 输出  （RDD与RDD之间进行转化）
+
+二、如何创建RDD
+    从集合创建
+        scala> val input = sc.parallelize(List("aa","bb"))
+        parallelCollectionRDD
+
+    从文件创建
+        本地 scala> val input = sc.textFile("file:// ... ")
+        MapPartitionRDD
+
+        HDFS scala> val input = sc.textFile("hdfs://hostname:9000/filename")
+        MapPartitionRDD
+    作业： 大小文件加载速度？是否加载成功？
+
+三、RDD支持的两类操作
+    1.RDD的转化操作(没有真正执行)
+        1.RDD filter()方法
+        scala> val filter_a_RDD = input.filter(line => line.contains("a"))
+        scala> val filter_b_RDD = input.filter(line => line.contains("b"))
+        scala> val filter_d_RDD = filter_a_RDD.filter(line => line.contains("d"))
+        注：
+            RDD转化操作是惰性计算
+            只在必要的时候读取数据，避免交互大量的数据
+            更容易从结果逆向构建计算过程
+
+        2.针对单个RDD常用的转化操作
+            def filter(f:(T) => Boolean): RDD[T]
+                过滤包含关键字的行
+            def first():T
+                显示文件第一行
+            def map[U](f:(T) => U)(implicit arg0:ClassTag[U]):RDD
+                映射为一个键值对
+                eg: val words = sc.parallelize( List("kgc", "kegongchang", "spark", "hello"))
+                    val word_length = words.map(_.length)
+                    word_length.collect()
+                    res: Array[Int] = Array(3, 11, 5, 5)
+
+            def zip[U](other:RDD[U])(implicit arg0:ClassTag[U]):RDD
+                对两个RDD并行遍历
+                eg: words.zip(word_length).collect()
+                res: Array[(String,Int)] = Array((kgc,3),(kegongchang,11),(spark,5),(hello,5))
+
+            def flatMap[U](f:(T) =>TraversableOnce[U])(implicit arg0:ClassTag[U]):RDD[U]
+                映射成多个元素构建新的RDD
+                map和flatmap区别在与：map处理完成生产一个元素，而flatmap可以生产多个元素构建新的RDD
+                eg: val nums = sc.parallelize(1 to 4 , 2)
+                    val num2 = nums.flatMap( x => 1 to x)
+                    num2.collect()
+                    res : Array[Int] = Array(1, 1, 2, 1, 2, 3, 1, 2, 3, 4)
+
+                    val lines =sc.parallelize( List("Hello Spark","kegongchang"))
+                    lines.flatMap( line => line.split(" ") ).collect()
+                    res: Array[String] = Array(Hello, Spark, kegongchang)
+
+                    lines.map( line => line.split(" ") ).collect()
+                    res: Array[Array[String]] = Array(Array(Hello, Spark), Array(kegongchang))
+
+            def distinct():RDD[T]
+                元素去重
+        2.针对两个RDD常用的转化操作
+            def union(other: RDD[T]): RDD[T]
+                输出两个RDD的所用元素,不去掉重复元素
+                eg: val num1 = sc.parallelize( List("aa", "bb", "cc", "cc"), 2 )
+                    val num2 = sc.parallelize( List("cc", "dd"), 2 )
+                    num1.union(num2).collect()
+                    res: Array[String] = Array(aa, bb, cc, cc, cc, dd)
+
+            def intersection(other: RDD[T], numPartition:Int): RDD[T]
+                输出两个RDD相同的元素,去重
+                eg: num1.intersection(num2).collect()
+                res: Array[String] = Array(cc)
+
+            def subtract(other: RDD[T], p:Partitioner)(implicit ord: Ordering[T] = null): RDD[T]
+                返回包含在第一个RDD中但是不包含在第二个RDD中的元素，不去重
+                eg: num1.subtract(num2).collect()
+                res: Array[String] = Array(aa, bb)
+
+            def cartesian[U](other: RDD[U]):(implicit arg0:ClassTag[U]):RDD[(T,U)]
+                返回两个元素的笛卡尔积
+                eg: num1.cartesian(num2).collect()
+                res: Array[(String,String)] = Array((aa,cc),(bb,cc),(aa, dd),(bb,dd), ...)
+    2.RDD的行动操作（开始运行）
+        def collect():Array[T]
+            返回全部元素
+        def take(num:Int):Array[T]
+            返回指定数量的元素
+            eg: val lines = sc.textFile("file:// ... ")
+                lines.take(2)
+            res:Array[String] = Array("", "") 前两行数据
+        def foreach(f:(T) => Unit):Unit
+            应用方法到每一个元素
+            eg: val lines = sc.textFile("file:// ... ")
+                lines.take(2).foreach(println)
+                res: 输出每一行数据
+        def count()：Long
+            统计元素总量
+            lines.count()
+            res: Long = 文件行数
+        def countByValue(implicit ord:Ordering[T] = null):Map[T,Long]
+            统计每一个元素数量
+        count和countByValue的区别在于：
+            count返回总数，countByValue统计每个元素的数量返回一对键值对
+        def reduce(f:(T,T) => T):T
+            对每一个元素进行逐个合并
+            eg: val num = sc.parallelize(1 to 10 ,2)
+                num.reduce((x,y) => x + y)
+                res Int = 55
+    3.RDD的RDD转化谱系图
+        见图
