@@ -1,0 +1,35 @@
+一、Pair RDD操作
+    特点：
+        1.Key-Value形式存储
+        2.方便操作
+        3.有针对Key-Value的专用操作
+    Pair RDD创建操作
+        val lines = sc.textFile("file:// README.md")
+        val pairs = lines.map( x => (x.split(" ")(0),x) )
+        res: Array[(String, String)]
+
+        val pairs2 = List(("yhs",1),("kgc",3),("yinshusheng",2),("yhs",60))
+        val pairs_rdd = sc.parallelize(pairs2)
+    Pair RDD常用转化操作
+        filter()
+            eg: pairs_rdd.reduceByKey(_+_).filter{ case(key,value) => key.length == 3}.collect()
+                res:  Array[(String, Int)] = Array[(kgc, 3),(yhs, 61)]
+        reduceByKey(func) 和groupByKey()
+            eg: pairs_rdd.reduceByKey(_+_).collect()
+                res: Array[(String, Int)] = Array[(kgc, 3),(yhs, 61),(yinshusheng, 2)]
+        sortByKey():根据key来排序
+            eg: pairs_rdd.sortByKey().collect()
+                res: Array[(String, Int)] = Array[(kgc, 3),(yhs, 1),(yhs, 60),(yinshusheng, 2)]
+    Pair RDD常用行动操作
+        countByKey()
+        collectAsMap()
+        lookup(key)
+            eg: pairs_rdd.lookup("yhs")
+                res: Seq[Int] = WrappedArray(1, 60)
+二、Pair RDD如何与一般RDD结合
+    统计用户使用的最多的shell是什么？
+        val file = sc.textFile("/etc/passwd")
+        file.map
+三、RDD的输出操作
+
+四、RDD持久化、累加器、广播变量
