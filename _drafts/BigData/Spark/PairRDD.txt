@@ -10,16 +10,22 @@
 
         val pairs2 = List(("yhs",1),("kgc",3),("yinshusheng",2),("yhs",60))
         val pairs_rdd = sc.parallelize(pairs2)
+
     Pair RDD常用转化操作
         filter()
             eg: pairs_rdd.reduceByKey(_+_).filter{ case(key,value) => key.length == 3}.collect()
                 res:  Array[(String, Int)] = Array[(kgc, 3),(yhs, 61)]
-        reduceByKey(func) 和groupByKey()
+
+        reduceByKey(func) 和 groupByKey()
+            对元素为KV对的RDD中Key相同的元素的Value进行binary_function的reduce操作，
+            因此，Key相同的多个元素的值被reduce为一个值，然后与原RDD中的Key组成一个新的KV对。
             eg: pairs_rdd.reduceByKey(_+_).collect()
                 res: Array[(String, Int)] = Array[(kgc, 3),(yhs, 61),(yinshusheng, 2)]
+
         sortByKey():根据key来排序
             eg: pairs_rdd.sortByKey().collect()
                 res: Array[(String, Int)] = Array[(kgc, 3),(yhs, 1),(yhs, 60),(yinshusheng, 2)]
+
     Pair RDD常用行动操作
         countByKey()
         collectAsMap()
