@@ -6,14 +6,17 @@
     对RDD一般都执行哪些操作
         创建  转化  行动
         输入 --> RDD --> RDD --> 输出  （RDD与RDD之间进行转化）
-
+    分区的定义：
+        一个RDD有多个RDD分区
+        一个RDD分区只在一个机器上
+        一个机器可有多个RDD分区
 二、如何创建RDD
-    从集合创建
-        scala> val input = sc.parallelize(List("aa","bb"))
+    从集合创建 （它们分别在3个分区中。这个RDD一共9个元素，每个元素含有一个数字）
+        scala> val input = sc.parallelize(1 to 9, 3)
         parallelCollectionRDD
 
-    从文件创建
-        本地 scala> val input = sc.textFile("file:// ... ")
+    从文件创建 （文件中的每一行就是RDD中的一个元素，分区是2）
+        本地 scala> val input = sc.textFile("file:// ... "，2)
         MapPartitionRDD
 
         HDFS scala> val input = sc.textFile("hdfs://hostname:9000/filename")
@@ -34,10 +37,14 @@
         2.针对单个RDD常用的转化操作
             def filter(f:(T) => Boolean): RDD[T]
                 过滤包含关键字的行
+
             def first():T
                 显示文件第一行
+
             def map[U](f:(T) => U)(implicit arg0:ClassTag[U]):RDD
-                映射为一个键值对
+                对RDD中的每个元素都执行一个指定的函数f来产生一个新的RDD。
+                任何原RDD中的元素在新RDD中都有且只有一个元素与之对应。
+
                 eg: val words = sc.parallelize( List("kgc", "kegongchang", "spark", "hello"))
                     val word_length = words.map(_.length)
                     word_length.collect()
@@ -63,6 +70,9 @@
                     lines.map( line => line.split(" ") ).collect()
                     res: Array[Array[String]] = Array(Array(Hello, Spark), Array(kegongchang))
 
+            def mapPartitions(function)
+                map()的输入函数是应用于RDD中每个元素，而mapPartitions()的输入函数是应用于每个分区
+
             def distinct():RDD[T]
                 元素去重
         2.针对两个RDD常用的转化操作
@@ -87,31 +97,41 @@
                 返回两个元素的笛卡尔积
                 eg: num1.cartesian(num2).collect()
                 res: Array[(String,String)] = Array((aa,cc),(bb,cc),(aa, dd),(bb,dd), ...)
+
     2.RDD的行动操作（开始运行）
         def collect():Array[T]
             返回全部元素
+
         def take(num:Int):Array[T]
             返回指定数量的元素
             eg: val lines = sc.textFile("file:// ... ")
                 lines.take(2)
             res:Array[String] = Array("", "") 前两行数据
+
         def foreach(f:(T) => Unit):Unit
             应用方法到每一个元素
             eg: val lines = sc.textFile("file:// ... ")
                 lines.take(2).foreach(println)
                 res: 输出每一行数据
+
         def count()：Long
-            统计元素总量
-            lines.count()
-            res: Long = 文件行数
+            返回RDD的元素个数
+
         def countByValue(implicit ord:Ordering[T] = null):Map[T,Long]
             统计每一个元素数量
-        count和countByValue的区别在于：
-            count返回总数，countByValue统计每个元素的数量返回一对键值对
+
+            count和countByValue的区别在于：
+                count返回总数，countByValue统计每个元素的数量返回一对键值对
+
         def reduce(f:(T,T) => T):T
             对每一个元素进行逐个合并
+            reduce将RDD中元素前两个传给输入函数，产生一个新的return值，
+            新产生的return值与RDD中下一个元素（第三个元素）组成两个元素，再被传给输入函数，直到最后只有一个值为止。
             eg: val num = sc.parallelize(1 to 10 ,2)
                 num.reduce((x,y) => x + y)
                 res Int = 55
     3.RDD的RDD转化谱系图
         见图
+
+大白话理解RDD
+http://blog.csdn.net/guotong1988/article/details/50556871
