@@ -28,8 +28,85 @@
                 res: Seq[Int] = WrappedArray(1, 60)
 二、Pair RDD如何与一般RDD结合
     统计用户使用的最多的shell是什么？
+        awk统计：
+            awk -F ":" '{array[$7]++} END {for (num in array) print array[num], num}' /etc/passwd
+        Spark统计
         val file = sc.textFile("/etc/passwd")
-        file.map
-三、RDD的输出操作
+        file.map(line => (line.split(":")(6), line)).map{ case(shell, lines) => (shell,1)}.reduceByKey(_+_).sortByKey(-_._2).collect()
 
+    用户付费行为统计
+        example.csv
+        wilson,iphone6S,5500
+        yinhuisheng,GALAXY S7,4500
+        wilson,OPPO,3000
+        john,iphone6S,5500
+        bill,iphone6S,5500
+
+        val data = sc.textFile("example.csv")
+        data.map(line => line.split(",")).map( payData => (payData(0),payData(1),payData(2)))
+
+        # 消费用户数量
+        val uniqueUsers = data.map{case(user, product, price) => user}.distinct().count()
+
+        # 消费总金额
+        val totalRevenue = data.map{case(user, product, price) => price.toDouble}.sum()
+
+        # 那一款是最受欢迎的
+        val productsByPopularity = data.map{case(user, product, price) => (product,1)}.reduceByKey(_+_).sortBy(-_._2).collect()
+        val mostPopular = productsByPopularity(0)
+
+三、RDD的输出操作
+    输出到终端
+        print()
+        println()
+            eg:println("Most popular product : %s with %d purchases".format(mostPopular._1,mostPopular._2))
+    输出到文件
+        saveAsTextFile()
+
+        打包 部署 独立应用程序
+            修改sbt文件
+                name :="Paylog Project"
+                version :=""
+                scalaVersion :=""
+                libraryDe +=""
+            程序源码
+                object PayLog {
+                  def main(args: Array[String]) {
+                    val sc = new SparkContext("local[2]", "pay log")
+
+                    // read csv
+                    // 消费用户数量
+                    // 消费总金额
+                    // 那一款是最受欢迎的
+
+                    // 1.println 2.
+
+                    sc.stop()
+                  }
+                }
+            提交应用程序
+                spark-submit --class "PayLog"  jar包的位子
+    在真正的开发过程中
+        1.首先是在spark-shell中写好测试代码
+        2.再切换到IDEA的工程中编写代码
 四、RDD持久化、累加器、广播变量
+    持久化作用
+    持久化和反持久化的操作
+        persist() unpersist()
+        eg: data.persist(org.apache.spark.storage.StorageLevel.MEMORY_ONLY)
+    持久化级别
+        MEMORY_ONLY
+        MEMORY_ONLY_SER
+        MEMORY_AND_DISK
+        MEMORY_AND_DISK_SER
+        DISK_ONLY
+    累加器和广播变量
+        累加器：聚合操作结果
+        广播变量：变量预先存入驱动器
+    累加器示例
+        val blankLines = sc.accumulator(0)
+        blankLines += 1
+        blankLines.value
+    广播变量示例
+        val broadcastVar = sc.broadcast(Array(1,2,3))
+        broadcastVar.value
