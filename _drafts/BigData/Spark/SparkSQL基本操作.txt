@@ -1,0 +1,107 @@
+一、DataFrame的操作
+    1.数据格式的分类:
+        非结构化数据：文本文件 多媒体文件
+        结构化数据：关系型数据库 格式化文本
+        半结构化数据：key-value xml tag
+
+    2.DataFrame的RDD的区别：DataFrame带有schema（表头）
+
+    3.创建DataFrame
+        val ssc = new org.apache.spark.sql.SQLContext(sc)
+
+        读取本地json格式的文件
+        val df = ssc.read.json("spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/people.json")
+
+        查看当前表的内容
+        df.show()
+    4.DataFrame的操作类型
+        行动操作：
+            df.collect()、df.count()、df.first()、df.show()
+
+        基础DataFrame操作：
+            df.cache()、df.explain()（打印物理执行计划）
+
+        集成语言查询操作（SQL操作）：增删改查。
+            df.select(df("name"),df("age")+1).show()
+            df.groupBy("age").count().show()
+
+        基础RDD操作:
+            df.filter(df("age") > 18).show()
+            df.groupBy("age").count().show()
+            df.printSchema()
+
+        输出操作:
+
+二、RDD转化为DataFrame的常用方法
+    1.反射机制推断的方法
+        创建一个sqlContext
+        val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+        导入隐式转换所需要的包
+        import sqlContext.implicits._
+        新生成一个class
+        case class Person (name:String,age:Int)
+        创建RDD读取文件，并对此RDD进行相应的处理，最后隐式转化为DataFrame
+        val people=sc.textFile("spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/people.txt").map(_.split(",")).map(p=>Person(p(0),p(1).trim.toInt)).toDF()
+        注册表名
+        people.registerTempTable("people")
+        利用表名进行查询操作
+        val teenagers=sqlContext.sql("select name,age from people where age>=13 and age <20")
+        输出
+        teenagers.map(t=>"Name: "+t(0)).collect().foreach(println)
+        teenagers.map(t=>"Name: "+t.getAs[String]("name")).collect().foreach(println)
+        teenagers.map(_.getValuesMap[Any](List("name","age"))).collect.foreach(println)
+
+    2.通过编成接口构建的方法
+        创建一个sqlContext
+        val sqlContext=new org.apache.spark.sql.SQLContext(sc)
+        创建RDD读取文件
+        val people=sc.textFile("/home/hadoop/app/spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/people.txt")
+        定义一个常量
+        val schemaString="name age"
+        导入所需要的包
+        import org.apache.spark.sql.Row
+        import org.apache.spark.sql.types.{StructType,StructField,StringType}
+        生成需要用的schema
+        val schema=StructType(schemaString.split(" " ).map(fieldName=>StructField(fieldName,StringType,true)))
+        生成rowRDD
+        val rowRDD=people.map(_.split(",")).map(p=>Row(p(0),p(1).trim))
+        创建DataFrame
+        val peopleDataFrame=sqlContext.createDataFrame(rowRDD,schema)
+        注册临时表
+        peopleDataFrame.registerTempTable("people")
+        查询
+        val result=sqlContext.sql("select name from people")
+        展示查询的结果
+        result.map(t=>"Name: "+t(0)).collect().foreach(println)
+
+三、不同数据源的加载
+    1.DataFrame支持三种数据源:
+        Json、Hive、jdbc
+    2.Json数据
+        创建一个sqlContext
+        val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+        读取json格式的文件
+        val people = sqlContext.read.json("/home/hadoop/app/spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/people.json")
+        注册临时表
+        people.registerTempTable("people")
+        查询表内容
+        val teenagers=sqlContext.sql("select name,age from people where age>=13 and age <20")
+        声明一个序列化
+        val anotherPeoppleRDD=sc.parallelize("""{"name":"Yin","address":{"city":"Columbus","state":"Ohio"}}""" :: Nil)
+        将RDD转化为DataFrame
+        val anotherPeople=sqlContext.read.json(anotherPeoppleRDD)
+        按DataFrame的内容
+        anotherPeople.show()
+
+    3.Hive数据
+        val sqlContext=new org.apache.spark.sql.hive.HiveContext(sc)
+        sqlContext.sql("create table if not exists src(key INT,value STRING)")
+        sqlContext.sql("load data local inpath '/home/hadoop/app/spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/kv1.txt'")
+        sqlContext.sql("from src select key,value").collect().foeach(println)
+
+四、UDF的定义方法
+    val sqlContext=new org.apache.spark.sql.SQLContext(sc)
+    sqlContext.udf.register("strLen",(s:String)=>s.length)
+    val people=sqlContext.read.json("/home/hadoop/app/spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/people.json")
+    people.registerTempTable("people")
+    sqlContext.sql("select strLen(name),name from people").show()

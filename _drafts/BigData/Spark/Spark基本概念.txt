@@ -87,7 +87,7 @@
         run-example jar包名称
     2.spark-submit提交自己打包的程序 (spark-submit)
         exec "${SPARK_HOME}"/bin/spark-submit --master local[*] --class "org.apache.spark.examples.SparkPi" \
-          "$SPARK_EXAMPLES_JAR" \ jar包位子
+          "$SPARK_EXAMPLES_JAR"  // jar包位子
         使用mvn打包java程序提交
 
         使用sbt打包scala程序提交
@@ -98,4 +98,4 @@
         提交Python编写的程序
 
         安装IDEA
-        IDEA打包程序 c
+        IDEA打包程序

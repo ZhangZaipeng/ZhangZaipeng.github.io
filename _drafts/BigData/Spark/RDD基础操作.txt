@@ -72,10 +72,16 @@
 
             def mapPartitions(function)
                 map()的输入函数是应用于RDD中每个元素，而mapPartitions()的输入函数是应用于每个分区
-
+                eg: val input = spark.parallelize(List(1, 2, 3, 4, 5, 6), 2)//RDD有6个元素，分成2个partition
+                    val result = input.mapPartitions(
+                          partition => Iterator(sumOfEveryPartition(partition))
+                    )//partition是传入的参数，是个list，要求返回也是list，即Iterator(sumOfEveryPartition(partition))
+                    result.collect().foreach {
+                        println(_)//6 15
+                    }
             def distinct():RDD[T]
                 元素去重
-        2.针对两个RDD常用的转化操作
+        3.针对两个RDD常用的转化操作
             def union(other: RDD[T]): RDD[T]
                 输出两个RDD的所用元素,不去掉重复元素
                 eg: val num1 = sc.parallelize( List("aa", "bb", "cc", "cc"), 2 )
