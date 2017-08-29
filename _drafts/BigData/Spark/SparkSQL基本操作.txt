@@ -94,11 +94,17 @@
         anotherPeople.show()
 
     3.Hive数据
+        建立 /user/hive 目录
         val sqlContext=new org.apache.spark.sql.hive.HiveContext(sc)
         sqlContext.sql("create table if not exists src(key INT,value STRING)")
-        sqlContext.sql("load data local inpath '/home/hadoop/app/spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/kv1.txt'")
+        sqlContext.sql("load data local inpath '/home/hadoop/app/spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/kv1.txt' INTO TABLE src")
         sqlContext.sql("from src select key,value").collect().foeach(println)
 
+    4.使用thriftserver
+        export HIVE_SERVER2_THRIFT_PORT=<listening-port>
+        export HIVE_SERVER2_THRIFT_BIND_HOST=<listening-host>
+
+        启动：start-thriftserver.sh --master <master-uri>
 四、UDF的定义方法
     val sqlContext=new org.apache.spark.sql.SQLContext(sc)
     sqlContext.udf.register("strLen",(s:String)=>s.length)

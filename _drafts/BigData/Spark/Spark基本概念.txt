@@ -45,6 +45,7 @@
             使用启动脚本
                 sbin目录：start-all.sh启动集群中所用机器
             通过web工具验证是否启动成功
+        spark-shell --master masterIP+端口
 三、能够使用Spark进行交互式开发
     spark日志级别调整：conf目录下
     scala-wordcount实例
