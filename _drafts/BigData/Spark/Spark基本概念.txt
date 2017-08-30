@@ -51,7 +51,7 @@
     scala-wordcount实例
         val textFile = sc.textFile(.../spark../README.md)    读取文件
 
-        val wordcount = textFile.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceBykey((a,b) => a+b)
+        val wordcount = textFile.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey((a,b) => a+b)
 
         wordcount.collect()
 

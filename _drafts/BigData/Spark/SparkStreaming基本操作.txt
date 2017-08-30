@@ -1,0 +1,21 @@
+一、了解Spark Streaming的特点和基本概念
+    1.工作与原理:
+        Spark Streaming接收实时输入数据流，并将数据分成批，然后由Spark引擎对其进行处理，以批量生成最终的结果流
+        图：SparkStreaming工作原理.jpg
+    2.DStream:
+        Spark Streaming提供称为离散流或DStream的高级抽象，它表示连续的数据流.
+        在内部，DStream表示为一系列 RDD
+        图：DStreams.jpg
+    3.特点
+        基本单位：离散流（DStream）
+        支持容错
+        支持状态处理
+        支持窗口操作
+二、流式处理的基本操作
+    1.DStreams特有的API
+        updateStateByKey(func)
+        countByWindow(windowLength，slideInterval)
+        reduceByKeyAndWindow(func，windowLength，slideInterval，[ numTasks ])
+        countByValueAndWindow(windowLength， slideInterval，[ numTasks ])
+
+三、状态操作和窗口操作概念

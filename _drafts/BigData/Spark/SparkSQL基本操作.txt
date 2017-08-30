@@ -81,7 +81,7 @@
         创建一个sqlContext
         val sqlContext = new org.apache.spark.sql.SQLContext(sc)
         读取json格式的文件
-        val people = sqlContext.read.json("/home/hadoop/app/spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/people.json")
+        val people = sqlContext.read.json("/home/hduser/app/spark-1.6.1-bin-2.6.0-cdh5.7.0/examples/src/main/resources/people.json")
         注册临时表
         people.registerTempTable("people")
         查询表内容
