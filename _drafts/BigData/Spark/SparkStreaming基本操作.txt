@@ -18,4 +18,70 @@
         reduceByKeyAndWindow(func，windowLength，slideInterval，[ numTasks ])
         countByValueAndWindow(windowLength， slideInterval，[ numTasks ])
 
+    2.用RDD操作来处理DStreams（关键代码）位置：NetworkWordCount.scala
+        StreamingExamples.setStreamingLogLevels()
+
+        val sparkConf = new SparkConf().setAppName("NetworkWordCount")
+        val ssc = new StreamingContext(sparkConf, Seconds(1))  //计算的时间间隔
+
+        val lines = ssc.socketTextStream(args(0), args(1).toInt, StorageLevel.MEMORY_AND_DISK_SER)
+        val words = lines.flatMap(_.split(" "))
+        val wordCounts = words.map(x => (x, 1)).reduceByKey(_ + _)
+        wordCounts.print()
+    注：可以用将socketTextStream换成textileStream("文件夹名字")
+
+    3.sparkStreaming与SQL结合在一起（关键代码）位置：SqlNetworkWordCount.scala
+        StreamingExamples.setStreamingLogLevels()
+
+        val sparkConf = new SparkConf().setAppName("SqlNetworkWordCount")
+        val ssc = new StreamingContext(sparkConf, Seconds(2))
+
+        val lines = ssc.socketTextStream(args(0), args(1).toInt, StorageLevel.MEMORY_AND_DISK_SER)
+        val words = lines.flatMap(_.split(" "))
+
+        // Convert RDDs of the words DStream to DataFrame and run SQL query
+        words.foreachRDD((rdd: RDD[String], time: Time) => {
+          // Get the singleton instance of SQLContext
+          val sqlContext = SQLContextSingleton.getInstance(rdd.sparkContext)
+          import sqlContext.implicits._
+
+          // *** Convert RDD[String] to RDD[case class] to DataFrame
+          val wordsDataFrame = rdd.map(w => Record(w)).toDF()
+
+          // Register as table
+          wordsDataFrame.registerTempTable("words")
+
+          // Do word count on table using SQL and print it
+          val wordCountsDataFrame =
+            sqlContext.sql("select word, count(*) as total from words group by word")
+          println(s"========= $time =========")
+          wordCountsDataFrame.show()
+        })
+    4.状态更新（关键代码）位置：StatefulNetworkWordCount.scala
+        StreamingExamples.setStreamingLogLevels()
+        val sparkConf = new SparkConf().setAppName("StatefulNetworkWordCount")
+        val ssc = new StreamingContext(sparkConf, Seconds(1))
+        ssc.checkpoint(".") // 给之前计算的检查结果做临时保存
+
+        // Initial state RDD for mapWithState operation
+        val initialRDD = ssc.sparkContext.parallelize(List(("hello", 1), ("world", 1)))
+
+        val lines = ssc.socketTextStream(args(0), args(1).toInt)
+        val words = lines.flatMap(_.split(" "))
+        val wordDstream = words.map(x => (x, 1))
+
+        // Update the cumulative count using mapWithState
+        // This will give a DStream made of state (which is the cumulative count of the words)
+        val mappingFunc = (word: String, one: Option[Int], state: State[Int]) => {
+          val sum = one.getOrElse(0) + state.getOption.getOrElse(0)
+          val output = (word, sum)
+          state.update(sum)
+          output
+        }
+
+        val stateDstream = wordDstream.mapWithState(
+          StateSpec.function(mappingFunc).initialState(initialRDD))
+        stateDstream.print()
+        ssc.start()
+        ssc.awaitTermination()
 三、状态操作和窗口操作概念
