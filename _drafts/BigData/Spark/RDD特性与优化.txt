@@ -7,7 +7,7 @@
         分区有自己的操作
             foreachPartition()
             mapPartitions()
-        eg: val nums = sc.parallelize(List(1,2,3,4,5,6,7,8,9), 3)
+        eg: val nums = sc.parallelize(tttList(1,2,3,4,5,6,7,8,9), 3)
             nums.foreachPartition(x => println(x.reduce(_+_)))
         函数：计算每一个分片，得出一个可以遍历的结果，用于说明在父RDD执行何种操作
         依赖：计算每个RDD对父RDD的以来列表
