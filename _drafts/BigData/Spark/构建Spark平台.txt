@@ -21,6 +21,7 @@
     构建步骤
         搭建hadoop
         搭建spark
+            spark metastore配置
         周期统计任务jar包
         周期统计spark sql
         用户自助接口
