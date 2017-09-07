@@ -19,4 +19,15 @@
 四、K-means算法
     K-means算法接受参数 k； 然后将事先输入的n个数据对象划分为k个聚类以便使得所获得的聚类满足；
     同一聚类中的对象相似度较高，而不同聚类中的对象相似度较小。
-    x 消费金额  y消费次数
+
+五 使用K-means算法来划分用户
+    处理输入数据格式
+    确定分类数量
+    尝试分类次数达到最优
+    输入测试并得出结论
+
+    关键程序
+    import org.apache.spark.ml.clustering.Kmeans
+    import org.apache.spark.mllib.linalg.Vectors
+    val clusters = KMeans.train(parsedData, numClusters, numIterations, runs)
+    clusters.predict(Vectors.dense(50.0, 30.0))
