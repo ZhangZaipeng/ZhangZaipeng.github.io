@@ -1,0 +1,37 @@
+安全登录几点防范措施
+
+修改 /etc/ssh/sshd_config
+重启sshd service sshd restart
+
+1.修改sshd默认端口
+    Port 22322
+
+2.限定主机登陆
+
+3.基于密钥登陆而不是口令
+    PubkeyAuthentication yes #公钥登陆
+    PasswordAuthentication no #禁止密码登录
+
+4.禁止管理员直接登陆
+    PermitRootLogin no #禁止root登陆
+
+5.仅允许有限用户登录
+    方法1：在/etc/pam.d/sshd文件第一行加入
+    auth required pam_listfile.so item=user sense=allow file=/etc/sshusers
+    onerr=fail
+    然后在/etc下建立sshusers文件,编辑这个文件,加入你允许使用ssh服务的用户名,不用重新启动sshd服务。
+    添加2个用户
+    zhangsan
+    lisisi
+
+    方法2：pam规则也可以写成deny的
+    auth required pam_listfile.so item=user sense=deny file=/etc/sshusers
+    onerr=succeed
+
+    方法3：pam规则可以使用group限制
+    auth required pam_listfile.so item=group sense=allow file=/etc/security/allow_groups onerr=fail
+    在allow_groups文件按中加入组名，主要一定要加root
+
+    方法4：在sshd_config中设置AllowUsers，格式如
+    AllowUsers a b c
+    重启sshd服务，则只有a/b/c3个用户可以登陆
