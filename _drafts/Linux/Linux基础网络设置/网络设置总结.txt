@@ -29,11 +29,23 @@ Linux基础网络设置
     3.查看所有网络接口的速率、模式等信息 --> ethtool eth0
 
 
-    使用hostname命令查看主机名称
+    使用hostname命令 查看主机名称
+    使用hostname命令 设置主机名 hostname [主机名]
+    可以修改配置文件 /etc/sysconfig/network
 
-    使用route命令查看路由表条目
+    使用route命令 查看路由表条目(UG 表示 use gateway 需要使用网关)
     Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
     0.0.0.0         10.154.128.1    0.0.0.0         UG    0      0        0 eth0
+
+    使用route命令 添加、删除静态路由
+    添加、删除到指定网段的路由记录(-net 表示要设置的目标网段)
+    route add -net 192.168.3.0/24 gw x.x.x.x
+    route del -net 192.168.3.0/24
+
+    添加、删除默认网关记录
+    route | grep default
+    route add default gw x.x.x.x
+    route del default gw x.x.x.x
 
     使用netstat命令查看网络连接情况
     -a: 显示当前主机中所用活动的网络连接信息
@@ -47,3 +59,51 @@ Linux基础网络设置
     使用ping命令测试网络连通性
     使用traceroute命令跟踪数据包的路由途径
     使用nslookup命令测试DNS域名解析
+
+三、使用网络配置命令
+    1.使用ifconfig命令修改网卡的地址、状态
+
+    手动修改网络配置两种基本方法
+    临时配置：通过命令直接修改当前使用的网络地址，修改立即生效，重启network或主机后失效
+    固定配置：通过修改配置文件来修改，重启network或者主机才能生效
+
+    修改网卡的IP地址、子网掩码
+    ifconfig eth0 192.168.168.1/24
+    ifconfig eth0 192.168.168.1/24 netmask 255.255.255.0
+
+    禁用、激活网络接口
+    ifconfig eht1 up
+    ifconfig eth1 down
+
+    为网卡绑定虚拟接口
+    ifconfig eth0:0 172.17.17.17
+
+    2.修改网络接口配置文件
+    配置文件默认目录：/etc/sysconfig/network-scripts/,
+    文件名格式"ifcfg-XXX" XXX式网络接口的名称
+    配置项的含义
+    DEVICE=设置网络接口名称
+    NM_CONTROLLED='yes'
+    ONBOOT=在Linux系统启动时激活
+    BOOTPROTO=设置配置方式 "static" "dhcp"
+    IPADDR= IP地址
+    NETMASK=子网掩码
+    GATEWAY=默认网关
+
+    3启用、禁用网络接口配置
+    service network restart 重启网络接口
+
+    ifdown eth1
+    ifup eht1
+
+    4.域名解析配置文件
+    /etc/resolv.conf文件
+    最多可以指定3个不同的DNS服务器
+    nameserver 10.236.158.106
+
+    本机映射文件
+    /etc/hosts文件
+
+
+
+
