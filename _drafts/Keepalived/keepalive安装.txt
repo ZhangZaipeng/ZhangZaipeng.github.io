@@ -1,0 +1,35 @@
+1.安装依赖软件
+    yum -y install kernel-devel openssl-devel popt-devel gcc gcc-c++ ipvsadm
+
+2.解压Keepalived
+    tar -zxvf keepalived-1.2.13.tar.gz
+
+3.编译安装
+    ./configure --prefix=/ --with-kernel-dir=/usr/src/kernels/2.6.32-431.el6.x86_64/
+
+    make && make install
+
+4.开机启动设置
+	chkconfig --add keepalived
+	chkconfig keepalived on
+
+5.参数设置
+    配置文件位置： /etc/keepalived/
+
+    global_defs 中 router_id 服务器名称
+
+    vrrp_instance VI_1 定义热备实例（同一个热备组中要保证  实例名称相同 --> VI_1 ）
+
+    state 定义主备
+
+    interface 承载接口
+
+    priority  优先级 最大100
+
+    advert_int 心跳频率
+
+    virtual_ipaddress 指定漂移IP
+
+    从服务器 state BACKUP
+        priority 低于 主服务器
+        其他跟猪一样
