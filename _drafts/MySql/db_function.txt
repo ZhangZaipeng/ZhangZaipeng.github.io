@@ -95,6 +95,6 @@
 	CASE [expr] WHEN [value1]
 	THEN[result1] ... 
 	ELSE[default]
-	END;			如果 expr 等于 value1，返回 result1，否则返回 default
+	END			如果 expr 等于 value1，返回 result1，否则返回 default
 
 	eg:select CASE salary WHEN 1000 then 'low' WHEN 2000 THEN 'mid' ELSE 'high' END from salary;

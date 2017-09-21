@@ -1,0 +1,33 @@
+创建项目
+    scrapy startproject tutorial (projectName)
+
+项目目录结构
+    tutorial/
+        scrapy.cfg            # 工程配置文件
+
+        tutorial/             # project的Python模块，你将从这里导入代码
+            __init__.py
+
+            items.py          # 抓取内容定义文件
+
+            pipelines.py      # 持久化设置文件
+
+            settings.py       # 爬虫参数设置文件
+
+            spiders/          # 一个目录，你稍后会把你的蜘蛛
+                __init__.py
+
+运行项目
+    scrapy crawl quotes(定义的蜘蛛名称)
+
+提取数据
+    .css() CSS选择元素
+        response.css('title').extract()
+    .re() 正则表达式
+        response.css('title::text').re(r'Quotes.*')
+    .xpath()
+        response.xpath('//title/text()').extract_first()
+
+存储数据
+    scrapy crawl quotes -o quotes.json
+

@@ -68,3 +68,22 @@
 		开始点 ~ 日志文件结束
 mysql字符集查看
 	show variables like '%char%' ;
+
+实例
+    source /etc/profile
+    cd /home/www/sbin
+    mv /home/www/htdocs/static.jmhqmc.com/app/upload/jm.zip /home/www/sbin/
+    cd /home/www/sbin
+    unzip jm.zip
+    mysql -uroot -pglobal0705 jm_product<jm_test.sql
+    rm -rf jm.zip jm_test.sql
+
+    source /etc/profile
+    cd /home/www/sbin
+    mv /home/www/htdocs/static.jmhqmc.com/test/upload/jm.zip /home/www/sbin/
+    cd /home/www/sbin
+    unzip jm.zip
+    mysql -uroot -pglobal0705 jm_test<jm_test.sql
+    rm -rf jm.zip jm_test.sql
+
+    PASSWD = fb0c32d39a88f533d2a1b3bd7f8812e7

@@ -1,0 +1,30 @@
+CentOS7下安装Scrapy步骤详细介绍
+[root@localhost ~]# yum -y update
+
+安装gcc及扩展包
+[root@localhost ~]# yum install gcc libffi-devel python-devel openssl-devel
+
+安装开发工具包
+[root@localhost ~]# yum groupinstall -y development
+
+安装libxslt-devel支持lxml
+[root@localhost ~]# yum install libxslt-devel
+
+安装pip
+[root@localhost ~]# yum -y install python-pip
+
+安装Scrapy
+[root@localhost ~]# sudo pip install scrapy
+
+
+
+安装mysqlDB
+
+以下开始安装mysql-pyhon
+pip install mysql-python
+
+如果遇到找不到mysql_config文件时，要先安装 MySQL-community-devel
+yum install mysql-community-devel
+
+Python.h No suchh file or directory
+再执行以下命令安装python-devel

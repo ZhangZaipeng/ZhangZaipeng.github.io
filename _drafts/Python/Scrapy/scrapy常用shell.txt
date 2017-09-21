@@ -1,0 +1,17 @@
+
+scrapy startproject <project_name> [project_dir]
+
+scrapy genspider [-t template] <name> <domain>
+
+scrapy crawl <spider>
+
+scrapy check [-l] <spider>
+
+scrapy list
+
+scrapy edit <spider>
+
+scrapy shell [url]
+    eg:scrapy shell 'http://quotes.toscrape.com'
+
+scrapy parse <url> [options]

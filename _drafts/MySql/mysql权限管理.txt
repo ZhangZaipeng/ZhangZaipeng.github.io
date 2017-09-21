@@ -6,7 +6,7 @@
 
 	例子：grant select on jm_test.test to 'select'@'100.100.100.1';
 	    grant all on *.* to 'hadoop3'@'%' identified by 'hadoop3';
-	flush privilegers;
+	FLUSH PRIVILEGES;
 
 三、撤销权限
 	revoke 权限列表 on 库名。表名 from '用户名'@'链接地址'
