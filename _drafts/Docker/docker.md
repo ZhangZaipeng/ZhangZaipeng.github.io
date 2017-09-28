@@ -1,6 +1,6 @@
 #### docker命令
 
-    docker安装 --> yum -y install docker
+                    docker安装 --> yum -y install docker
     docker停止 --> systemctl start docker.service
     docker启动 --> systemctl stop docker.service
     docker开机启动 --> systemctl enable docker.service
