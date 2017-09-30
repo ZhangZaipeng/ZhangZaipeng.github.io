@@ -123,4 +123,10 @@
 	location~\.(gif | jpg | ....){
 		expires 1d;
 	}		
-			
+
+### 十二、负载均衡配置
+upstream jetty_server{
+   # upstream的负载均衡 weight是权重，可以根据机器配置定义权重。weigth参数表示权值，权值越高被分配到的几率越大
+   server 123.206.174.58:8045 weight=2;
+   server 119.29.178.133:8045 weight=1;
+}			
