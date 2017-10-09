@@ -57,4 +57,4 @@
 
   命令： docker build
 
-eg:
+eg: 1.生成镜像 --> docker build -t httpd:centos7 . 

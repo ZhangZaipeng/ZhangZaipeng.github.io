@@ -1,3 +1,5 @@
+#### docker 三大概念
+    镜像 容器 仓库   
 #### docker命令
 
                     docker安装 --> yum -y install docker
@@ -15,7 +17,7 @@
     - 5 是Docker核心概念之一
     - 6 Docker容器的运行必须以镜像的成功加载为前提
  
-- 二、镜像的表示方法
+- 二、镜像的表示方法（两种：1.仓库名称：[标签]，2.镜像ID号）
     - 1 仓库名称：[标签]。 如 centos:7, zhangsan/centos:7, dockerhub:5000/zhangsan/ubuntu:14.05
     - 2 镜像ID号： 5506de43b
     - 3 查看镜像命令：docker images | less  
@@ -24,13 +26,14 @@
         IMAGE ID  --> 5506de43b  
         CREATED --> 创建时间  
         SIZE  --> 397M
-    - 4 镜像 搜索 获取 删除
+    - 4 镜像搜索 获取
         docker search 关键字
         eg: docker search lamp
         NAME：镜像所在仓库， DESCRIPTION描述 ， STARS星级欢迎程度 ， OFFICIAL：是否是官方生产 AUTOMATED
     
         docker pull  NAME
         eg: docker pull tutum/lamp
+        
     - 5 镜像存出、载入、新增名称  
         docker save -o 文件名 用户名/仓库名：标签=REPOSITORY：TAG  
         eg: docker save -o lamp tutum/lamp:latest  
