@@ -53,8 +53,10 @@
   - 1.建立目录 : Dockerfile文件
   - 2.创建并编辑Dockerfile文件及需要运行的脚本文件、要复制到容器里的文件
   - 3.运行 docker build 生成镜像
-    docker build -t 名称 .
+    docker build -t 名称 .  注意后面的"."
 
   命令： docker build
 
 eg: 1.生成镜像 --> docker build -t httpd:centos7 . 
+
+docker run -d -p 49180:80 httpd:centos7 

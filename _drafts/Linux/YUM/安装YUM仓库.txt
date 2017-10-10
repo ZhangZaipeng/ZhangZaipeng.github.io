@@ -1,0 +1,21 @@
+一、客户机配置
+    1.内网
+        [yum]
+        name=centos6
+        baseurl=ftp://192.168.1.101/yum
+        enabled=1
+        gpgcheck=0
+    2.公网
+        下载新repo
+        CentOS 6
+        wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+        CentOS 7
+        wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+
+        之后运行yum makecache生成缓存
+    3.本地
+        [local]
+        name=local
+        baseurl=file://mnt
+        enabled=1
+        gpgcheck=0
