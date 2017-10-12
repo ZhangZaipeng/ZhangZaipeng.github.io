@@ -1,0 +1,22 @@
+一、docker数据卷
+    1.数据卷是一个供容器使用的目录，位于容器中
+    2.可以在容器之间挂载
+    3.可将宿主机的目录挂载到数据卷上，实现数据迁移
+    4.对数据卷的操作立刻可见
+
+二、对docker数据卷的操作
+    1.在docker run 命令中使用-v 创建数据卷
+        docker run -d -v /data1 -v /data2 --name web apache6:centos7
+
+    2.可以创建数据卷的同时将宿主机的目录挂载到数据卷上
+        docker run -d -v /var/data:/data1 --name web-1 apache6:centos7
+
+三、docker数据卷容器与操作
+    1.数据卷容器是一个普通的容器，专门提供数据卷给其他容器使用
+
+    2.实现步骤
+        创建一个容器作为数据卷容器
+        docker run -it -v /data --name dbdata centos:7 /bin/bash
+
+        其他容器在创建时用--volumes-from挂载数据卷容器中的数据卷
+        docker run -it --volumes-from dbdata --name db1 centos:7 /bin/bash
