@@ -1,0 +1,42 @@
+一、端口映射（解释）
+    1.将宿主机的端口映射到容器中
+    2.外部网络访问宿主机的端口便可访问容器内的服务
+二、端口映射的操作
+    1.docker run 使用 -P 可以实现随机映射，端口范围49000-49900
+        docker run -d -P apache6:centos7
+    2.docker run 使用 -p 可指定映射的端口
+        docker run -d -p 49180:80 apache6:centos7
+三、容器互联与操作
+    1.容器互联是通过容器的名称在容器间建立一条专门的网络通信隧道实现互联
+    2.实现步骤
+    docker run 建立容器A ，使用 --name 指定容器名称
+        docker run -d -P --name web1 apache6:centos7
+    docker run 建立容器B，--name 指定名称，--link 容器名称：连接别名以实现容器互联
+        docker run -d -P --name web2 --link web1:web1 apache6:centos7
+四、Docker实现秘钥SSHD远程登陆
+    1.建立目录sshd_centos
+    2.使用ssh-keygen -t rsa 生成公钥与私钥，将公钥复制到sshd_centos目录下并命名为authorized_keys
+    3.创建并修改Dockerfile、要在容器中执行的脚本文件run.sh
+        Dockerfile   文件
+        FROM centos:7
+        MAINTAINER from auth <email>
+        RUN yum install -y openssh-server
+        RUN mkdir -p /var/run/sshd
+        RUN mkdir -p /root/.ssh
+        RUN sed -ri 's/session  required        pam_loginuid.so/#session        required        pam_loginuid.so/g' /etc/pam.d/sshd
+        ADD authorized_keys /root/.ssh/authorized_keys
+        ADD run.sh /run.sh
+        RUN chmod 775 /run.sh
+        EXPOSE 22
+        CMD ["/run.sh"]
+
+        run.sh   文件
+        #!/bin/bash
+        /usr/sbin/sshd -D
+
+    4.使用docker bulid 生成镜像并验证登陆
+        docker build -t sshd:centos7 .
+
+        docker run -d -p 49122:22 sshd:centos7
+
+        ssh 192.168.0.1 -p 49122

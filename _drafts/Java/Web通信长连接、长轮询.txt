@@ -1,0 +1,2 @@
+Web 通信 之 长连接、长轮询（long polling）
+http://www.cnblogs.com/hoojo/p/longPolling_comet_jquery_iframe_ajax.html
