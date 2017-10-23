@@ -1,0 +1,16 @@
+tomcat 部署项目的三种方式
+
+一、项目直接放入 webapps 目录中
+    1.将编写并编译好的web项目(注意要是编译好的，如果是 eclipse，可以将项目打成 war 包放入)，放入到 webapps 中
+    2.启动tomcat服务器
+        startup.bat
+    3.项目访问路径
+        http://localhost:端口/项目名/访问的文件名
+二、修改 conf/server.xml
+
+
+三、
+
+
+参考文档
+http://www.cnblogs.com/ysocean/p/6893446.html
