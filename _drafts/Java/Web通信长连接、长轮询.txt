@@ -1,2 +1,26 @@
 Web 通信 之 长连接、长轮询（long polling）
 http://www.cnblogs.com/hoojo/p/longPolling_comet_jquery_iframe_ajax.html
+
+1.ajax 轮询
+
+2.
+sevlet 3 异步通知
+spring deferredresult
+ajax 长轮询
+
+3.
+comet流方式 sse
+EventSource
+  text/event-stream
+
+4.
+webSocket
+
+
+
+浏览器支持度
+实时性
+代码复杂度
+适用场景
+
+
