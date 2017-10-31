@@ -222,3 +222,18 @@
   </activeProfiles>
 
 </settings>
+
+easy shell 插件
+传递依赖性原则
+1.路径最近优先 C->B->A, C依赖B，B依赖A，会先用B的jar
+2.路径相同，第一声明者优先：C->B,C->A,必须看B,A在C中哪一个先声明
+
+maven 继承
+集成父节点中的dependency
+不能集成父节点中的dependencyManagement
+dependencyManagement管理dependency
+
+maven 聚合继承  作用
+maven 镜像配置
+
+process on
