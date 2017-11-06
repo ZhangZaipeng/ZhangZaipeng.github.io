@@ -7,6 +7,7 @@
         |-- --test
         |-- -- --java
         |-- -- --resources
+        |--target
         |--pom.xml
 
 二、坐标与依赖
@@ -36,8 +37,15 @@
     解决方案：小张只需要设置SNAPSHOT,然后发布到仓库中，maven会自动给模块A加上时间戳（标记最新版）。
         模块B在构建时因为用的是SNAPSHOT，maven会自动找到最新版本放到模块B中。
 
+四、maven聚合与继承的意义和关系
+    聚合的意义：创建一个聚合模块(有自己的pom,packaging为pom)，满足一条命令构建多个模块.
+    继承的意义：当两个pom 文件有很多配置相同时，可以使用pom继承
+        可继承的pom
+           groupId，version，dependencies，dependencyManagement ...
 
-
+五、传递依赖性原则
+    1.路径最近优先 C->B->A, C依赖B，B依赖A，会先用B的jar
+    2.路径相同，第一声明者优先：C->B,C->A,必须看B,A在C中哪一个先声明
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -49,6 +57,13 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging></packaging>
     <name>Hello</name>
+
+    <!-- 聚合标签 -->
+    <modules>
+        <module>...</module>
+        <module>...</module>
+        <module>...</module>
+    </modules>
 
     <!--添加依赖的jar包-->
     <dependencies>
@@ -66,6 +81,20 @@
             </exclusions>
         </dependency>
     </dependencies>
+
+    <!-- 既能够让子模块继承到父模块的依赖配置，又能保证子模块依赖使用的灵活性 -->
+    <dependencyManagement></dependencyManagement>
+
+    <!-- pluginManagement 插件管理 -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    ...
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <!-- 给出Maven部署当前项目的构件到远程库时
         注意：构建远程仓库需要认证  在settings 文件的 servers配置认证，id仓库名保持一致。
@@ -151,23 +180,16 @@
     不论是从远程仓库下载，还是部署构建都需要认证
   -->
   <servers>
-
     <server>
+      <!-- 仓库ID -->
       <id>deploymentRepo</id>
       <username>repouser</username>
       <password>repopwd</password>
     </server>
-
-    <server>
-      <id>siteServer</id>
-      <privateKey>/path/to/private/key</privateKey>
-      <passphrase>optional; leave empty if not used.</passphrase>
-    </server>
-
   </servers>
 
   <!-- mirrors
-   | 任何向外的请求都被转至http://maven.aliyun.com/nexus/content/groups/public
+   | maven 镜像 ：可以替代中央仓库，任何对中央仓库的请求都会转至镜像
    | <mirrorOf>*</mirrorOf> 表示任何远程仓库
    | <mirrorOf>repo1,repo2</mirrorOf>
    | <mirrorOf>*,!repo1</mirrorOf> ! 用于排除远程仓库
@@ -224,16 +246,5 @@
 </settings>
 
 easy shell 插件
-传递依赖性原则
-1.路径最近优先 C->B->A, C依赖B，B依赖A，会先用B的jar
-2.路径相同，第一声明者优先：C->B,C->A,必须看B,A在C中哪一个先声明
-
-maven 继承
-集成父节点中的dependency
-不能集成父节点中的dependencyManagement
-dependencyManagement管理dependency
-
-maven 聚合继承  作用
-maven 镜像配置
 
 process on
