@@ -1,0 +1,46 @@
+jQuery.fn.myFuncOne=function(){
+		alert("jquery1");
+	}
+
+jQuery.extend({
+    'myFuncTwo':function(){
+        alert("jquery2");
+    }
+})
+
+$.myFuncThree = function(url, data, successCB){
+    alert("jquery3,parm:" + url);
+        if(successCB){ //回调
+            successCB(url);
+        }else{
+            alert("no callback");
+        }
+}
+jQuery.fn.extend({
+    'myFuncFour':function(){
+        alert("jquery4");
+    }
+})
+
+function myFuncThreeCB(url){
+    alert("myFuncThreeCB+"+url)
+}
+
+
+$("#h1").click(function(){
+    $("#h1").myFuncOne();
+
+    // $.myFuncThree("www.baidu.com",'hello',myFuncThreeCB);
+});
+
+$("#h2").click(function(){
+    $().myFuncTwo();
+});
+
+$("#h3").click(function(){
+    $.myFuncThree('www.baidu.com','data',myFuncThreeCB);
+});
+
+$("#h4").click(function(){
+    $("#h4").myFuncFour();
+});
