@@ -1,0 +1,37 @@
+安装django环境
+
+创建项目文件夹
+best_websites
+
+创建项目
+django-admin.py startproject best_websites .
+
+创建数据库
+python manage.py migrate
+
+查看项目是否 创建成功
+python manage.py runserver
+访问端口
+localhost:8000
+出现页面（成功标示）
+It worked!
+Congratulations on your first Django-powered page.
+
+创建模块
+python manage.py startapp admin_web
+
+添加相应模块到
+INSTALLED_APPS admin_web
+
+定义模型
+models.py
+
+迁移模型
+执行命令 python manage.py makemigrations 模型名称
+检查python manage.py migrate
+
+注册模型
+admin.py
+
+创建超级管理员
+python manage.py createsuperuser
