@@ -4,7 +4,7 @@
      rpm -ivh  ncurses-devel-5.7-3.20090208.el6.x86_64.rpm
      安装依赖
      yum -y install make gcc-c++ bison-devel  ncurses-devel
-     yum-y install autoconf
+     yum -y install autoconf
 3.mysql5.5安装cmake进行编译 ,mysql 5.6开始，需要使用g++进行编译（cmake  需要gcc ,gcc++支持）
      tar -xf cmake-2.8.11.1.tar.gz -C /usr/src  ---->  ./configure  ----> make && make install
 4.创建mysql用户与组，相关目录

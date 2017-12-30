@@ -1,0 +1,65 @@
+一、多线程的创建，启动，退出
+    extends Thread
+    implements Runnable
+
+    启动 start()
+
+二、线程的状态
+    新创建   线程被创建，但是没有调用start方法
+    可运行（RUNNABLE）  运行状态，由cpu决定是不是正在运行
+    被阻塞（BLOCKING）  阻塞，线程被阻塞于锁
+    等待/计时等待（WAITING） 等待某些条件成熟
+    被终止  线程执行完毕
+
+三、取消和中断线程
+    1.手动设置取消标志位（不安全）
+    2.使用interrupt()中断线程， isInterrupted()线程检查中断标志位
+    3.IO,NIO不可中断，解决方案：覆盖线程的interrupt方法，关闭底层socket,再用super.interrupt()
+
+四、常用方法 ：run() start() yield() wait() notify() notifyAll() join()
+
+    run()和start()
+        run就是一个普通的方法，跟其他类的实例方法没有任何区别。
+    sleep()
+        不会释放锁，该方法属于Thread类，强制使当前线程休眠
+    yield()
+        当前线程出让cpu占有权，当前线程变成了可运行状态，下一时刻仍然可能被cpu选中，不会释放锁。
+    join()
+        把某个线程加入到，执行join方法的线程中
+        eg: 把线程A加入B线程，则需要在 B中执行了A.join(), 线程B等待线程A 终止了以后，B线程才能执行 A.join()后面的内容
+
+    wait() notify() notifyAll()
+        方法的作用：
+            notify() 唤醒在此对象监视器上等待的单个线程
+            notifyAll() 唤醒在此对象监视器上等待的所有线程
+            wait() 释放锁，导致当前的线程等待
+        注意事项：
+            1.wait、notify、notifyAll 的 锁范围是实例
+            2.调用以上方法以前，当前线程必须要持有锁，如果不加锁的话，则会报 IllegalMonitorStateException 异常，
+            3.调用之后wait()立刻释放锁，notify()/notifyAll()是等同步块执行完后才释放锁
+        总结：
+            wait和notify方法均可释放对象的锁，但wait同时释放CPU控制权，即它后面的代码停止执行，线程进入阻塞状态，
+            而notify方法不立刻释放CPU控制权，而是在相应的synchronized(){}语句块执行结束，再自动释放锁。
+        学习微博
+        http://blog.csdn.net/lingzhm/article/details/44940823
+
+
+五、Sync同步的范围
+    1.实例
+        实例方法
+        - public synchronized void f(){} --> 锁的是 调用这个方法的对象，（作用对象）
+        实例方法中的代码块
+        - synchronized(this){/*区块*/}  --> 锁的是 调用这个方法的对象，（作用对象）
+        锁 lock 方法中的代码块
+        - private Object lock = new Object();
+          synchronized(lock) {} --> 锁的是 这个对象中的 lock实例变量，（作用范围对象）
+    2.类
+        锁静态方法
+        - public static synchronized void f(){} --> 锁的是 这个类中的类方法 ，（作用范围类）
+        锁类中的 代码块
+        - synchronized(Foo.class) {} --> 锁的是 这个类， （作用范围类）
+        锁 lock
+        - private static Object lock = new Object();
+          synchronized(lock) {} --> 锁的是 这个类中的 lock类变量，（作用范围类）
+    学习微博
+    http://www.cnblogs.com/devinzhang/archive/2011/12/14/2287675.html

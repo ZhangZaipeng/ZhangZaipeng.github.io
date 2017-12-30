@@ -1,0 +1,3 @@
+使用本地JConsole监控远程JVM
+
+http://www.linuxidc.com/Linux/2015-02/113420.htm

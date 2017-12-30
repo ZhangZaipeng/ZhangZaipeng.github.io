@@ -21,9 +21,9 @@
 	1.修改 /etc/my.cnf
 		server-id = 11
 		log-bin=master-bin
-		log-slave-uptdates=true
+		log-slave-uptdates=1（5.6.20 不需要）
 	2.授权所有从服务器复制二进制日志文件
-		grant replication slave on *.* to 'adm'@'192.168.1.%' identified by '123456';
+		grant replication slave on *.* to 'repl'@'172.17.0.%' identified by '123456';
 		flush privileges; 刷新权限
 	3.查看主服务器的状态
 		show master status;    position
@@ -37,7 +37,7 @@
 		change master to master_host='192.168.17.1' , master_user='adm',  master_password='123456',
 		master_log_file='master-bin.000002',  master_log_pos=334;
 	4.启动slave
-		start slave;
+		start slave; stop slave;
 	5.查看Slave状态，保证Slave_IO_Running 和Slave_SQL_Running 为 yes
 		show slave status\G
 五、测试

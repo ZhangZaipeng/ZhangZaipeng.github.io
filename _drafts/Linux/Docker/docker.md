@@ -101,6 +101,8 @@
         docker rm 容器的ID/名称
     - 2.删除运行的容器
         docker rm -f 容器的ID/名称
+- 容器生成镜像
+        docker commit -m "Added nginx from ubuntu14.04" -a "saymagic" 79c761f627f3 saymagic/ubuntu-nginx:v1
 
 
      

@@ -34,6 +34,11 @@
 	COMMENT='技师表'
 	AUTO_INCREMENT=1
 	;
+	CREATE TABLE `tb_news`(
+	    `id` INT(20) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
+	    `name` VARCHAR(20) DEFAULT NULL COMMENT '名字',
+	    PRIMARY KEY (`id` )
+	)
 
 	删除表：drop table tabname
 	修改表：
