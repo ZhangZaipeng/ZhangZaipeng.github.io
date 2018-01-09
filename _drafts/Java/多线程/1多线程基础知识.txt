@@ -12,9 +12,15 @@
     被终止  线程执行完毕
 
 三、取消和中断线程
+
     1.手动设置取消标志位（不安全）
-    2.使用interrupt()中断线程， isInterrupted()线程检查中断标志位
-    3.IO,NIO不可中断，解决方案：覆盖线程的interrupt方法，关闭底层socket,再用super.interrupt()
+        为什么手动不安全，需要中断机制，线程处于阻塞（如调用了java的sleep,wait等等方法时）的时候，
+        是不会理会我们自己设置的取消标志位的，但是这些阻塞方法都会检查线程的中断标志位
+    2. Thread.currentThread().interrupt() 中断线程，本质是将线程的中断标志位设为true
+    3. Thread.currentThread().isInterrupted() 线程检查中断标志位
+    4. Thread.interrupted() 将中断标志位复位为false
+
+    5.IO,NIO不可中断，解决方案：覆盖线程的interrupt方法，关闭底层socket,再用super.interrupt()
 
 四、常用方法 ：run() start() yield() wait() notify() notifyAll() join()
 
@@ -43,8 +49,14 @@
         学习微博
         http://blog.csdn.net/lingzhm/article/details/44940823
 
+五、volatile和synchronized
+    violate 修饰字段，对这个变量的访问必须要从共享内存刷新一次。
+        最新的修改写回共享内存。可以保证字段的可见性。绝对不是线程安全的，没有操作的原子性。
 
-五、Sync同步的范围
+    synchronized 可以修饰方法或者以同步块的形式来进行使用，它主要确保多个线程在同一个时刻，
+        只能有一个线程处于方法或者同步块中，它保证了线程对变量访问的可见性和排他性，又称为内置锁机制，悲观锁。
+
+六、Sync同步的范围
     1.实例
         实例方法
         - public synchronized void f(){} --> 锁的是 调用这个方法的对象，（作用对象）
@@ -63,3 +75,26 @@
           synchronized(lock) {} --> 锁的是 这个类中的 lock类变量，（作用范围类）
     学习微博
     http://www.cnblogs.com/devinzhang/archive/2011/12/14/2287675.html
+
+七、等待通知机制
+    等待方原则：
+    1、获取对象锁
+    2、如果条件不满足，调用对象的wait方法，被通知后依然要检查条件是否满足
+    3、条件满足以后，才能执行相关的业务逻辑
+    Synchronized(对象){
+    	While(条件不满足){
+    	对象.wait()
+    }
+        业务逻辑处理
+    }
+
+    通知方原则：
+    1、	获得对象的锁；
+    2、	改变条件；
+    3、	通知所有等待在对象的线程
+    Synchronized(对象){
+    	业务逻辑处理，改变条件
+    	对象.notify/notifyAll
+    }
+
+八、等待超时模式

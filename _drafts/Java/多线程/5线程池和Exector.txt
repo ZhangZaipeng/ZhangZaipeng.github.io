@@ -1,0 +1,90 @@
+一、什么是线程池
+1、降低资源的消耗
+2、提高响应速度，任务：T1创建线程时间，T2任务执行时间，T3线程销毁时间，线程池没有或者减少T1和T3
+3、提高线程的可管理性。
+
+二、线程池的主要处理流程
+    1）线程池判断核心线程池里的线程是否都在执行任务。如果不是，则创建一个新的工作
+    线程来执行任务。如果核心线程池里的线程都在执行任务，则进入下个流程。
+    2）线程池判断工作队列是否已经满。如果工作队列没有满，则将新提交的任务存储在这
+    个工作队列里。如果工作队列满了，则进入下个流程。
+    3）线程池判断线程池的线程是否都处于工作状态。如果没有，则创建一个新的工作线程
+    来执行任务。如果已经满了，则交给饱和策略来处理这个任务。
+
+三、ThreadPoolExecutor 执行 execute() 方法的流程
+    1）如果当前运行的线程少于corePoolSize，则创建新线程来执行任务（注意，执行这一步骤
+    需要获取全局锁）。
+    2）如果运行的线程等于或多于corePoolSize，则将任务加入BlockingQueue。
+    3）如果无法将任务加入BlockingQueue（队列已满），则创建新的线程来处理任务（注意，执行这一步骤需要获取全局锁）。
+    4）如果创建新线程将使当前运行的线程超出maximumPoolSize，任务将被拒绝，并调用RejectedExecutionHandler.rejectedExecution()方法。
+
+四、ThreadPoolExecutor 参数
+
+    构造函数
+    public ThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
+        long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue,
+        ThreadFactory threadFactory, RejectedExecutionHandler handler)
+
+    corePoolSize
+        线程池中的核心线程数，当提交一个任务时，线程池创建一个新线程执行任务，直到当前线程数等于corePoolSize；
+        如果当前线程数为corePoolSize，继续提交的任务被保存到阻塞队列中，等待被执行；
+        如果执行了线程池的prestartAllCoreThreads()方法，线程池会提前创建并启动所有核心线程。
+
+    maximumPoolSize
+        线程池中允许的最大线程数。如果当前阻塞队列满了，且继续提交任务，则创建新的线程执行任务，前提是当前线程数小于maximumPoolSize
+
+    keepAliveTime
+        线程空闲时的存活时间，即当线程没有任务执行时，继续存活的时间。默认情况下，该参数只在线程数大于corePoolSize时才有用
+
+    TimeUnit
+        keepAliveTime的时间单位
+
+    workQueue
+        workQueue必须是BlockingQueue阻塞队列。当线程池中的线程数超过它的corePoolSize的时候，线程会进入阻塞队列进行阻塞等待。通过workQueue，线程池实现了阻塞功能
+    threadFactory
+
+    RejectedExecutionHandler（饱和策略）
+        线程池的饱和策略，当阻塞队列满了，且没有空闲的工作线程，如果继续提交任务，必须采取一种策略处理该任务，线程池提供了4种策略：
+        （1）AbortPolicy：直接抛出异常，默认策略；
+        （2）CallerRunsPolicy：用调用者所在的线程来执行任务；
+        （3）DiscardOldestPolicy：丢弃阻塞队列中靠最前的任务，并执行当前任务；
+        （4）DiscardPolicy：直接丢弃任务；
+        当然也可以根据应用场景实现RejectedExecutionHandler接口，自定义饱和策略，如记录日志或持久化存储不能处理的任务。
+
+五、合理地配置线程池
+  线程数配置：
+  任务：计算密集型，IO密集型，混合型
+  计算密集型=计算机的cpu数或计算机的cpu数+1（应付页缺失）
+  IO密集型=计算机的cpu数*2
+  混合型，拆分成计算密集型，IO密集型
+  Runtime.getRuntime().availableProcessors();当前机器中的cpu核心个数
+  尽量有界队列，不要使用无界队列
+
+六、Executor框架调度模型
+
+七、Executor框架基本使用流程
+    1.创建实现Runnable或者Callable接口的任务对象。
+    2.工具类Executors可以把一个Runnable对象封装为一个Callable对象
+        （Executors.callable（Runnable task）或Executors.callable（Runnable task，Object resule））
+    3.用Executors创建一个ExecutorService
+        （ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE)）
+    3.然后可以把Runnable对象直接交给ExecutorService执行
+        （ExecutorService.execute（Runnablecommand））；
+      或者也可以把Runnable对象或Callable对象提交给ExecutorService执行
+        （Executor-Service.submit（Runnable task）或ExecutorService.submit（Callable<T>task））
+    4.如果是ExecutorService.execute 无返回值
+      如果是Executor-Service.submit 返回的是FutureTask
+
+八、线程池的种类
+    FixedThreadPool详解
+
+    SingleThreadExecutor详解
+
+    CachedThreadPool详解
+
+    WorkStealingPool
+
+九、CompletionService详解
+
+
+十、ScheduledThreadPoolExecutor

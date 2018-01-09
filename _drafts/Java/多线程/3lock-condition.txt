@@ -1,0 +1,88 @@
+一、Lock与synchronized区别
+
+类别          synchronized                            Lock
+
+存在层次	    Java的关键字，在jvm层面上                是一个类
+
+锁的获取    阻塞                                  非阻塞、阻塞
+
+锁的释放    1、以获取锁的线程执行完同步代码，释放锁    在finally中必须释放锁，不然容易造成线程死锁
+           2、线程执行发生异常，jvm会让线程释放锁
+
+锁状态	        无法判断	                            可以判断
+
+锁类型	    可重入 不可中断 非公平	        可重入 可判断 可公平（两者皆可）
+
+二、锁的相关概念
+    1.锁的可重入
+        基于线程的分配，而不是基于方法调用的分配
+
+    2.公平和非公平锁
+        公平锁即尽量以请求锁的顺序来获取锁。比如同是有多个线程在等待一个锁，当这个锁被释放时，等待时间最久的线程（最先请求的线程）会获得该所，这种就是公平锁。
+
+        非公平锁即无法保证锁的获取是按照请求锁的顺序进行的。这样就可能导致某个或者一些线程永远获取不到锁
+
+    3.可中断锁
+        如果某一线程A正在执行锁中的代码，另一线程B正在等待获取该锁，可能由于等待时间过长，线程B不想等待了，想先处理其他事情，
+        我们可以让它中断自己或者在别的线程中中断它，这种就是可中断锁。
+
+三、Lock的标准用法、常用API
+    lock()用来获取锁。如果锁已被其他线程获取，则进行等待
+    lockInterruptibly：可中断
+        当通过这个方法去获取锁时，如果线程正在等待获取锁，则这个线程能够响应中断，即中断线程的等待状态。
+        也就使说，当两个线程同时通过lock.lockInterruptibly()想获取某个锁时，
+        假若此时线程A获取到了锁，而线程B只有在等待，那么对线程B调用threadB.interrupt()方法能够中断线程B的等待过程
+    tryLocktryLock(long time, TimeUnit unit)
+        方法是有返回值的，它表示用来尝试获取锁，如果获取成功，则返回true，如果获取失败（即锁已被其他线程获取），
+        则返回false，也就说这个方法无论如何都会立即返回。在拿不到锁时不会一直在那等待。
+    unlock() 释放锁的
+
+    标准用法
+        public static void main(String[] args) {
+            Lock lock = new ReentrantLock();
+            lock.lock();
+            try{
+                // do my work.....
+            }finally{
+                lock.unlock();
+            }
+        }
+
+四、Condition接口有何用处
+    1.用来替代传统的Object的wait()、notify()实现线程间的协作
+    2.使得某些线程一起等待某个条件（Condition），只有当该条件具备(signal 或者 signalAll方法被调用)时，这些等待线程才会被唤醒，从而重新争夺锁
+    3.使用
+        Condition依赖于Lock接口，生成一个Condition的基本代码是lock.newCondition()
+
+        Condition的await()和signal()方法，都必须在lock保护之内，就是说必须在lock.lock()和lock.unlock之间才可以使用
+
+        Conditon中的await()对应Object的wait()
+        Condition中的signal()对应Object的notify()
+        Condition中的signalAll()对应Object的notifyAll()
+    4.模板
+    public class ConditionTemplete {
+        Lock lock = new ReentrantLock();
+        Condition condition = lock.newCondition(); // 可以创建多个
+
+        public void waitc() throws InterruptedException {
+            lock.lock();
+            try{
+                condition.await();
+            }finally{
+                lock.unlock();
+            }
+        }
+        public void waitnotify() throws InterruptedException {
+            lock.lock();
+            try{
+                condition.signal();
+                //condition.signalAll();尽量少使用
+            }finally{
+                lock.unlock();
+            }
+        }
+    }
+
+五、AQS
+
+六、了解ReentrantLock的实现，了解ReentrantReadWriteLock的实现，了解Condition的实现

@@ -1,0 +1,40 @@
+一、ConcurrentHashMap
+
+二、阻塞队列
+    方法  抛出异常    返回值     一直阻塞    超时退出
+    插入  Add        offer      put        offer
+    移除  remove      poll      take       poll
+    检查  element     peek      没有        没有
+
+    ArrayBlockingQueue： 数组结构组成有界阻塞队列。
+    先进先出原则，初始化必须传大小，take和put时候用的同一把锁
+
+    LinkedBlockingQueue：链表结构组成的有界阻塞队列
+    先进先出原则，初始化可以不传大小，put，take锁分离
+
+    PriorityBlockingQueue：支持优先级排序的无界阻塞队列，
+    排序，自然顺序升序排列，更改顺序：类自己实现compareTo()方法，初始化PriorityBlockingQueue指定一个比较器Comparator
+
+    DelayQueue： 使用了优先级队列的无界阻塞队列
+    支持延时获取，队列里的元素要实现Delay接口。DelayQueue非常有用，可以将DelayQueue运用在以下应用场景。
+    缓存系统的设计：可以用DelayQueue保存缓存元素的有效期，使用一个线程循环查询DelayQueue，一旦能从DelayQueue中获取元素时，表示缓存有效期到了。
+    还有订单到期，限时支付等等。
+
+    SynchronousQueue：不存储元素的阻塞队列
+    每个put操作必须要等take操作
+
+    LinkedTransferQueue：链表结构组成的无界阻塞队列
+
+    Transfer,tryTransfer，生产者put时，当前有消费者take，生产者直接把元素传给消费者
+
+    LinkedBlockingDeque：链表结构组成的双向阻塞队列
+    可以在队列的两端插入和移除，xxxFirst头部操作,xxxLast尾部操作。工作窃取模式。
+
+三、并发工具类
+CountDownLatch的使用
+
+CyclicBarrier的使用
+
+Semaphore的使用
+
+Exchange的使用
