@@ -1,0 +1,3 @@
+
+docker stack deploy --compose-file [文件] [stack名]
+stack 理解为一组服务
