@@ -107,6 +107,14 @@
         docker rm -f 容器的ID/名称
 - 容器生成镜像
         docker commit -m "Added nginx from ubuntu14.04" -a "saymagic" 79c761f627f3 saymagic/ubuntu-nginx:v1
+        
+        
+        
+docker
+https://docs.docker.com/engine/installation/
+
+docker-compose
+https://docs.docker.com/compose/overview/
 
 
      

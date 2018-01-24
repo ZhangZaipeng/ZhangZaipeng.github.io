@@ -1,0 +1,30 @@
+
+# 创建swarm集群
+docker swarm init --advertise-addr <机器ip>
+
+# 创建集群下的网络
+docker network create -d overlay --attachable swarm_net
+
+# 确定集群是否完成，在manage节点上可以看到当前集群有哪些机器
+docker node ls
+
+# 添加集群管理工具portainer
+# 9001端口，进去后改密码，用户名 admin 密码 tryportainer
+docker service create \
+--name docker_portainer \
+--publish 9001:9000 \
+--constraint 'node.role==manager' \
+--mount type=bind,src=/data/portainer,dst=/data/portainer \
+--mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock portainer/portainer \
+-H unix:///var/run/docker.sock
+
+# 新的节点怎么加入？
+# 在manage节点上执行下面这个命令，生成一个用于新manage加入的token。 
+# 在新节点中心执行输出的内容可以用于manage加入swarm集群
+docker swarm join-token manager
+
+docker swarm join-token worker
+
+# 如果要退出swarm集群，使用下面这个命令，退出不了就加个 ‐‐force
+docker swarm leave
+
