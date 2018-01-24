@@ -1,0 +1,58 @@
+1.string (key:String)
+    增
+        set [key] [value] [ex] [sec] // 设置键值，和 ex 过期时间
+        setnx [key] [value] 不存在键name时，返回1设置成功；存在的话失败0
+        mset
+    查
+        get [key] //存在则返回value, 不存在返回nil
+        mget [key ...]
+    常用
+        incr [key] //必须为整数自加1，非整数返回错误，无age键从0自增返回1
+        decr [key]
+        append [key] [追加值]
+        strlen [key]
+        getrange [key] [范围]
+2.hash (key:Map<?,?>)
+    增
+        hset [key] [field] [value]
+        hmset [key] [field] [value]
+    查
+        hget [key] [field]
+        hmget [key]
+    删
+        删值 hdel [key] [field]
+    常用
+        hlen [key]  // 返回2, key有两个属性
+        hexists [key] [field] //判断field是否存在
+        hkeys [key] // 返回所有字段
+        hvals [key] // 返回所有值
+        hgetall [key] // 返回所有字段 和 值
+3.list (key:List<?>)
+    增
+        rpush lpush linset
+    查
+        lrange lindex llen
+    删
+        lpop rpop lrem ltrim
+    改
+        lset
+
+4.set (key:Set<?>) 无序
+    Set限制：:不允许有重复元素，且集合是无序，一个集合最多可存2的32次方减1个元素
+    元素操作 sadd smember srm  scard  spop
+    交集 sinter
+    并集 sunion
+    差集 sdiff
+    将集合的结果另存到队列 sinterstore   sunionstore  sdiffstore
+4.set (key:Set<?>) 有序
+    zadd   zrem  zincrby
+    zrange  zrank  zrevrank  zrangebyscore  zrevrangebyscore
+    zcard  zcount
+    zinterstore
+5.全局命令
+    1.查看所有键：keys *
+    2.键总数: dbsize // 如果存在大量键，线上禁止使用此指令
+    3.检查键是否存在：exists key  //存在返回1，不存在返回0
+    4.删除键：del key  // del hello school, 返回删除键个数，删除不存在键返回0
+    5.键过期：expire key seconds  //set name test  expire name 10 //10秒过期 ttl 查看剩余的过期时间
+    6.键的数据结构类型：type key //type hello  //返回string,键不存在返回none
