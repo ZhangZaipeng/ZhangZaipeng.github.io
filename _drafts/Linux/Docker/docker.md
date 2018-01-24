@@ -71,6 +71,10 @@
         docker run centos:7 /bin/bash c ls /
         使用docker run 来运行一个容器时，只要后面的命令运行结束，容器就停止
         镜像不存在时会从共有仓库下载
+        
+        centos7 要使用 /usr/sbin/init
+        docker run -it  -v /data/mysql_master:/mnt 3fa822599e10 /usr/sbin/init
+
 - 三、容器的运行，终止
     
     - 1.守护态运行
