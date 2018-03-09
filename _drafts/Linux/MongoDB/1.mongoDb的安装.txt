@@ -1,0 +1,20 @@
+1.解压
+    /usr/local/mongodb-3.4.10/
+
+2.创建配置文件 mongodb.conf
+
+3.启动脚本  ./mongod -f mongodb.conf &
+    安全模式启动(./mongod -f mongodb.conf --auth)
+
+    权限设置步骤
+    1.通过start-mongodb-auth.sh启动mongodb
+    2.数据库增加安全模式后，初始化一个“userAdminAnyDatabase”非常重要
+      通过客户端连接，使用admin数据库， 执行如下脚本：
+      db.createUser({'user':'boss22', 'pwd':'boss', 'roles':[{'role':'userAdminAnyDatabase', 'db':'admin'}]})
+
+    3.使用刚创建成功的用户登录：db.auth("boss","boss");
+    4.切换到lison数据库（use lison），创建读写权限用户：
+    db.createUser({'user':'lison','pwd':'lison','roles':[{'role':'readWrite','db':'lison'}]})
+    5.使用读写权限用户lison登录，db.auth("lison","lison")，登录后测试;
+
+    ps:也可以以非auth模式启动，然后创建用户后，用auth模式启动
