@@ -4,6 +4,8 @@ https://www.cnblogs.com/ylcms/p/7738692.html
 lantern
 https://c4ys.com/archives/1102
 
+gitlab
+https://www.linuxidc.com/Linux/2017-11/148223.htm
 
 XenServer
 https://www.jianshu.com/p/8975555f3177

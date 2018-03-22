@@ -1,4 +1,5 @@
 storage:
+    # 开启 journal日志
     journal:
         enabled: true
     ## 数据存储路径
