@@ -1,5 +1,5 @@
 一、VpnServer安装
-    1.在vpnserver上开启ip转发功能，编辑/etc/sysctl.conf,修改net.ipv4.ip_forward为1
+    1.在vpnserver上开启ip转发功能，编辑/etc/sysctl.conf(/etc/sysctl.d/99-sysctl.conf),修改net.ipv4.ip_forward为1
         net.ipv4.ip_forward = 1
 
     2.使用-p选项使参数修改生效
@@ -22,7 +22,7 @@
 
     6.安装openvpn软件
         tar -zxvf openvpn-2.2.2.tar.gz -C /usr/src
-        ./configure --with-lzo-lib=/usr/local/lib--with-lzo-headers=/usr/local/include
+        ./configure --with-lzo-lib=/usr/local/lib --with-lzo-headers=/usr/local/include
         make && make install
         检查安装结果 --> which openvpn
 

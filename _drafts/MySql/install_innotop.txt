@@ -1,0 +1,16 @@
+wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/innotop/innotop-1.9.1.tar.gz
+
+tar -zxvf innotop-1.9.1.tar.gz -C /usr/src
+
+yum -y install perl
+yum -y install perl-Time-HiRes
+yum install perl-ExtUtils-Embed
+yum install perl-DBD-MySQL
+yum install perl-DBI perl-TermReadKey
+
+cd /usr/src/innotop-1.9.1/
+
+perl Makefile.PL
+
+make
+make install
