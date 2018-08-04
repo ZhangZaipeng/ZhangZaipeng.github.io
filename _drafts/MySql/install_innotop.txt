@@ -6,7 +6,7 @@ yum -y install perl
 yum -y install perl-Time-HiRes
 yum install perl-ExtUtils-Embed
 yum install perl-DBD-MySQL
-yum install perl-DBI perl-TermReadKey
+yum install perl-DBIq perl-TermReadKey
 
 cd /usr/src/innotop-1.9.1/
 
@@ -14,3 +14,6 @@ perl Makefile.PL
 
 make
 make install
+
+
+innotop -uroot -proot -h127.0.0.1

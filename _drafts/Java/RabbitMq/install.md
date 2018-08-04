@@ -103,3 +103,39 @@ Java Api : https://www.rabbitmq.com/api-guide.html
 
 ### RabbitMq应用场景
 http://www.cnblogs.com/saltlight-wangchao/p/6214334.html
+
+yum install unixODBC unixODBC-devel wxBase wxGTK SDL wxGTK-gl
+
+wget https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_14/rabbitmq-server-3.6.14-1.el6.noarch.rpm
+
+rabbitmq-server start
+
+rabbitmq-server stop
+
+rabbitmq-server -detached
+
+
+rabbitmq-plugins enable rabbitmq_management
+
+User can only log in via localhost   错误
+vim  /usr/lib/rabbitmq/lib/rabbitmq_server-3.6.14/ebin/rabbit.app
+loopback_users里的<<”guest”>>删除。
+
+
+log
+/var/log/rabbitmq/
+
+配置
+/etc/rabbitmq/
+
+
+
+
+
+
+
+
+
+
+
+
