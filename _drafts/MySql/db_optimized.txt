@@ -57,3 +57,9 @@
 
 数据库工作原理
 http://blog.jobbole.com/100349/?from=timeline
+
+# 数据库优化
+https://blog.csdn.net/q602075961/article/details/71076390
+
+# 为什么字段尽可能用NOT NULL，而不是NULL
+https://blog.csdn.net/u011341352/article/details/48265137
