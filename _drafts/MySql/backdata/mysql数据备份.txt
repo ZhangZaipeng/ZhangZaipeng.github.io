@@ -87,3 +87,12 @@ mysql字符集查看
     rm -rf jm.zip jm_test.sql
 
     PASSWD = fb0c32d39a88f533d2a1b3bd7f8812e7
+
+
+# 备份日志
+https://www.cnblogs.com/luoyx/p/5896419.html
+
+https://blog.csdn.net/abaowu/article/details/611386
+
+https://www.cnblogs.com/digdeep/p/4898622.html
+

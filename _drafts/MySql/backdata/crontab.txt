@@ -1,0 +1,19 @@
+# 生产环境
+# 每个星期日凌晨3:00执行完全备份脚本
+0 3 * * 0 /usr/bin/bash /root/mysql-bak/bakfull-shex-db.sh > /dev/null
+
+# 周一到周六凌晨3:00做增量备份
+0 3 * * 1-6 /usr/bin/bash /root/mysql-bak/bakincrement-shex-db.sh > /dev/null
+
+# 测试环境
+# 每个天凌晨3:00执行完全备份脚本
+0 3 * * * /usr/bin/bash /root/mysql-bak/bakfull-shex-db.sh > /dev/null
+
+# 每两个小时做增量备份
+0 */2 * * * /usr/bin/bash /root/mysql-bak/bakincrement-shex-db.sh > /dev/null
+
+
+
+
+
+

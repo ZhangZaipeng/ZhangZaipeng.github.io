@@ -9,6 +9,10 @@
 		tar xf ngni -C /usr/src/
 -	6.  ./configure --prefix=/usr/local/nginx  --user=nginx  --group=nginx  
 			--with-http_stub_status_module
+        ./configure --prefix=/usr/local/nginx --user=nginx  --group=nginx 
+        --with-http_stub_status_module
+        --with-http_ssl_module 
+        --add-module=/usr/src/fastdfs-nginx-module/src			
 -	7.make && make install
 -	8.为主程序nginx创建链接文件
 		ln -s /usr/local/nginx/sbin/nginx    /usr/local/sbin/
