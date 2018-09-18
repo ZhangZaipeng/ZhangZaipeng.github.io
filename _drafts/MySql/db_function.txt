@@ -59,7 +59,7 @@
 	
 	UNIX_TIMESTAMP(date)  返回日期 date 的 UNIX 时间戳
 	
-	FROM_UNIXTIME()  返回 UNIX 时间戳的日期值
+	FROM_UNIXTIME(time,fmt)  返回 UNIX 时间戳的日期值
 	
 	WEEK(date)  返回日期 date 为一年中的第几周
 	
