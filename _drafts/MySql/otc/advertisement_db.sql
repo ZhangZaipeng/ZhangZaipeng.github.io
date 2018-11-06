@@ -1,0 +1,24 @@
+-- 广告主表
+DROP TABLE IF EXISTS `tb_advertisement`;
+CREATE TABLE `tb_advertisement`(
+	`advert_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
+
+	`floor` DECIMAL(10,4) DEFAULT NULL COMMENT'最低限额',
+	`ceiling` DECIMAL(10,4) DEFAULT NULL COMMENT'最高限额',
+
+	`publish_status` INT(11) DEFAULT NULL COMMENT'发布状态:1即将发布，2已发布，3已截止',
+
+	`instruction` text TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '交易说明',
+  `remark` text
+	`type` SMALLINT(1) NOT NULL COMMENT '订单类型 0 收购 1 出售',
+
+	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+	PRIMARY KEY (`gos_id`)
+)
+COLLATE='utf8_unicode_ci'
+ENGINE=INNODB
+ROW_FORMAT=DEFAULT
+COMMENT='广告主表'
+AUTO_INCREMENT=1
+;
