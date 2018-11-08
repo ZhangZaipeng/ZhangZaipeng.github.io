@@ -67,7 +67,7 @@ CREATE TABLE `tb_user_asset` (
   `available` decimal(40,18) DEFAULT '0.000000000000000000' COMMENT '用户可用资产',
   `freez` decimal(40,18) DEFAULT '0.000000000000000000' COMMENT '用户冻结资产',
 
-  `status` smallint(1) DEFAULT '1' COMMENT '状态：1-正常，2-删除',
+  `status` smallint(1) DEFAULT '1' COMMENT '状态：1-正常，0-删除',
 
   `crypto_address` varchar(255) DEFAULT NULL COMMENT '资产充值地址',
   `account_pwd` varchar(255) DEFAULT NULL COMMENT '账户创建密码',

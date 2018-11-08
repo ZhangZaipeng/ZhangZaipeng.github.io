@@ -72,11 +72,3 @@ ROW_FORMAT=DEFAULT
 COMMENT='支付方式'
 AUTO_INCREMENT=1
 ;
-
-
-
-
-
-
--- 支付 种类
-

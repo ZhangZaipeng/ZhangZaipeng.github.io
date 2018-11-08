@@ -1,4 +1,4 @@
--- 普通广告主表
+-- 下单表
 DROP TABLE IF EXISTS `tb_order`;
 CREATE TABLE `tb_order`(
   `order_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '订单id',

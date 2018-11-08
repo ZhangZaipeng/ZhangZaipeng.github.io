@@ -1,11 +1,15 @@
--- 普通广告主表
-DROP TABLE IF EXISTS `tb_advertisement`;
+-- 普通广告主表（广告费，大批量，手续费）
+DROP TABLE IF EXISTS `tb_general_advertisement`;
 CREATE TABLE `tb_advertisement`(
 	`advert_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
 
 	-- 价格设置 （浮动价格，固定价格）
+  `price_type` SMALLINT(1) NOT NULL COMMENT '设置价格类型 1 浮动价格 2 固定价格',
+  `overflow_ratio` DECIMAL(6,3) DEFAULT NULL COMMENT '溢价比例',
+  `fixed_price` DECIMAL(6,3) DEFAULT NULL COMMENT '固定价格',
 
-	-- 付款期限
+	-- 付款期限 默认为15分钟  在订单中可点击延迟一次
+  `payment_limit` INT(11) DEFAULT '15' COMMENT '付款期限 默认15分钟',
 
   `advert_type` SMALLINT(1) NOT NULL COMMENT '广告类型 0 收购 1 出售',
   `tcoin_name_en` varchar(20) NOT NULL COMMENT '交易币种 英文名称（大写）',
@@ -36,7 +40,7 @@ AUTO_INCREMENT=1
 ;
 
 
--- 批量 广告主表
+-- 批量 广告主表(一口价，一次性, 有效期 8小时, 手续费)
 DROP TABLE IF EXISTS `tb_batch_advertisement`;
 CREATE TABLE `tb_batch_advertisement`(
 	`advert_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
