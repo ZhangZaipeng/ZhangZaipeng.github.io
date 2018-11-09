@@ -14,14 +14,14 @@ CREATE TABLE `tb_advertisement`(
   `advert_type` SMALLINT(1) NOT NULL COMMENT '广告类型 0 收购 1 出售',
   `tcoin_name_en` varchar(20) NOT NULL COMMENT '交易币种 英文名称（大写）',
 
-	`lcoin_name_en` varchar(20) NOT NULL COMMENT '计价币种 英文名称（大写）',
-	`floor` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 最低限额',
-	`ceiling` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 最高限额',
+	`vcoin_name_en` varchar(20) NOT NULL COMMENT '计价币种 英文名称（大写）',
+	`trans_floor` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 最低限额',
+	`trans_ceiling` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 最高限额',
 
 	`payment_id` INT(11) DEFAULT NULL COMMENT'支付方式 id',
 
-	`instruction` text DEFAULT NULL COMMENT '交易说明',
-  `remark` text DEFAULT NULL COMMENT '交易备注',
+	`trans_instruction` varchar(255) DEFAULT NULL COMMENT '交易说明',
+  `trans_remark` varchar(255) DEFAULT NULL COMMENT '交易备注',
 
   `max_process_order` INT(11) DEFAULT '0' COMMENT '最大订单处理量',
   `must_auth` SMALLINT(1) DEFAULT '0' COMMENT '是否必须通过 实名认证, 0 否 1 是',
@@ -35,7 +35,7 @@ CREATE TABLE `tb_advertisement`(
 COLLATE='utf8_unicode_ci'
 ENGINE=INNODB
 ROW_FORMAT=DEFAULT
-COMMENT='普通广告主表'
+COMMENT='普通 广告主表'
 AUTO_INCREMENT=1
 ;
 
@@ -49,7 +49,7 @@ CREATE TABLE `tb_batch_advertisement`(
 
   `advert_type` SMALLINT(1) NOT NULL COMMENT '广告类型 0 收购 1 出售',
   `tcoin_name_en` varchar(20) NOT NULL COMMENT '交易币种 英文名称（大写）',
-	`lcoin_name_en` varchar(20) NOT NULL COMMENT '计价币种 英文名称（大写）',
+	`vcoin_name_en` varchar(20) NOT NULL COMMENT '计价币种 英文名称（大写）',
 
 	`amount` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 数量',
   `price` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 单价',
@@ -61,8 +61,7 @@ CREATE TABLE `tb_batch_advertisement`(
 
   `must_auth` SMALLINT(1) DEFAULT '0' COMMENT '是否必须通过 实名认证, 0 否 1 是',
 
-  `remark` text DEFAULT NULL COMMENT '交易备注',
-
+  `trans_remark` text DEFAULT NULL COMMENT '交易备注',
 	`expired_time` TIMESTAMP NOT NULL COMMENT '过期时间' ,
 
 	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -72,6 +71,6 @@ CREATE TABLE `tb_batch_advertisement`(
 COLLATE='utf8_unicode_ci'
 ENGINE=INNODB
 ROW_FORMAT=DEFAULT
-COMMENT='广告主表'
+COMMENT='批量 广告主表'
 AUTO_INCREMENT=1
 ;

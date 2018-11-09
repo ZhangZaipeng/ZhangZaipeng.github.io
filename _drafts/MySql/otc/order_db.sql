@@ -7,7 +7,7 @@ CREATE TABLE `tb_order`(
 
   `unit_price` decimal(20,10) DEFAULT NULL COMMENT '交易 单价',
   `trade_total` decimal(20,10) DEFAULT NULL COMMENT '交易 总额',
-  `lcoin_name_en` varchar(20) NOT NULL COMMENT '计价币种 英文名称（大写）',
+  `vcoin_name_en` varchar(20) NOT NULL COMMENT '计价币种 英文名称（大写）',
 
   `trade_number` decimal(20,10) DEFAULT NULL COMMENT '交易 数量',
   `tcoin_name_en` varchar(20) NOT NULL COMMENT '交易币种 英文名称（大写）',
@@ -25,3 +25,17 @@ ROW_FORMAT=DEFAULT
 COMMENT='用户下单表'
 AUTO_INCREMENT=1
 ;
+
+-- 当天取消三笔订单，被投诉冻结账户
+
+
+-- 交易流程 （买）
+-- 查看广告 --> 下单 --> 买家支付 --> 标记订单完成 --> 等待释放数字货币
+                   --> 锁定卖家资产
+                   --> 卖家等待到账
+
+
+-- 交易流程 （卖）
+-- 查看广告 --> 下单 --> 卖家等待到账 --> 卖家确认到账 --> 卖家点击释放数字货币
+                   --> 卖家锁定资产
+                   --> 买家支付
