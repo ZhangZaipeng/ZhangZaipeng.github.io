@@ -9,7 +9,7 @@ CREATE TABLE `tb_user_credit`(
 	`user_id` bigint(11) NOT NULL COMMENT '用户ID',
   `tcoin_name_en` varchar(20) NOT NULL COMMENT '交易币种 英文名称（大写）',
 
-  `success_trans_number` INT(11) DEFAULT '0' COMMENT '买卖 成功下单次数',
+  `success_trans_number` INT(11) DEFAULT '0' COMMENT '交易次数 (买卖 成功下单次数)',
   `history_trans_number` decimal(20,8) COMMENT '买卖 历史成交量',
   `comment_ratio` decimal(8,4) DEFAULT '0' COMMENT '评论 比率',
   `comment_score` INT(11) DEFAULT '0' COMMENT '评价总分数 （非常愉快 +2 ，还好 +1， 很糟糕 -1）',

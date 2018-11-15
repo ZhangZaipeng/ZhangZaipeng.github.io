@@ -66,8 +66,8 @@ DEFAULT CHARSET=utf8
 ROW_FORMAT=COMPACT COMMENT='交易 币种 费率';
 
 -- 支付方式
-DROP TABLE IF EXISTS `tb_payment`;
-CREATE TABLE `tb_payment`(
+DROP TABLE IF EXISTS `tb_payment_info`;
+CREATE TABLE `tb_payment_info`(
 	`payment_id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
 
 	`vcoin_id`  INT(11) NOT NULL COMMENT '计价币种 id',

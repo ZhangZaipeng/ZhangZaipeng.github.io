@@ -10,6 +10,8 @@ CREATE TABLE `tb_user` (
 
   `auth_level` smallint(1) DEFAULT '0' COMMENT '认证等级：0-普通，1-实名，2-进阶',
 
+  -- 接收订单邮件通知
+
 	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
 
@@ -52,11 +54,9 @@ COMMENT='客户登录'
 AUTO_INCREMENT=1
 ;
 
-
-
 -- 用户认证信息记录表
 CREATE TABLE `tb_user_auth` (
-  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT '自增长',
   `user_id` bigint(11) DEFAULT NULL COMMENT '用户编号',
 
   `area_type` smallint(1) DEFAULT NULL COMMENT '会员地区类别：1-中华人民共和国，2-其它国家或地区',
@@ -79,6 +79,62 @@ CREATE TABLE `tb_user_auth` (
 ENGINE=InnoDB
 AUTO_INCREMENT=1
 DEFAULT CHARSET=utf8
-ROW_FORMAT=COMPACT COMMENT='用户认证信息记录表';
+ROW_FORMAT=COMPACT
+COMMENT='用户认证信息记录表';
 
+-- 用户 收款 账号
+CREATE TABLE `tb_user_payment_account` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT '自增长',
+  `user_id` bigint(11) DEFAULT NULL COMMENT '用户编号',
+  `payment_id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '支付 id',
 
+  `account_info` varchar(256) DEFAULT NULL COMMENT '收款 账户信息',
+  `account_img_url` varchar(256) DEFAULT NULL COMMENT '收款 账户图片',
+  `show_order_page` SMALLINT(1) NULL DEFAULT '1' COMMENT '是否 展示在订单页面 0 否 1是',
+
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_user_payment_id` (`user_id`,`payment_id`)
+)
+ENGINE=InnoDB
+AUTO_INCREMENT=1
+DEFAULT CHARSET=utf8
+ROW_FORMAT=COMPACT
+COMMENT='用户 收款 账号表';
+
+-- 用户 信任名单 信息
+CREATE TABLE `tb_user_trust_list`(
+  `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT '自增长',
+  `user_id` bigint(11) NOT NULL COMMENT '用户编号',
+
+  `to_user_id` bigint(11) NOT NULL COMMENT '对方用户编号',
+
+  `source` varchar(50) DEFAULT NULL COMMENT '信任来源',
+
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+)
+ENGINE=InnoDB
+AUTO_INCREMENT=1
+DEFAULT CHARSET=utf8
+ROW_FORMAT=COMPACT
+COMMENT='用户 信任名单 信息';
+
+-- 用户 黑名单 信息
+CREATE TABLE `tb_user_black_list`(
+  `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT '自增长',
+  `user_id` bigint(11) NOT NULL COMMENT '用户编号',
+
+  `to_user_id` bigint(11) NOT NULL COMMENT '对方用户编号',
+  `source` varchar(50) DEFAULT NULL COMMENT '信任来源',
+
+  PRIMARY KEY (`id`)
+)
+ENGINE=InnoDB
+AUTO_INCREMENT=1
+DEFAULT CHARSET=utf8
+ROW_FORMAT=COMPACT
+COMMENT='用户 黑名单 信息';
