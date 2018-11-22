@@ -25,7 +25,7 @@ insert into tb_trans_coin (tcoin_name_cn, tcoin_name_en) values ('泰达币','US
 
 
 -- 计价 币种
-DROP TABLE IF EXISTS `tb_limit_coin`;
+DROP TABLE IF EXISTS `tb_valuation_coin`;
 CREATE TABLE `tb_valuation_coin`(
   `vcoin_id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
 
@@ -43,12 +43,12 @@ CREATE TABLE `tb_valuation_coin`(
 COLLATE='utf8_unicode_ci'
 ENGINE=INNODB
 ROW_FORMAT=DEFAULT
-COMMENT='计价 币种'
+COMMENT='法币种'
 AUTO_INCREMENT=1
 ;
 
-insert into tb_limit_coin (vcoin_name_cn,vcoin_name_en) values ('人民币','CNY');
-insert into tb_limit_coin (vcoin_name_cn,vcoin_name_en) values ('美元','USD');
+insert into tb_valuation_coin (vcoin_name_cn,vcoin_name_en) values ('人民币','CNY');
+insert into tb_valuation_coin (vcoin_name_cn,vcoin_name_en) values ('美元','USD');
 
 -- 交易费率表
 CREATE TABLE `tb_tcoin_rate` (
@@ -73,29 +73,6 @@ CREATE TABLE `tb_payment_info`(
 	`vcoin_id`  INT(11) NOT NULL COMMENT '计价币种 id',
 
 	`payment_name` varchar(20) DEFAULT NULL COMMENT'支付方式 名称',
-
-	`status` SMALLINT(1) DEFAULT '1' COMMENT '状态',
-
-	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
-	PRIMARY KEY (`payment_type_id`)
-)
-COLLATE='utf8_unicode_ci'
-ENGINE=INNODB
-ROW_FORMAT=DEFAULT
-COMMENT='支付方式'
-AUTO_INCREMENT=1
-;
-
--- 认证等级 与 单笔交易限额
-DROP TABLE IF EXISTS `tb_level_limit`;
-CREATE TABLE `tb_level_limit`(
-	`id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
-
-  `tcoin_id` INT(11) NOT NULL COMMENT '计价币种 id',
-
-	`payment_name` varchar(20) DEFAULT NULL COMMENT'普通 单笔交易限额',
-	`payment_name` varchar(20) DEFAULT NULL COMMENT'实名 单笔交易限额',
 
 	`status` SMALLINT(1) DEFAULT '1' COMMENT '状态',
 

@@ -1,8 +1,8 @@
 -- 普通广告主表（广告费，大批量，手续费）
 DROP TABLE IF EXISTS `tb_general_advertisement`;
 CREATE TABLE `tb_general_advertisement`(
-	`g_advert_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
-	`user_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '用户编号',
+  `g_advert_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
+  `user_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '用户编号',
 
 	-- 价格设置 （浮动价格，固定价格）
   `price_type` SMALLINT(1) NOT NULL COMMENT '设置价格类型 1 浮动价格 2 固定价格',
@@ -19,15 +19,13 @@ CREATE TABLE `tb_general_advertisement`(
 	`trans_floor` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 最低限额',
 	`trans_ceiling` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 最高限额',
 
-	`payment_id` INT(11) DEFAULT NULL COMMENT'支付方式 id',
-
 	`trans_instruction` varchar(255) DEFAULT NULL COMMENT '交易说明',
   `trans_remark` varchar(255) DEFAULT NULL COMMENT '交易备注',
 
   `max_process_order` INT(11) DEFAULT '0' COMMENT '最大订单处理量',
   `must_auth` SMALLINT(1) DEFAULT '0' COMMENT '是否必须通过 实名认证, 0 否 1 是',
 
-	`status` SMALLINT(1) DEFAULT '1' COMMENT '状态 0 下架 1 上架' ,
+	`status` SMALLINT(1) DEFAULT '1' COMMENT '状态 0 下架 1 上架 9 删除' ,
 
 	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
@@ -53,8 +51,6 @@ CREATE TABLE `tb_batch_advertisement`(
 
 	`amount` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 数量',
   `price` DECIMAL(15,5) DEFAULT NULL COMMENT'交易 单价',
-
-	`payment_id` INT(11) DEFAULT NULL COMMENT'支付方式 id',
 
   `cust_name` varchar(20) DEFAULT NULL COMMENT'收款人 姓名',
   `cust_account` varchar(50) DEFAULT NULL COMMENT'收款人 账号',
@@ -102,7 +98,12 @@ AUTO_INCREMENT=1
 DROP TABLE IF EXISTS `tb_batch_pay`;
 CREATE TABLE `tb_advert_pay`(
 	`bp_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '自增长主键',
+
 	`b_advert_id` BIGINT(11) NOT NULL COMMENT '批量 广告 id',
+	`payment_id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '支付方式 ID',
+
+	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
 )
 COLLATE='utf8_unicode_ci'
 ENGINE=INNODB

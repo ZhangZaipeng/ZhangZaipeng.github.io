@@ -3,7 +3,7 @@
 -- 好评度 ： 好评次数/总次数（总下单次数）
 -- 评价总分数 （非常愉快 2 ，还好 1， 很糟糕 -1）， 默认为 1
 
--- 用户 信用记录
+-- 用户 信用 记录
 DROP TABLE IF EXISTS `tb_user_credit`;
 CREATE TABLE `tb_user_credit`(
 	`user_id` bigint(11) NOT NULL COMMENT '用户ID',
@@ -47,5 +47,7 @@ ROW_FORMAT=DEFAULT
 COMMENT='用户 信用记录'
 AUTO_INCREMENT=1
 ;
+
+
 
 

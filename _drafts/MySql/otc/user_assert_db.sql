@@ -33,7 +33,8 @@ CREATE TABLE `tb_user_asset` (
 
   `balance` decimal(20,8) DEFAULT '0' COMMENT '用户总资产',
   `available` decimal(20,8) DEFAULT '0' COMMENT '用户可用资产',
-  `freez` decimal(20,8) DEFAULT '0' COMMENT '用户锁仓',
+  `freez` decimal(20,8) DEFAULT '0' COMMENT '用户 冻结',
+  `Locked` decimal(20,8) DEFAULT '0' COMMENT '用户 交易锁仓',
 
   `status` smallint(1) DEFAULT '1' COMMENT '状态：1-正常，0-删除',
 

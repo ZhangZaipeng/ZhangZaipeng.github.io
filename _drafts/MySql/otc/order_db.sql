@@ -2,7 +2,7 @@
 DROP TABLE IF EXISTS `tb_order`;
 CREATE TABLE `tb_order`(
   `order_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '订单id',
-	`trade_no` char(40) NOT NULL COMMENT ' 订单号 编号',
+	`trade_no` char(40) NOT NULL COMMENT ' 订单号 编号(用于显示)',
 	`user_id` bigint(11) NOT NULL COMMENT '用户ID',
 
   `unit_price` decimal(20,10) DEFAULT NULL COMMENT '交易 单价',
@@ -39,3 +39,27 @@ AUTO_INCREMENT=1
 -- 查看广告 --> 买家下单 --> 卖家等待到账 --> 卖家确认到账 --> 卖家点击释放数字货币
                       --> 卖家锁定资产
                       --> 买家支付
+
+
+DROP TABLE IF EXISTS `tb_order_appeal`;
+CREATE TABLE `tb_order_appeal`(
+  `appeal_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+
+	`order_id` char(40) NOT NULL COMMENT ' 订单号 id ',
+	`user_id` bigint(11) NOT NULL COMMENT '用户ID',
+	`to_user_id` bigint(11) NOT NULL COMMENT '被投诉人 用户ID',
+
+  `appeal_content` varchar(255) DEFAULT NULL COMMENT '投诉内容',
+
+  `status` smallint(1) DEFAULT '0' COMMENT '申诉状态 0：进行中， 1：驳回， 2：申诉成功',
+
+	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+	PRIMARY KEY (`trade_no`)
+)
+COLLATE='utf8_unicode_ci'
+ENGINE=INNODB
+ROW_FORMAT=DEFAULT
+COMMENT='用户 订单 申诉表'
+AUTO_INCREMENT=1
+;

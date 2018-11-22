@@ -1,8 +1,8 @@
 -- 用户表
 CREATE TABLE `tb_user` (
-	`user_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '用户编号',
+  `user_id` BIGINT(11) NOT NULL AUTO_INCREMENT COMMENT '用户编号',
 
-	`uname` VARCHAR(20) NULL COMMENT '用户名',
+  `uname` VARCHAR(20) NULL COMMENT '用户名',
   `icon_img_url` VARCHAR(128) NULL COMMENT '头像',
 
   `mobile` VARCHAR(20) NULL COMMENT '手机号',
@@ -27,9 +27,10 @@ AUTO_INCREMENT=98000000
 -- 用户登录表
 DROP TABLE IF EXISTS `tb_user_agent`;
 CREATE TABLE `tb_user_agent` (
-	`user_agent_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '用户登录编号',
-	`user_id` BIGINT(20) COMMENT '用户编号',
-	`login_name` varchar(50) NULL COMMENT '登录名',
+  `user_agent_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '用户登录编号',
+  `user_id` BIGINT(20) COMMENT '用户编号',
+
+  `login_name` varchar(50) NULL COMMENT '登录名',
 	`login_pwd` varchar(100) NULL COMMENT '登录密码',
 
 	`telephone` varchar(20) NULL COMMENT '电话',
@@ -44,7 +45,7 @@ CREATE TABLE `tb_user_agent` (
 	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
 
 	PRIMARY KEY (`user_agent_id`),
-	UNIQUE KEY `idx_telephone` (`telephone`),
+	UNIQUE KEY `uniq_telephone` (`telephone`),
 	INDEX `idx_user_agent_id` (`user_agent_id`)
 )
 ENGINE=InnoDB
