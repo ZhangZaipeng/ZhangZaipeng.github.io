@@ -1,3 +1,64 @@
+优化步骤：
+    1.网络优化：
+
+    2.操作系统优化：内核参数优化、ulimit 优化
+
+    3.tomcat 优化
+        连接协议：非阻塞NIO
+        连接数:maxConnections
+        处理线程：maxThreads
+        等候队列：acceptCount
+        tomcat 内部线程数达到500 需要考虑做集群
+
+    4.nginx 优化
+        gzip压缩、超时时间
+        动静分离
+        负载均衡
+    5.jvm参数优化：
+        常规优化：
+            1、禁用System.gc -XX:-DisableExplicitGC
+            2、逃逸分析与标题替换 默认是启用的 -XX:+DoEscapeAnalysis
+            3、关闭偏向锁优化
+            4、指针压缩 -XX:+UseCompressedOops
+            5、getter方法优化 -XX:UseFastAccessorMethods
+        JIT优化：
+            1、开启服务端模式 -server
+            2、增加内联函数的可能性
+            3、提高编译的可能性 -XX:CompileThreshold=10000
+            4、降低线程优先级
+            5、热度衰减与半衰周期
+        内存优化：
+            1、将新对象预留在年轻代，-XX:TargetSurvivorRatio=90
+            2、让大对象进入年老代，-XX:PetenureSizeThreshold=1000000，1M
+            3、设置对象进入年老代的年龄，-XX:MaxTenuringThreshold=31
+            4、稳定的 Java 堆 ，Xmx与Xms相同
+            5 、 增 大 吞 吐 量 提 升 系 统 性 能 ， –XX:+UseParallelGC ，
+                –XX:+UseParallelOldGC，–XX:ParallelGC-Threads（CPU核心数相等）
+            6、使用非占有的垃圾回收器，–XX:+UseConcMarkSweepGC
+        经验值：
+            java -Xmx3550m -Xms3550m -Xss128k -XX:NewRatio=4 -XX:SurvivorRatio=4 -XX:MaxPermSize=16m -XX:MaxTenuringThreshold=0
+            调优方案：
+            -Xmx5g：设置JVM最大可用内存为5G。
+            -Xms5g：设置JVM初始内存为5G。此值可以设置与-Xmx相同，以避免每次垃圾回收完成后JVM重新分配内存。
+            -Xmn2g：设置年轻代大小为2G。
+                整个堆内存大小 = 年轻代大小 + 年老代大小 + 持久代大小 。
+                持久代一般固定大小为64m，所以增大年轻代后，将会减小年老代大小。
+                此值对系统性能影响较大，Sun官方推荐配置为整个堆的3/8。
+            -XX:+UseParNewGC：设置年轻代为并行收集。
+                可与CMS收集同时使用。JDK5.0以上，JVM会根据系统配置自行设置，所以无需再设置此值。
+            -XX:ParallelGCThreads=8：配置并行收集器的线程数，
+                即：同时多少个线程一起进行垃圾回收。此值最好配置与处理器数目相等。
+            -XX:SurvivorRatio=6：设置年轻代中Eden区与Survivor区的大小比值。
+                根据经验设置为6，则两个Survivor区与一个Eden区的比值为2:6，一个Survivor区占整个年轻代的1/8。
+            -XX:MaxTenuringThreshold=30： 设置垃圾最大年龄（次数）。
+                如果设置为0的话，则年轻代对象不经过Survivor区直接进入年老代。
+                对于年老代比较多的应用，可以提高效率。如果将此值 设置为一个较大值，则年轻代对象会在Survivor区进行多次复制，
+                这样可以增加对象再年轻代的存活时间，增加在年轻代即被回收的概率。
+                设置为30表示 一个对象如果在Survivor空间移动30次还没有被回收就放入年老代。
+            -XX:+UseConcMarkSweepGC：设置年老代为并发收集。
+                测试配置这个参数以后，参数-XX:NewRatio=4就失效了，所以，此时年轻代大小最好用-Xmn设置，因此这个参数不建议使用
+
+
 1.查看TCP 连接数
     netstat -n | awk '/^tcp/{++S[$NF]} END {for(a in S) print a, S[a]}'
 
@@ -72,7 +133,5 @@
 
 3.tomcat参数优化
 
-    连接数:maxConnections
-    处理线程：maxThreads
-    等候队列：acceptCount
+
 
