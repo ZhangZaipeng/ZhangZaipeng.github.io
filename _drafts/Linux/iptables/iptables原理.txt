@@ -3,3 +3,14 @@
 二、iptables链，表
 
 三、数据包匹配深入分析
+
+
+centos 7 清理 iptables
+1、都使用systemctl stop firewalld 关闭防火墙
+2、使用 yum install iptables-services 安装或更新服务
+3、使用systemctl enable iptables 启动iptables
+4、systemctl start iptables 打开iptables
+5、service iptables save可以操作了
+chkconfig iptables off
+service iptables stop
+systemctl disable iptables

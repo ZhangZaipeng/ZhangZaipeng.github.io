@@ -1,0 +1,2 @@
+yum -y install wget screen curl python net-tools
+https://oneinstack.com
