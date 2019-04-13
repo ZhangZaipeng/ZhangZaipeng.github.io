@@ -104,6 +104,8 @@ Linux基础网络设置
     本机映射文件
     /etc/hosts文件
 
+四、arp 协议
+    查看本地arp 缓存表 ： arp -a
 
 
 
