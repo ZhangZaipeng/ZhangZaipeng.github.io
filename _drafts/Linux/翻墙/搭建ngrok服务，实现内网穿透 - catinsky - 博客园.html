@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)https://www.cnblogs.com/catinsky/p/9133409.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>搭建ngrok服务，实现内网穿透 - catinsky - 博客园</title>
+<meta property="og:description" content="自己的服务器到期，转移自己博客内容至此。 域名为：liuanhuaming.top。此篇博文以liuanhuaming.top为准。 ngrok是一个反向代理，它能够让你本地内网的web服务或tcp服">
+    <link type="text/css" rel="stylesheet" href="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/bundle-MountainInk.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/bundle-MountainInk-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/catinsky/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/catinsky/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/catinsky/wlwmanifest.xml">
+    <script src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/amp4ads-host-v0.js.下载"></script><script src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/pubads_impl_rendering_2019043001.js.下载"></script><script async="" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/analytics.js.下载"></script><script type="text/javascript" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/encoder.js.下载"></script><script src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/jquery-2.2.0.min.js.下载"></script>
+    <script>var currentBlogId=422982;var currentBlogApp='catinsky',cb_enable_mathjax=false;var isLogined=true;</script>
+    <script src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/blog-common.js.下载" type="text/javascript"></script>
+<link rel="preload" href="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/f.txt" as="script"><script type="text/javascript" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/f.txt"></script><script src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/pubads_impl_2019043001.js.下载" async=""></script><link rel="prefetch" href="https://tpc.googlesyndication.com/safeframe/1-0-33/html/container.html"></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/catinsky/"><img id="blogLogo" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/logo.gif" alt="返回主页"></a>
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/catinsky/">catinsky</a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/catinsky/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/catinsky">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/catinsky/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/catinsky/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 20&nbsp; </span>
+<span id="stats_article_count">文章 - 1&nbsp; </span>
+<span id="stats-comment_count">评论 - 0</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/catinsky/p/9133409.html">搭建ngrok服务，实现内网穿透</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p><span style="background-color: #ffcc99;">自己的服务器到期，转移自己博客内容至此。</span></p>
+<p>域名为：liuanhuaming.top。此篇博文以liuanhuaming.top为准。</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;ngrok是一个反向代理，它能够让你本地内网的web服务或tcp服务通过公共的端口</p>
+<p>和外部建立一个安全的通道，使得外网可以访问本地的计算机服务。</p>
+<p>服务器环境：Centos 7<br>客户端环境：Windows 10</p>
+<div class="cnblogs_code">
+<pre>软件版本：<br>[root@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> git –version</span>
+git version 1.8.3.1<span style="color: #000000;">
+[root</span>@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> go version</span>
+go version go1.8.3 linux/amd64</pre>
+</div>
+<h4>一、添加域名解析</h4>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; 添加两个A记录，把域名解析到自己服务器上，用来关联ngrok服务。<br>比如我的域名添加：<span style="background-color: #ffcc99;">ngrok</span>.liuanhuaming.top和<span style="background-color: #ffcc99;">*.ngrok</span>.liuanhuaming.top</p>
+<h4>二、安装go环境</h4>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>[root@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> yum install golang -y      #安装golang</span>
+[root@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> go version                 #查看版本</span>
+go version go1.8.3 linux/<span style="color: #000000;">amd64    
+[root</span>@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> vi .bash_profile           #编辑.bash_profile，添加以下两行。</span>
+export GOPATH=<span style="color: #800080;">$HOME</span>/<span style="color: #000000;">go
+PATH</span>=<span style="color: #800080;">$PATH</span>:<span style="color: #800080;">$HOME</span>/.local/bin:<span style="color: #800080;">$HOME</span>/bin:<span style="color: #800080;">$GOPATH</span>/<span style="color: #000000;">bin
+[root</span>@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> source .bash_profile       #立即生效</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<h4>三、安装git</h4>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; 经测试git 1.8.3.1可以正常使用，不需要安装git 2.6.0版本。<br>centos7默认安装git 1.8.3.1。如果没有安装，直接yum install git即可。</p>
+<div class="cnblogs_code">
+<pre>[root@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel</span>
+[root@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> yum install gcc perl-ExtUtils-MakeMaker       #安装依赖</span></pre>
+</div>
+<h4>四、从github下载ngrok源码</h4>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>[root@xifeng ~]<span style="color: #008000;">#</span><span style="color: #008000;"> cd /usr/local/                  #进入自己准备存放ngrok源码的目录。</span>
+[root@xifeng local]<span style="color: #008000;">#</span><span style="color: #008000;"> git clone https://github.com/inconshreveable/ngrok.git</span>
+Cloning into ‘ngrok’…                            <span style="color: #008000;">#</span><span style="color: #008000;">克隆ngrok源码到本地ngrok目录。</span>
+remote: Counting objects: 2732<span style="color: #000000;">, done.
+remote: Total </span>2732 (delta 0), reused 0 (delta 0), pack-reused 2732<span style="color: #000000;">
+Receiving objects: </span>100% (2732/2732), 665.40 KiB | 0 bytes/<span style="color: #000000;">s, done.
+Resolving deltas: </span>100% (1298/1298), done.</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<h4>五、为域名生成ngrok签名证书</h4>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>[root@xifeng local]<span style="color: #008000;">#</span><span style="color: #008000;"> cd ngrok/</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> export GOPATH=/usr/local/ngrok</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> openssl genrsa -out rootCA.key 2048</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> openssl req -x509 -new -nodes -key rootCA.key -subj “/CN=ngrok.liuanhuaming.top” -days 5000 -out rootCA.pem</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> openssl genrsa -out device.key 2048</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> openssl req -new -key device.key -subj “/CN=ngrok.liuanhuaming.top” -out device.csr</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 5000</span><span style="color: #008000;">
+#</span><span style="color: #008000;">以上步骤为生成ngrok签名证书，注意将以上域名部分改为自己的。</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p style="margin-left: 30px;">以上签名命令完成以后，在ngrok目录下将多出6个证书文件，如下：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> ll</span>
+-rw-r–r– 1 root root 1013 Jan 4 10:13<span style="color: #000000;"> device.crt
+</span>-rw-r–r– 1 root root 907 Jan 4 10:12<span style="color: #000000;"> device.csr
+</span>-rw-r–r– 1 root root 1679 Jan 4 10:11<span style="color: #000000;"> device.key
+</span>-rw-r–r– 1 root root 1675 Jan 4 10:10<span style="color: #000000;"> rootCA.key
+</span>-rw-r–r– 1 root root 1131 Jan 4 10:11<span style="color: #000000;"> rootCA.pem
+</span>-rw-r–r– 1 root root 17 Jan 4 10:13 rootCA.srl</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p style="margin-left: 30px;">将生成的证书分别替换到 assets/client/tls和assets/server/tls中，这两个目录分别存放着ngrok和ngrokd的默认证书。替换以下三个即可：</p>
+<div class="cnblogs_code">
+<pre>[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> cp rootCA.pem assets/client/tls/ngrokroot.crt</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> cp device.crt assets/server/tls/snakeoil.crt</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> cp device.key assets/server/tls/snakeoil.key</span><span style="color: #008000;">
+#</span><span style="color: #008000;">以上命令为替换证书，并覆盖。</span></pre>
+</div>
+<h4 id="5-编译ngrokd和ngrok">六、编译ngrokd服务端和ngrok客户端</h4>
+<div class="cnblogs_code">
+<pre>[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> make release-server     #编译ngrokd，速度较慢，需等待。</span><span style="color: #000000;"><br></span></pre>
+</div>
+<pre><span>  生成ngrok客户端，以下为生成windows、arm、linux版本客户端：</span></pre>
+<div class="cnblogs_code">
+<pre>[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> GOOS=linux GOARCH=amd64 make release-client</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> GOOS=windows GOARCH=amd64 make release-client</span>
+[root@xifeng ngrok]<span style="color: #008000;">#</span><span style="color: #008000;"> GOOS=linux GOARCH=arm make release-client</span><span style="color: #008000;">
+#</span><span style="color: #008000;">生成的客户端文件在ngrok/bin目录里面。</span><span style="color: #008000;">
+#</span><span style="color: #008000;">将ngrok/bin/windows_amd64/ngrok.exe下载下来，放到windows 10系统里。</span></pre>
+</div>
+<p>&nbsp;不同平台使用不同的 GOOS 和 GOARCH，GOOS为go编译出来的操作系统 (windows,linux,darwin)，GOARCH, 对应的构架 (386,amd64,arm)：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>  Linux 平台 32 位系统：GOOS=linux GOARCH=386<span style="color: #000000;"> 
+  Linux 平台 </span>64 位系统：GOOS=linux GOARCH=<span style="color: #000000;">amd64 
+Windows 平台 </span>32 位系统：GOOS=windows GOARCH=386<span style="color: #000000;">
+Windows 平台 </span>64 位系统：GOOS=windows GOARCH=<span style="color: #000000;">amd64 
+    MAC 平台 </span>32 位系统：GOOS=darwin GOARCH=386<span style="color: #000000;"> 
+    MAC 平台 </span>64 位系统：GOOS=darwin GOARCH=<span style="color: #000000;">amd64 
+             ARM 平台：GOOS</span>=linux GOARCH=arm</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<h4>七、启动ngrokd服务器</h4>
+<div class="cnblogs_code">
+<pre>[root@xifeng bin]<span style="color: #008000;">#</span><span style="color: #008000;"> cd /usr/local/ngrok/bin      #进入ngrok的bin命令目录。</span>
+[root@xifeng bin]<span style="color: #008000;">#</span><span style="color: #008000;"> ./ngrokd -domain=”ngrok.liuanhuaming.top” -httpAddr=”:8088″ -httpsAddr=”:8089″     </span><span style="color: #008000;">
+#</span><span style="color: #008000;">启动ngrokd服务。-domain为ngrok服务的域名，-httpAddr为http服务端口，-httpsAddr为https服务端口。</span>&nbsp; &nbsp; &nbsp; &nbsp;</pre>
+</div>
+<p style="margin-left: 30px;">iptables防火墙允许8088、8089、4443端口：</p>
+<div class="cnblogs_code">
+<pre>-A INPUT -p tcp -m state –state NEW -m tcp –dport 8088 -<span style="color: #000000;">j ACCEPT
+</span>-A INPUT -p tcp -m state –state NEW -m tcp –dport 4443 -<span style="color: #000000;">j ACCEPT
+</span><span style="color: #008000;">#</span><span style="color: #008000;">我的不使用https，所以防火墙没添加8089。4443为ngrokd服务端口。</span></pre>
+</div>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;启动后，命令在前台运行，退出命令后服务即关闭。</p>
+<p style="margin-left: 30px;">后台运行ngrokd服务端命令：</p>
+<div class="cnblogs_code">
+<pre>nohup ./ngrokd -domain=”ngrok.liuanhuaming.top” -httpAddr=”:8088″ -httpsAddr=”:8089″ -log=”ngrok.log” &amp;
+<span style="color: #008000;">#</span><span style="color: #008000;">注意是在ngrok/bin目录下运行此命令。</span></pre>
+</div>
+<p>&nbsp; &nbsp; &nbsp; 因为我命令用的./当前目录，可以使用/usr/local/ngrok/bin/ngrokd全路径，或者将命令cp至系统命令，或者加入环境变量。</p>
+<p>命令使用的少，一般不需要添加环境变量，最好是使用全路径。</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;经测试，使用nohup加&amp;后台运行命令时，ngrokd服务不能正常使用。使用脚本可正常运行。</p>
+<p style="margin-left: 30px;">ngrokd服务运行脚本：<br>脚本放在/usr/local/ngrok/bin/目录下。</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>[root@xifeng bin]<span style="color: #008000;">#</span><span style="color: #008000;"> vi /usr/local/ngrok/bin/ngrok.sh </span>
+nohup ./ngrokd -domain=”ngrok.liuanhuaming.top” -httpAddr=”:8088″ -httpsAddr=”:8089″ -log=”ngrok.log” &amp;<span style="color: #000000;">
+[root</span>@xifeng bin]<span style="color: #008000;">#</span><span style="color: #008000;"> chmod 777 ngrok.sh</span><span style="color: #008000;">
+#</span><span style="color: #008000;">以上命令为，添加ngrok.sh脚本文件，将命令写入脚本。并赋予777权限。</span>
+[root@xifeng bin]<span style="color: #008000;">#</span><span style="color: #008000;"> ./ngrok.sh &amp;      #后台运行脚本</span>
+[1] 30181<span style="color: #000000;">
+nohup: appending output to ‘nohup.out’
+[</span>1]+ Done ./ngrok.sh</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p style="margin-left: 30px;">至此，ngrok服务端配置完成。</p>
+<h4>八、启动ngrok客户端</h4>
+<div style="margin-left: 30px;">以windows 10为例：<br>将服务器上的/usr/local/ngrok/bin/windows_amd64/ngrok.exe下载到本地D盘根目录。</div>
+<div>&nbsp;</div>
+<div style="margin-left: 30px;">在本地D盘根目录创建ngrok.cfg文件，文件内容如下，域名改为自己的即可：</div>
+<div class="line">
+<div class="cnblogs_code">
+<pre>server_addr: “ngrok.liuanhuaming.top:4443<span style="color: #000000;">″
+trust_host_root_certs: </span><span style="color: #0000ff;">false</span></pre>
+</div>
+</div>
+<p style="margin-left: 30px;">启动ngrok客户端：<br>打开windows的cmd窗口，进入本地D盘根目录，运行以下命令：</p>
+<div class="cnblogs_code">
+<pre>ngrok -subdomain demo -config=./ngrok.cfg 99
+<span style="color: #008000;">#</span><span style="color: #008000;">-subdomain后面的demo可以改为任意的，99为本地端口号。</span>
+因为我本地web为99端口，改为自己的即可。</pre>
+</div>
+<p><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/1357953-20180604154010994-620515472.png" alt=""></p>
+<p style="margin-left: 30px;">Tunnel Status状态为online在线说明连接成功：<br>浏览器打开http://demo.ngrok.liuanhuaming.top:8088测试即可：</p>
+<p>&nbsp;<img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/1357953-20180604154039223-1762304238.png" alt=""></p>
+<p style="margin-left: 30px;">至此ngrok搭建完成！</p>
+<p>&nbsp;</p>
+<pre><span>&nbsp;</span></pre></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/catinsky/category/1217568.html" target="_blank">ngrok</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(9133409,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;128bffb0-94d3-48ce-a6b0-08d5866282ce&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/catinsky/" target="_blank"><img src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/catinsky/">catinsky</a><br>
+            <a href="http://home.cnblogs.com/u/catinsky/followees">关注 - 0</a><br>
+            <a href="http://home.cnblogs.com/u/catinsky/followers">粉丝 - 0</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(9133409,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(9133409,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/catinsky/p/9128655.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/catinsky/p/9128655.html" title="发布于2018-06-03 11:54">html基础</a><br><a href="https://www.cnblogs.com/catinsky/p/9133907.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/catinsky/p/9133907.html" title="发布于2018-06-04 16:13">搭建git服务器</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2018-06-04 15:06</span> <a href="https://www.cnblogs.com/catinsky/">catinsky</a> 阅读(<span id="post_view_count">6</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=9133409" rel="nofollow">编辑</a> <a href="https://www.cnblogs.com/catinsky/p/9133409.html#" onclick="AddToWz(9133409);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=422982,cb_entryId=9133409,cb_blogApp=currentBlogApp,cb_blogUserGuid='128bffb0-94d3-48ce-a6b0-08d5866282ce',cb_entryCreatedDate='2018/6/4 15:06:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="https://www.cnblogs.com/catinsky/p/9133409.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/catinsky/p/9133409.html#top">返回顶部</a></div>
+<div id="comment_form_container"><script type="text/javascript" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/mention.js.下载"></script>
+<div id="commentform_title">发表评论</div>
+<span id="tip_comment" style="color:Red"></span>
+<p>
+昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="50" value="catinsky">
+</p>
+<div class="commentbox_main">
+<div class="commentbox_title">
+<div class="commentbox_title_left">评论内容：</div>
+<div class="commentbox_title_right">
+<img id="ubb_quote" class="comment_icon" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/quote.gif" alt="引用" title="添加引用" onclick="insertUBB(&#39;tbCommentBody&#39;,&#39;quote&#39;)">
+<img id="ubb_bold" class="comment_icon" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/b.png" alt="粗体" title="添加粗体" onclick="insertUBB(&#39;tbCommentBody&#39;,&#39;b&#39;)">
+<img id="ubb_url" class="comment_icon" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/lk.png" alt="链接" title="添加链接" onclick="insertUbbUrl(&#39;tbCommentBody&#39;)">
+<img id="ubb_indent" class="comment_icon" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/indent.png" alt="缩进" title="添加首行缩进" onclick="insertIndent(&#39;tbCommentBody&#39;)">
+<img id="ubb_code" class="comment_icon" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/InsertCode.gif" alt="代码" title="添加代码" onclick="insertUbbCode()">
+<img id="ubb_img" class="comment_icon" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/img.gif" alt="图片" title="上传图片" onclick="OpenImageUploadWindow();">
+</div>
+</div>
+<div class="clear"></div>
+<textarea id="tbCommentBody" class="comment_textarea"></textarea>
+</div>
+<p id="commentbox_opt">
+<input id="btn_comment_submit" type="button" class="comment_btn" value="提交评论">
+<span id="span_comment_canceledit" style="display:none"><a href="javascript:void(0);" onclick="return CancelCommentEdit()">不改了</a></span>
+<a href="javascript:void(0);" onclick="return logout();">退出</a>
+</p>
+<div id="tip_comment2" style="color:Red"></div>
+<p>
+[Ctrl+Enter快捷键提交]
+</p>
+<div style="display:none">
+<span id="comment_edit_id"></span><span id="span_parentcomment_id"></span>
+<span id="span_parent_id"></span>
+<span id="span_comment_replyto"></span>
+<span id="span_comment_posted"></span>
+</div>
+</div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-工控&#39;)">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-看雪&#39;)">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-享学&#39;)">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/gpt.js.下载"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CNSF0OC_i-ICFUwwKgodh54IZA"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" width="300" height="250" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border: 0px; vertical-align: bottom;" data-google-container-id="1" data-load-complete="true" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/saved_resource.html"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/raorao1994/p/10396682.html" target="_blank" onclick="clickRecomItmem(10396682)">搭建Ngrok服务器</a><br>·  <a href="https://www.cnblogs.com/mqx365/p/9963587.html" target="_blank" onclick="clickRecomItmem(9963587)">NGROK搭建</a><br>·  <a href="https://www.cnblogs.com/jswang/p/7918447.html" target="_blank" onclick="clickRecomItmem(7918447)">Sunny-Ngrok内外网穿透</a><br>·  <a href="https://www.cnblogs.com/mmmaolj/p/9876633.html" target="_blank" onclick="clickRecomItmem(9876633)">Ngrok内网穿透配置及使用 ·</a><br>·  <a href="https://www.cnblogs.com/best/p/7776634.html" target="_blank" onclick="clickRecomItmem(7776634)">Ubuntu中Ngrok服务器搭建</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CNWF0OC_i-ICFUwwKgodh54IZA"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" width="468" height="60" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border: 0px; vertical-align: bottom;" data-google-container-id="2" data-load-complete="true" src="../../../../../Users/Administrator/Desktop/搭建ngrok服务，实现内网穿透%20-%20catinsky%20-%20博客园_files/saved_resource(1).html"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/624963/" target="_blank">中国科技品牌双雄华为小米齐进百强：有同有不同</a><br> ·  <a href="https://news.cnblogs.com/n/624962/" target="_blank">I/O 2019：Android Q将引入对AV1视频编码器的原生支持</a><br> ·  <a href="https://news.cnblogs.com/n/624961/" target="_blank">再次挑战超算王座，AMD真的是想干掉Intel了</a><br> ·  <a href="https://news.cnblogs.com/n/624960/" target="_blank">游戏生态公司“代码乾坤”获愉悦资本领投1亿元A轮融资</a><br> ·  <a href="https://news.cnblogs.com/n/624959/" target="_blank">被子植物起源于三叠纪晚期瑞替期</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/catinsky/">catinsky</a><br>园龄：<a href="https://home.cnblogs.com/u/catinsky/" title="入园时间：2018-03-22">1年1个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/catinsky/followers/">0</a><br>关注：<a href="https://home.cnblogs.com/u/catinsky/followees/">0</a><div id="p_b_follow"></div><script>getFollowStatus('128bffb0-94d3-48ce-a6b0-08d5866282ce')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/04/01&#39;);return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/06/01&#39;);return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" align="center" abbr="日" scope="col">日</th><th class="CalDayHeader" align="center" abbr="一" scope="col">一</th><th class="CalDayHeader" align="center" abbr="二" scope="col">二</th><th class="CalDayHeader" align="center" abbr="三" scope="col">三</th><th class="CalDayHeader" align="center" abbr="四" scope="col">四</th><th class="CalDayHeader" align="center" abbr="五" scope="col">五</th><th class="CalDayHeader" align="center" abbr="六" scope="col">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td class="CalTodayDay" align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></div>
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/catinsky/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/catinsky/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/catinsky/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/catinsky/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/catinsky/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block"></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/catinsky/category/1235234.html">css(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/catinsky/category/1218969.html">git(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/catinsky/category/1230094.html">haproxy(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/catinsky/category/1228793.html">html(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/catinsky/category/1229552.html">https(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/catinsky/category/1300989.html">kvm</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/catinsky/category/1221853.html">laragon(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/catinsky/category/1229560.html">linux(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/catinsky/category/1250451.html">mysql</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/catinsky/category/1217568.html">ngrok(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/catinsky/category/1217567.html">python(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/catinsky/category/1229564.html">samba(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_12" href="https://www.cnblogs.com/catinsky/category/1229544.html">seafile(1)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/catinsky/archive/2018/09.html">2018年9月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/catinsky/archive/2018/08.html">2018年8月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/catinsky/archive/2018/07.html">2018年7月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/catinsky/archive/2018/06.html">2018年6月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/catinsky/archive/2018/05.html">2018年5月 (3)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap" style="display: none;">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"></div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/catinsky/p/9318380.html">1. centos7扩展根分区(774)</a></li><li><a href="https://www.cnblogs.com/catinsky/p/9134246.html">2. seafile搭建https私有云(625)</a></li><li><a href="https://www.cnblogs.com/catinsky/p/9082876.html">3. windows使用laragon配置开发环境(151)</a></li><li><a href="https://www.cnblogs.com/catinsky/p/9376815.html">4. centos7搭建keepalived高可用nginx负载均衡集群(148)</a></li><li><a href="https://www.cnblogs.com/catinsky/p/9173455.html">5. Python Linux系统管理与自动化运维(124)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap" style="display: none;">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap" style="display: none;">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 catinsky
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>
