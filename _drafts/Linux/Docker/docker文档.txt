@@ -1,2 +1,19 @@
 docker 命令文档
-https://docs.docker.com/engine/reference/commandline/
+https://docs.docker.com/engine/reference/commandline/docker/
+
+# swarm集群创建
+https://www.jianshu.com/p/9eb9995884a5
+https://www.cnblogs.com/atuotuo/p/6951831.html
+
+
+# docker compose 加入已经存在的网络
+https://www.jianshu.com/p/aa984711df80
+
+# docker网络 数据管理
+https://docs.docker.com/network/
+
+# Docker的4种网络模式
+https://www.cnblogs.com/gispathfinder/p/5871043.html
+
+# Docker
+https://www.cnblogs.com/zhuochong/category/1310443.html
