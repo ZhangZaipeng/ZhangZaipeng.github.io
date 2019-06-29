@@ -20,4 +20,7 @@ COMMENT='检查工程 申请表'
 AUTO_INCREMENT=1
 ;
 
+insert into tb_check_item (`item_name`) VALUES ('钢筋检查记录');
+insert into tb_check_item (`item_name`) VALUES ('钻孔桩成孔交验');
+insert into tb_check_item (`item_name`) VALUES ('环框梁钢筋工程关键工序验收');
 
