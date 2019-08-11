@@ -1,0 +1,52 @@
+重要的操作系统配置，请参照：
+https://www.elastic.co/guide/en/elasticsearch/reference/current/system-config.html
+
+1.数据目录和日志目录
+  path.logs:
+  path.data:
+
+2.所属的集群名，默认为 elasticsearch ，可自定义
+  cluster.name: payment
+
+3.节点名，默认为 UUID前7个字符，可自定义
+  node.name: node1
+
+4.network.host 集群下要服务间通信
+  network.host: 0.0.0.0
+
+5.http.port: 对外服务的http 端口， 默认 9200-9300
+  http.port: 9200
+
+6.transport.tcp.port 节点间交互的端口
+  transport.tcp.port: 9300
+
+7.节点发现配置, 节点发现方式是  zen（基于组播（多播）、单播）
+  discovery.zen.ping.unicast.hosts: ["host1","host2:port","host3[portX-portY]"]
+  discovery.zen.minimum_master_nodes: 1
+
+8.是否压缩tcp传输的数据，默认false
+  transport.tcp.compress: false
+
+9.是否使用http协议对外提供服务，默认true
+  http.cors.enabled: true
+
+10.http传输内容的最大容量，默认100mb
+  http.max_content_length: 100mb
+
+11.指定该节点是否可以作为master节点，默认是true。
+  node.master: true
+
+12.该节点是否存索引数据，默认true。
+  node.data: true
+
+13.设置集群中自动发现其他节点时ping连接超时时长，默认为3秒。
+  在网络环境较差的情况下，增加这个值，会增加节点等待响应的时间，从一定程度上会减少误判。
+  discover.zen.ping.timeout: 3s
+
+14.是否启用多播来发现节点。
+  discovery.zen.ping.multicast.enabled: false
+
+15.Jvm heap 大小设置
+
+16.JVM heap dump path 设置
+  -XX:HeapDumpPath=/var/lib/elasticsearch
