@@ -19,3 +19,7 @@ https://www.cnblogs.com/zhuochong/p/10069293.html
 
 # Docker
 https://www.cnblogs.com/zhuochong/category/1310443.html
+
+
+Docker的网络模式和如何跨主机通信
+https://blog.csdn.net/smooth00/article/details/82842234
