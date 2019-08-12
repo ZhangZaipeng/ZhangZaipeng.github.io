@@ -1,6 +1,9 @@
 docker 命令文档
 https://docs.docker.com/engine/reference/commandline/docker/
 
+# docker 部署私有Docker Registry
+https://tonybai.com/2016/02/26/deploy-a-private-docker-registry/
+
 # swarm集群创建
 https://www.jianshu.com/p/9eb9995884a5
 https://www.cnblogs.com/atuotuo/p/6951831.html
@@ -28,6 +31,20 @@ https://blog.csdn.net/qq_35615618/article/details/81201646
 # docker zookeeper
 https://www.cnblogs.com/kingkoo/p/8732448.html
 https://hub.docker.com/_/zookeeper
+https://blog.csdn.net/jaryn_fang/article/details/81273266#_26
 
 # docker
 https://www.cnblogs.com/mxmbk/p/9969008.html
+
+# docker 安装 es
+# 挂载目录权限问题
+chmod 775 -R /data/elasticsearch
+# [1]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+    vim /etc/sysctl.conf
+    vm.max_map_count=655300
+    sysctl -p
+https://blog.csdn.net/qq_29553063/article/details/94420159
+https://www.cnblogs.com/mxmbk/p/9969008.html
+
+# docker 安装 RabbitMq
+https://blog.csdn.net/kevinsingapore/article/details/82501131

@@ -108,6 +108,8 @@ yum install unixODBC unixODBC-devel wxBase wxGTK SDL wxGTK-gl
 
 wget https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_14/rabbitmq-server-3.6.14-1.el6.noarch.rpm
 
+yum -y install rabbitmq-server-3.6.14-1.el6.noarch.rpm
+
 rabbitmq-server start
 
 rabbitmq-server stop
