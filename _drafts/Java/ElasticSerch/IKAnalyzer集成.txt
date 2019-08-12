@@ -1,0 +1,22 @@
+1.获取 ES-IKAnalyzer插件
+  下载地址： https://github.com/medcl/elasticsearch-analysis-ik/releases
+  注意：一定要获取匹配的版本
+
+2.安装IKAnalyzer
+  将 ik 的压缩包解压到 ES安装目录的plugins/目录下（最好把解出的目录名改一下，防止安装别的插件时同名冲突），然后重启ES。
+
+3.扩展词库
+  配置文件config/IKAnalyzer.cfg.xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+  <properties>
+  	<comment>IK Analyzer 扩展配置</comment>
+  	<!--用户可以在这里配置自己的扩展字典 -->
+  	<entry key="ext_dict">custom/mydict.dic;custom/single_word_low_freq.dic</entry>
+  	 <!--用户可以在这里配置自己的扩展停止词字典-->
+  	<entry key="ext_stopwords">custom/ext_stopword.dic</entry>
+   	<!--用户可以在这里配置远程扩展字典 -->
+  	<entry key="remote_ext_dict">location</entry>
+   	<!--用户可以在这里配置远程扩展停止词字典-->
+  	<entry key="remote_ext_stopwords">http://xxx.com/xxx.dic</entry>
+  </properties>

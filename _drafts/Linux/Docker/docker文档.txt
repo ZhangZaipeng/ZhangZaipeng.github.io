@@ -36,6 +36,10 @@ https://blog.csdn.net/jaryn_fang/article/details/81273266#_26
 # docker
 https://www.cnblogs.com/mxmbk/p/9969008.html
 
+
+Docker的网络模式和如何跨主机通信
+https://blog.csdn.net/smooth00/article/details/82842234
+
 # docker 安装 es
 # 挂载目录权限问题
 chmod 775 -R /data/elasticsearch
