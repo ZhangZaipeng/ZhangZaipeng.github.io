@@ -1,0 +1,28 @@
+# docker官网安装
+https://docs.docker.com/install/linux/docker-ce/centos/
+# yum 安装
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+yum makecache fast
+yum install docker-ce-18.09.0-3.el7  docker-ce-cli-18.09.0-3.el7 containerd.io
+service docker start
+
+
+# Compose 官网安装
+https://docs.docker.com/compose/install/
+# 安装
+curl -L "https://github.com/docker/compose/releases/download/1.8.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+
+# 更换镜像加速器
+{
+  "registry-mirrors": ["https://tg838gpi.mirror.aliyuncs.com"]
+}
+
+# 更换镜像私有仓库地址
+    https://blog.csdn.net/boling_cavalry/article/details/78818462
+
+# 登录仓库
+    命令：docker login

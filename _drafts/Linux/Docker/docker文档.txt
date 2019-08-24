@@ -26,7 +26,6 @@ https://www.cnblogs.com/zhuochong/category/1310443.html
 # docker 远程连接设置
 # 使用docker Maven插件本地构建docker镜像并发布到远程服务器(私服，阿里云)
 https://blog.csdn.net/boling_cavalry/article/details/78934391
-https://blog.csdn.net/qq_35615618/article/details/81201646
 
 # docker zookeeper
 https://www.cnblogs.com/kingkoo/p/8732448.html
@@ -52,3 +51,6 @@ https://www.cnblogs.com/mxmbk/p/9969008.html
 
 # docker 安装 RabbitMq
 https://blog.csdn.net/kevinsingapore/article/details/82501131
+
+定时清理镜像
+docker rmi `docker images | grep xxxxx | awk '{print $3}'`
