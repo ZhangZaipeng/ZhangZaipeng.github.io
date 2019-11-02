@@ -1,0 +1,9 @@
+1.解压TLS.tar.gz 执行cfssl.sh
+2.为etcd生成证书
+  1.执行TLS/etcd/generate_etcd_cert.sh中的 生成CA
+    cfssl gencert -initca ca-csr.json | cfssljson -bare ca -
+  2.生成 ca-key.pem  ca.pem
+  3.执行TLS/etcd/generate_etcd_cert.sh中的 （注意：server-csr.json中的hosts节点）
+    cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=www server-csr.json | cfssljson -bare server
+  4.生成 server-key.pem  server.pem
+

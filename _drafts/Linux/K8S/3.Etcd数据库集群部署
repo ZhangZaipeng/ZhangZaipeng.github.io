@@ -1,0 +1,32 @@
+1.解压etcd.tar.gz
+
+2.修改etcd/cfg/etcd.conf
+
+3.cp刚才生成的ssl
+  cp  /root/TLS/etcd/{ca,server,server-key}.pem  ssl/
+
+4.scp etcd 到其他三台机器
+  scp -r etcd root@192.172.1.178:/opt/
+  scp -r etcd root@192.172.1.177:/opt/
+
+5.scp etcd.service 到其他三台机器
+  scp -r etcd.service root@192.172.1.178:/usr/lib/systemd/system
+  scp -r etcd.service root@192.172.1.177:/usr/lib/systemd/system
+
+6.修改其他节点的配置文件 /opt/etcd/cfg/etcd.conf
+  1. 本机IP
+  2. ETCD_NAME
+
+6.启动服务
+  systemctl daemon-reload # 重新加载配置文件
+  systemctl start etcd # 启动
+  systemctl status etcd.service # 查看启动状态
+
+7.设置开启启动
+  systemctl enable etcd.service
+
+8.检查集群状况
+  /opt/etcd/bin/etcdctl \
+  --ca-file=/opt/etcd/ssl/ca.pem --cert-file=/opt/etcd/ssl/server.pem --key-file=/opt/etcd/ssl/server-key.pem \
+  --endpoints="https://192.172.1.179:2379,https://192.172.1.178:2379,https://192.172.1.177:2379" \
+  cluster-health
