@@ -1,0 +1,53 @@
+1.解压k8s-master.zip
+
+2.下载v1.16.2二进制包 wget https://dl.k8s.io/v1.16.2/kubernetes-server-linux-amd64.tar.gz
+
+3.替换kubernetes/bin中的
+  kube-apiserver kube-controller-manager kubectl kube-scheduler
+
+4.cp 刚才为apiserver生成的证书 到 kubernetes/ssl
+  cp  /root/TLS/k8s/*pem  kubernetes/ssl
+
+5.修改kubernetes/cfg中文件 kube-apiserver.conf
+  1.修改 --etcd-servers=https://192.172.1.179:2379,https://192.172.1.178:2379,https://192.172.1.177:2379
+  2.修改 --bind-address= 192.172.1.179
+  3.修改 --advertise-address= 192.172.1.179
+
+6.修改kubernetes/cfg中文件 kube-controller-manager
+
+7.修改kubernetes/cfg中文件 kube-scheduler.conf
+
+8.kubernetes文件夹 移动到 /opt目录下
+
+9.复制 kube-apiserver.service  kube-controller-manager.service  kube-scheduler.service 到 /usr/lib/systemd/system
+
+10.启动
+  systemctl daemon-reload # 重新加载配置文件
+
+  systemctl start kube-apiserver.service # 启动
+  systemctl start kube-controller-manager.service # 启动
+  systemctl start kube-scheduler.service # 启动
+
+  systemctl status kube-apiserver.service # 查看启动状态
+  systemctl status kube-controller-manager.service # 查看启动状态
+  systemctl status kube-scheduler.service # 查看启动状态
+
+11.设置开启启动
+  systemctl enable kube-apiserver.service
+  systemctl enable kube-controller-manager
+  systemctl enable kube-scheduler.service
+
+12.移动/opt/kubernetes/bin/kubectl 到 /usr/local/bin/
+  mv  /opt/kubernetes/bin/kubectl  /usr/local/bin/
+
+13.启动TLS Bootstrapping 为kubectl TLS Bootstrapping授权：
+  kubectl create clusterrolebinding kubelet-bootstrap --clusterrole=system:node-bootstrapper --user=kubelet-bootstrap
+
+
+
+
+
+
+
+
+相关配置可以查看官网 https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/

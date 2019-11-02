@@ -1,0 +1,24 @@
+1.部署CNI网络
+  下载地址:https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-amd64-v0.8.2.tgz
+
+2.创建cni 配置目录 工作目录
+  mkdir  -p  /opt/cni/bin  /etc/cni/net.d
+
+3.解压cni
+   tar -zxvf cni-plugins-linux-amd64-v0.8.2.tgz -C /opt/cni/bin
+
+4.确保kubectl 启用了CNI
+  cat /opt/kubernetes/cfg/kubelet.conf
+  --network-plugin=cni
+
+5.在master上执行 ()
+  kubelet apply -f kube-flannel.yaml
+  注意：cat /opt/kubernetes/cfg/kube-controller-manager.conf -->
+  --cluster-cidr=10.244.0.0/16 与 kube-flannel.yaml 中 net-conf.json: 网段一致
+
+6.安装flannel网络
+  kubectl apply -f kube-flannel.yml
+  kube-flannel.yml下载 wget https://raw.githubusercontent.com/coreos/flannel/v0.11.0/Documentation/kube-flannel.yml
+
+7.授权
+   kubectl apply -f apiserver-to-kubelet-rbac.yaml

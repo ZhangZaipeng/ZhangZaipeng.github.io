@@ -1,4 +1,5 @@
 1.解压TLS.tar.gz 执行cfssl.sh
+
 2.为etcd生成证书
   1.执行TLS/etcd/generate_etcd_cert.sh中的 生成CA
     cfssl gencert -initca ca-csr.json | cfssljson -bare ca -
@@ -7,3 +8,7 @@
     cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=www server-csr.json | cfssljson -bare server
   4.生成 server-key.pem  server.pem
 
+3.为k8s生成证书
+  1.修改server-csr.json (注意：server-csr.json中的hosts节点）
+  2..执行TLS/etcd/generate_etcd_cert.sh
+  3.生成 ca-key.pem  ca.pem  kube-proxy-key.pem  kube-proxy.pem  server-key.pem  server.pem
