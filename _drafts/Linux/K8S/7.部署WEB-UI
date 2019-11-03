@@ -1,0 +1,17 @@
+1.创建WEB UI
+  kubectl apply -f dashboard.yaml
+
+2.查看pod,svc信息
+  kubectl get pods,svc -n kubernetes-dashboard
+
+3.访问页面
+  https://192.172.1.179:30001
+
+4.创建登录用户
+  kubectl apply -f dashboard-adminuser.yaml
+
+5.获取token
+  kubectl -n kubernetes-dashboard describe secret \
+  $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+
+6.登录页面

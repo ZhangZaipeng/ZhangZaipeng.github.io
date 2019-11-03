@@ -1,0 +1,6 @@
+1.查看Node节点文件
+  cat /opt/kubernetes/cfg/kubelet-config.yml 中的clusterDNS: - 10.0.0.2
+  与CoreDNS的clusterIP 保持一致
+
+2.执行
+  kubectl apply -f coredns.yaml

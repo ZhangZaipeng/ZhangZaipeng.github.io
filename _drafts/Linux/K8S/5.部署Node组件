@@ -55,6 +55,7 @@ systemctl enable docker.service
   systemctl enable kube-proxy.service
 
 8.master允许给Node颁发证书
+  kubectl get csr
   kubectl certificate approve [node-name]
 
 9.master查看node

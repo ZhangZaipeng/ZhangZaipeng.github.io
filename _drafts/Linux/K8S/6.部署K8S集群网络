@@ -1,13 +1,13 @@
-1.部署CNI网络
+1.在Node部署CNI网络
   下载地址:https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-amd64-v0.8.2.tgz
 
-2.创建cni 配置目录 工作目录
+2.在Node创建cni 配置目录 工作目录
   mkdir  -p  /opt/cni/bin  /etc/cni/net.d
 
-3.解压cni
+3.在Node解压cni
    tar -zxvf cni-plugins-linux-amd64-v0.8.2.tgz -C /opt/cni/bin
 
-4.确保kubectl 启用了CNI
+4.在Node确保kubectl 启用了CNI
   cat /opt/kubernetes/cfg/kubelet.conf
   --network-plugin=cni
 

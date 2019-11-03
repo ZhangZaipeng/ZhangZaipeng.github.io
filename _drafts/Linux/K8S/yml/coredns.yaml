@@ -108,7 +108,8 @@ spec:
           operator: "Exists"
       containers:
       - name: coredns
-        image: lizhenliang/coredns:1.2.2
+        image: coredns/coredns:1.2.2
+        #image: coredns/coredns:1.6.4
         imagePullPolicy: IfNotPresent
         resources:
           limits:
