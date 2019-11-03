@@ -1,27 +1,27 @@
 ## 关闭防火墙
-systemctl stop firewalld
-systemctl disable firewalld
+  systemctl stop firewalld
+  systemctl disable firewalld
 
 
 ## 关闭selinux
-setenforce 0
-sed -i 's/enforcing/disabled' /etc/selinux/config
+  setenforce 0
+  sed -i 's/enforcing/disabled' /etc/selinux/config
 
 
 ## 关闭swap
-swapoff -a  -临时
-vim /etc/fstab -永久
+  swapoff -a  -临时
+  vim /etc/fstab -永久
 
 
 ## 修改主机名称
-hostnamectl set-hostname swarm1
+  hostnamectl set-hostname swarm1
 
 
 ## 修改时区
-yum -y install ntp
-ntpdate -u cn.pool.ntp.org
-timedatectl set-timezone Asia/Shanghai
-yum -y install vim wget lrzsz net-tools
+  yum -y install ntp
+  ntpdate -u cn.pool.ntp.org
+  timedatectl set-timezone Asia/Shanghai
+  yum -y install vim wget lrzsz net-tools
 
 
 ## 添加hosts
