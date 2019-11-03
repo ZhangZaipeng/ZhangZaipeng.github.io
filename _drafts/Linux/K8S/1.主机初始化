@@ -23,3 +23,10 @@ ntpdate -u cn.pool.ntp.org
 timedatectl set-timezone Asia/Shanghai
 yum -y install vim wget lrzsz net-tools
 
+
+## 添加hosts
+  vim /etc/hosts
+
+  192.172.1.179   k8s-master
+  192.172.1.178   k8s-node1
+  192.172.1.177   k8s-node2
