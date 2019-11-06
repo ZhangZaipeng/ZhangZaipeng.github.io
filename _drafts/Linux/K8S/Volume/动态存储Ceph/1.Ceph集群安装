@@ -1,0 +1,26 @@
+1.Ceph（v13.2.5 mimic稳定版）分布式存储部署 (https://blog.51cto.com/fengjicheng/2401681)
+  1．预检
+    host解析
+    时间同步
+    ssh免密登录，deploy节点需要ssh免密登录到所有node节点
+    关闭防火墙
+    关闭selinux
+  2.部署
+    1）所有节点配置yum源
+cat << EOF > /etc/yum.repos.d/ceph.repo
+[Ceph-noarch]
+name=Ceph noarch packages
+baseurl=http://download.ceph.com/rpm-mimic/el7/noarch
+enabled=1
+gpgcheck=1
+type=rpm-md
+gpgkey=https://download.ceph.com/keys/release.asc
+EOF
+
+yum makecache
+    2）deploy节点安装ceph-deploy并初始化集群
+      yum -y install ceph-deploy
+      ceph-deploy --version
+
+      wget https://bootstrap.pypa.io/ez_setup.py -O - | python
+      curl https://bootstrap.pypa.io/ez_setup.py | python

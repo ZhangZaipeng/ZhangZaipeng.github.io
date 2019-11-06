@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv003
+spec:
+  # 存储能力
+  capacity:
+    storage: 5Gi
+  # ReadWriteOnce： 读写权限、并且只能被单个 Node 挂载。
+  # ReadOnlyMany： 只读权限、允许被多个 Node 挂载。
+  # ReadWriteMany： 读写权限、允许被多个 Node 挂载。
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  # 存储类别  具有特定“类别”的 PV 只能与请求了该“类别”的 PVC 进行绑定
+  storageClassName: slow
+  nfs:
+    path: /somepath
+    server: 172.17 .0.2
+
+

@@ -1,0 +1,9 @@
+2.Pod调度的多种形式
+  ReplicationController（RC）
+  Deployment
+  DaemonSet
+  Job
+  StatefulSet 特性
+    1.StatefulSet 里的每个 Pod 都有稳定、唯一的网络标识，可以用来发现集群内的其他成员。
+    2.StatefulSet 控制的 Pod 副本的启停顺序是受控的，操作第 n 个 Pod 时，前 n-1 个 Pod 己经是运行且准备好的状态。
+    3.StatefulSet 里的 Pod 采用稳定的持久化存储卷，通过 PV/PVC 来实现，删除 Pod 时默认 不会删除与 Statefu!Set 相关的存储卷（为了保证数据的安全〉。

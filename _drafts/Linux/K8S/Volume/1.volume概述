@@ -1,0 +1,39 @@
+1.Volume 是 Pod 中能够被多个容器访问的共享目录。
+
+
+2.Volume种类
+
+
+3.PV(Persistent Volume)
+  1.动态PV
+  2.静态PV （StorageClass）
+  3.PV的回收策略
+    保留（Retain）：保留数据，需要手工处理。
+    回收空间（Recycle）：简单清除文件的操作（例如执行 rm -rf /thevolume/* 命令）。
+    删除（Delete）：与 PV 相连的后端存储完成 volume 的删除操作
+
+    注意：NFS 和 HostPath 两种类型的存储支持“Recycle”策略； AWSEBS、 GCEPD、 Azure Disk 和 Cinder volumes 支持“Delete”策略。
+
+
+4.PVC(Persistent Volume Claim)
+
+
+5.PV 和 PVC 的生命周期
+  1. 资源供应（Provisioning）
+  2. 资源绑定（ Binding)
+  3. 资源使用（ Using)
+  4. 资源释股（ Releasing )
+  5. 资源、回收（ Reclaiming )
+
+
+6.StorageClass关键配置参数
+  1）提供者（Provisioner）：描述存储资源的提供者，也可以看作后端存储驱动
+  2）参数（Parameters)：不同的 Provisioner 包括不同的参数设置。
+
+
+7.设置默认的（ Default) StorageClass
+  1.要在系统中设置一个默认的 StorageClass，
+    首先需要启用名为"DefaultStorageClass"的 admission controller，
+    即在 kube-apiserver 的命令行参数--admission-control 中增加：--admission-control=DefaultStorageClass
+  2.然后，在 StorageClass 的定义中设置一个 annotation:
+    storageclass.beta.kubernetes.io/is-default-class="true"

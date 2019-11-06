@@ -1,0 +1,21 @@
+# K8S上试用Ceph RBD存储
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ceph-sc
+  namespace: default
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: ceph.com/rbd
+reclaimPolicy: Retain
+parameters:
+  monitors: 172.16.1.31:6789,172.16.1.32:6789,172.16.1.33:6789
+  adminId: admin
+  adminSecretName: storage-secret
+  adminSecretNamespace: default
+  pool: k8s
+  fsType: xfs
+  userId: admin
+  userSecretName: storage-secret
+  imageFormat: "2"
+  imageFeatures: "layering"

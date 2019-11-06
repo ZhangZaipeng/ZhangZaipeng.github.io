@@ -1,0 +1,11 @@
+1.Pod调度对象
+  ReplicationController（RC）
+  Deployment
+  DaemonSet：在每个 Node 上调度一个 Pod
+  Job：批处理调度
+  StatefulSet：
+
+
+2.Pod调度形式
+  1.全自动
+  2.NodeSelector：定向调度

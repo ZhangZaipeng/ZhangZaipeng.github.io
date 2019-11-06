@@ -1,0 +1,38 @@
+1.ConfigMap 供容器使用的典型用法如下。
+（1）生成为容器内的环境变量。
+（2）设置容器启动命令的启动参数（需设置为环境变量）。
+（3）以 Volume 的形式挂载为容器内部的文件或目录。
+
+2.创建ConfigMap
+  创建ConfigMap种类：
+    1.yaml文件方式创建
+    2.kubectl 命令行方式创建
+  创建ConfigMap内容的种类
+    1.创建 键值对形式
+      kubectl create configmap NAME－－from-literal=key1=value1
+        例: kubectl create configmap NAME－－from-literal=loglevel=info
+    2.创建 key为配置文件的别名， value则是配置文件的全部文本内容：
+      kubectl create configmap NAME－－from-file=[key]source
+        例: kubectl create configmap NAME－－from-file=server.xml
+
+3.使用ConfigMap
+  1）通过环境变量方式使用 ConfigMap
+  2）通过 volumeMount 使用 ConfigMap
+
+4.使用的限制条件
+  1.ConfigMap 必须在 Pod 之前创建。
+  2.ConfigMap 受 Namespace 限制，只有处于相同 Namespaces 中的 Pod 可以引用它。
+  3.ConfigMap 中的配额管理还未能实现。
+  4.kubelet 只支持可以被 API Server 管理的 Pod 使用 ConfigMap。
+    kubelet 在本 Node 上通 过－－manifest-url :eJt--config 自动创建的静态 Pod 将无法引用 Conf1gMap。
+  5.在 Pod 对 ConfigMap 进行挂载（volumeMount）操作时，容器内部只能挂载为“目录”， 无法挂载为“文件”。
+    在挂载到容器内部后，目录中将包含 ConfigMap 定义的每个 item, 如果该目录下原来还有其他文件，则容器内的该目录将会被挂载的 ConfigMap 覆盖。
+
+
+5.ConfigMap热更新
+
+6.查看配置文件
+   # 直接修改文件
+   kubectl edit  -f test-configmap.yaml
+   # 类似更新
+   kubectl apply  -f test-configmap.yaml

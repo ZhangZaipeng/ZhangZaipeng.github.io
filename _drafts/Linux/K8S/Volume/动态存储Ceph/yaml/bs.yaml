@@ -1,0 +1,24 @@
+# 挂载的方式
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+  namespace: default
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command:
+        - sleep
+        - "3600"
+      volumeMounts:
+        - name: ceph-pvc
+          mountPath: /opt/pvc
+          readOnly: false
+  volumes:
+    - name: ceph-pvc
+      persistentVolumeClaim:
+        claimName: ceph-pvc
+  restartPolicy: Always
