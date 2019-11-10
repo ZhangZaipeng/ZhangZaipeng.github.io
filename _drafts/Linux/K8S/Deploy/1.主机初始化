@@ -10,7 +10,7 @@
 
 ## 关闭swap
   swapoff -a  -临时
-  vim /etc/fstab -永久
+  sed -ri 's/.*swap.*/#&/' /etc/fstab -永久
 
 
 ## 修改主机名称
@@ -30,3 +30,4 @@
   192.172.1.179   k8s-master
   192.172.1.178   k8s-node1
   192.172.1.177   k8s-node2
+  192.172.1.176   k8s-node3

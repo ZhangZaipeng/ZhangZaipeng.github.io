@@ -38,6 +38,9 @@ systemctl enable docker.service
 4.移动 kubelet.service  kube-proxy.service 到 /usr/lib/systemd/system
   mv  *.service  /usr/lib/systemd/system
 
+安装 cni
+wget https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-amd64-v0.8.2.tgz
+
 5.cp ssl证书
   scp  ca.pem  kube-proxy*pem  root@192.172.1.178:/opt/kubernetes/ssl
 

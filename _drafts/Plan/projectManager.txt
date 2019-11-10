@@ -25,5 +25,4 @@
 	记录日志的10个建议
 	http://blog.jobbole.com/52018/
 	
-5.maven web项目目录管理
-	
+
