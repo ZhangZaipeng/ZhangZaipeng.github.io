@@ -21,6 +21,8 @@ DumpFile=/data/mysql/back_data/$DATE.sql
 
 GZDumpFile=/data/mysql/back_data/$DATE.sql.tgz
 
+# 跨服务器导出导入数据
+#
 /usr/local/mysql/bin/mysqldump shex_db  > $DumpFile
 
 echo "Dump Done" >> $LogFile

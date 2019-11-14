@@ -1,0 +1,10 @@
+# Linux 单独安装mysqldump
+yum -y install holland-mysqldump.noarch
+
+mysqldump备份简单操作：
+mysqldump -h[ip] -P[端口号]  -u[用户名]  -p[密码]  数据库名  表名 >导出的文件名.sql
+mysqldump -h[ip] -P[端口号]  -u[用户名]  -p[密码]  数据库名  表名1 表名2 表名3 | gzip >导出的文件名.sql.gz
+
+
+mysqldump -h127.0.0.1 -P3306  -uadmin  -pl5ij78mETLXPYi2f  payment  tb_coin > tb_coin.sql
+mysqldump -uadmin  -pl5ij78mETLXPYi2f  payment  tb_coin > tb_coin.sql
