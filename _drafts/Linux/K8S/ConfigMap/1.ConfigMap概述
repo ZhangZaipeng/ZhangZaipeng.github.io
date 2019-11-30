@@ -33,6 +33,6 @@
 
 6.查看配置文件
    # 直接修改文件
-   kubectl edit  -f test-configmap.yaml
+   kubectl edit -f test-configmap.yaml
    # 类似更新
-   kubectl apply  -f test-configmap.yaml
+   kubectl apply -f test-configmap.yaml

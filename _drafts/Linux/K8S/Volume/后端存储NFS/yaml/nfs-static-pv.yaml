@@ -1,7 +1,9 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv003
+  name: pv001
+  labels:
+    nfs-pv: pv001
 spec:
   # 存储能力
   capacity:
@@ -10,12 +12,12 @@ spec:
   # ReadOnlyMany： 只读权限、允许被多个 Node 挂载。
   # ReadWriteMany： 读写权限、允许被多个 Node 挂载。
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   # 存储类别  具有特定“类别”的 PV 只能与请求了该“类别”的 PVC 进行绑定
-  storageClassName: slow
+  storageClassName: nfs
   nfs:
-    path: /somepath
-    server: 172.17 .0.2
+    path: /data
+    server: 192.172.1.179
 
 

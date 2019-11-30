@@ -9,14 +9,9 @@ spec:
     requests:
       storage: 8Gi
   # 只有设置了 该 Class 的 PV 才能被系统选出，井与该 PVC 进行绑定。
-  storageClassName: slow
-  # PV 选择条件（Selector
+  storageClassName: nfs
+  # PV 选择条件（Selector）
   selector:
     matchLabels:
-      release: "stable"
-    matchExpressions:
-      - key: environment
-        operator: In
-        values:
-          - dev
+      nfs-pv: pv001
 
