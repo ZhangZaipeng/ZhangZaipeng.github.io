@@ -23,7 +23,7 @@ hql="insert overwrite table result_etl select deptno, avg(sal) from emp_etl grou
 
 hive -e "$hql"
 
-if [ "$?"-ne 0]; then
+if [ "$?" -ne 0 ]; then
     echo "hive failed";
     exit 1;
 fi
