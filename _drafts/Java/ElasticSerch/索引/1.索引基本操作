@@ -1,0 +1,54 @@
+1.创建索引
+  PUT twitter
+  {
+    "settings" : {
+      "number_of_shards" : 3,
+      "number_of_replicas" : 2
+    },
+    "mappings" : {
+      "type1" : {
+        "properties" : {
+            "field1" : { "type" : "text" }
+        }
+      }
+    }
+  }
+  注意：
+    number_of_shards，分片数。
+    number_of_replicas，副本数。
+
+2.查看索引
+  查看所有索引
+  GET /_cat/indices?v
+
+  查看单个索引（可以一次获取多个索引（以逗号间隔））
+  GET /twitter
+  {
+    "twitter" : {
+      "aliases" : { },
+      "mappings" : { },
+      "settings" : {
+        "index" : {
+          "creation_date" : "1577026037087",
+          "number_of_shards" : "3",
+          "number_of_replicas" : "2",
+          "uuid" : "UR5mspvSQ5aHzWA4EEbl0A",
+          "version" : {
+            "created" : "7050199"
+          },
+          "provided_name" : "twitter"
+        }
+      }
+    }
+  }
+
+  查看 _settings 配置
+  GET /twitter/_settings
+
+  查看 _mapping 配置、可以一次删除多个索引（以逗号间隔）
+  GET /twitter/_mapping
+
+3.删除索引
+  DELETE /twitter
+
+

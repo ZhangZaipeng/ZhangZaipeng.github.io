@@ -1,0 +1,50 @@
+1.es别名的用途
+  如果希望一次查询可查询多个索引。
+  如果希望通过索引的视图来操作索引，就像数据库库中的视图一样。
+
+2.别名的种类
+  1.带过滤器的别名
+  2.带routing的别名
+  3.同时都有routing和过滤器的
+
+3.别名 aliases 的定义
+  1.新建索引时定义别名
+  {
+    "mappings" : {
+      "type" : {
+        "properties" : {
+            "year" : {"type" : "integer"}
+        }
+      }
+    },
+    "aliases" : {
+      "current_day" : {},
+      "2016" : {
+        "filter" : {
+            "term" : {"year" : 2016 }
+        }
+      }
+    }
+  }
+  2.直接创建
+  POST /_aliases
+  {
+    "actions" : [
+      { "add" : { "index" : "test1", "alias" : "alias1" } }
+    ]
+  }
+  3.删除别名
+  POST /_aliases
+  {
+    "actions" : [
+      { "remove" : { "index" : "test1", "alias" : "alias1" } }
+    ]
+  }
+
+  DELETE /{index}/_alias/{name}
+  index：* | _all | glob pattern | name1,name2
+  name： * | _all | glob pattern | name1,name2
+
+
+4.索引的查看
+  GET /{index}/_alias/{alias}

@@ -1,0 +1,125 @@
+1.判断索引是否存在
+  HEAD twitter
+  结果：HTTP status code 表示结果 404 不存在 ， 200 存在
+
+2.修改索引的settings信息
+  索引的设置信息分为静态信息和动态信息两部分。
+  静态信息：分片数。
+  动态信息：副本数。
+
+  PUT /twitter/_settings
+  {
+    "index" : {
+      "number_of_replicas" : 2
+    }
+  }
+
+3.设置索引的读写
+  PUT /twitter/_settings
+  {
+    "index" : {
+      "refresh_interval" : null,
+      "blocks":{
+        "read": true
+      }
+    }
+  }
+  index.blocks.read_only：设为true,则索引以及索引的元数据只可读
+  index.blocks.read_only_allow_delete：设为true，只读时允许删除。
+  index.blocks.read：设为true，则不可读。
+  index.blocks.write：设为true，则不可写。
+  index.blocks.metadata：设为true，则索引元数据不可读写。
+
+4.打开/关闭索引
+  POST /my_index/_close
+  POST /my_index/_open
+
+  关闭的索引不能进行读写操作，几乎不占集群开销。
+  关闭的索引可以打开，打开走的是正常的恢复流程。
+
+5.Shrink Index 收缩索引
+  索引的分片数是不可更改的，如要减少分片数可以通过收缩方式收缩为一个新的索引。
+  新索引的分片数必须是原分片数的因子值，如原分片数是8，则新索引的分片数可以为4、2、1 。
+
+  收缩的流程：
+    1.先把所有主分片都转移到一台主机上；
+    2.在这台主机上创建一个新索引，分片数较小，其他设置和原索引一致；
+    3.把原索引的所有分片，复制（或硬链接）到新索引的目录下；
+    4.对新索引进行打开操作恢复分片数据；
+    5.(可选)重新把新索引的分片均衡到其他节点上。
+
+  收缩前的准备工作：
+    将原索引设置为只读；
+    将原索引各分片的一个副本重分配到同一个节点上，并且要是健康绿色状态。
+    PUT /my_source_index/_settings
+    {
+      "settings": {
+        "index.routing.allocation.require._name": "shrink_node_name",
+        "index.blocks.write": true
+      }
+    }
+  进行收缩：
+    POST my_source_index/_shrink/my_target_index
+    {
+      "settings": {
+        "index.number_of_replicas": 1,
+        "index.number_of_shards": 1,
+        "index.codec": "best_compression"
+      }
+    }
+  监控收缩过程：
+    GET _cat/recovery?v
+    GET _cluster/health
+
+6.Split Index 拆分索引
+  准备一个索引来做拆分：
+    PUT my_source_index
+    {
+      "settings": {
+        "index.number_of_shards" : 1,
+        "index.number_of_routing_shards" : 2 #创建时需要指定路由分片数
+      }
+    }
+
+  先设置索引只读：
+    PUT /my_source_index/_settings
+    {
+      "settings": {
+        "index.blocks.write": true
+      }
+    }
+  做拆分：
+    POST my_source_index/_split/my_target_index
+    {
+      "settings": {
+        "index.number_of_shards": 2 #新索引的分片数需符合拆分规则
+      }
+    }
+  监控拆分过程：
+    GET _cat/recovery?v
+    GET _cluster/health
+
+7.Rollover Index 别名滚动指向新创建的索引
+  可以根据满足指定的条件（时间、文档数量、索引大小）创建新的索引，并把别名滚动指向新的索引。
+  Rollover Index 示例
+
+  创建一个名字为logs-0000001 、别名为logs_write 的索引
+  PUT /logs-000001
+  {
+    "aliases": {
+      "logs_write": {}
+    }
+  }
+
+  POST /logs_write/_rollover
+  {
+    "conditions": {
+      "max_age":   "7d",
+      "max_docs":  1000,
+      "max_size":  "5gb"
+    }
+  }
+  如果别名logs_write指向的索引是7天前（含）创建的或索引的文档数>=1000或索引的大小>= 5gb，
+  则会创建一个新索引 logs-000002，并把别名logs_writer指向新创建的logs-000002索引
+
+  注意：rollover是你请求它才会进行操作，并不是自动在后台进行的。你可以周期性地去请求它。

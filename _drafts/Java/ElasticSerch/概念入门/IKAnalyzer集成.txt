@@ -20,3 +20,10 @@
    	<!--用户可以在这里配置远程扩展停止词字典-->
   	<entry key="remote_ext_stopwords">http://xxx.com/xxx.dic</entry>
   </properties>
+
+4.测试分词器的使用
+  GET _analyze
+  {
+    "analyzer": "ik_max_word",
+    "text": "我是中国人"
+  }
