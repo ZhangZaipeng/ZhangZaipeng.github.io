@@ -1,0 +1,45 @@
+1.映射是什么
+  映射定义索引中有什么字段、字段的类型等结构信息。
+
+2.创建索引
+  PUT test
+  {
+    "mappings" : {
+      "_doc" : {
+        "properties" : {
+          "field1" : { "type" : "text" }
+        }
+      }
+    }
+  }
+
+3.字段类型 datatypes
+  https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html
+
+  Core Datatypes（核心类型）
+  string:
+    text：类型会分词
+    ：类型不会分词
+  Numeric datatypes
+    long, integer, short, byte, double, float, half_float, scaled_float
+  Date datatype
+    date
+    "properties" : {
+      "date" : {
+        "type" : "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      }
+    }
+  Boolean datatype
+    boolean
+  Binary datatype
+    binary
+
+  Complex datatypes（复合类型）
+  Array datatype
+  Object datatype
+  Nested datatype
+
+  Geo datatypes（地理数据类型）
+  Geo-point datatype
+  Geo-Shape datatype

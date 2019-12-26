@@ -1,0 +1,13 @@
+1.可以为每个查询、每个字段、每个索引指定分词器。
+  在索引阶段ES将按如下顺序来选用分词：
+    1.首先选用字段mapping定义中指定的analyzer
+    2.字段定义中没有指定analyzer，则选用 index settings中定义的名字为default 的analyzer
+    3.如index setting中没有定义default分词器，则使用 standard analyzer
+
+  查询阶段ES将按如下顺序来选用分词：
+    The analyzer defined in a full-text query.
+    The search_analyzer defined in the field mapping.
+    The analyzer defined in the field mapping.
+    An analyzer named default_search in the index settings.
+    An analyzer named default in the index settings.
+    The standard analyzer.

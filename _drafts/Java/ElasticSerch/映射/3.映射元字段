@@ -1,0 +1,10 @@
+1.元字段是什么
+
+2.元字段有哪些
+  _index
+  _type
+  _id
+  _source
+  _size
+  _field_names
+  _routing

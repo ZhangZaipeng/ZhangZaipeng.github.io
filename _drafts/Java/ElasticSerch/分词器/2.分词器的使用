@@ -1,0 +1,22 @@
+1.为字段指定分词器
+  PUT my_index8/_mapping/_doc
+  {
+    "properties": {
+      "title": {
+          "type": "text",
+          "analyzer": "my_ik_analyzer"
+      }
+    }
+  }
+
+2.如果该字段的查询需要使用不同的analyzer
+  PUT my_index8/_mapping/_doc
+  {
+    "properties": {
+      "title": {
+          "type": "text",
+          "analyzer": "my_ik_analyzer",
+          "search_analyzer": "other_analyzer"
+      }
+    }
+  }

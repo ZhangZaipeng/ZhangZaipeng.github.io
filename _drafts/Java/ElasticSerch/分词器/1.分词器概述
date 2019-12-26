@@ -1,0 +1,59 @@
+1.什么是分成器
+
+2.分成器发分类
+  character filter：字符过滤器，对文本进行字符过滤处理，如处理文本中的html标签字符。
+    处理完后再交给tokenizer进行分词。一个analyzer中可包含0个或多个字符过滤器，多个按配置顺序依次进行处理。
+  tokenizer：分词器，对文本进行分词。一个analyzer必需且只可包含一个tokenizer。
+  token filter：词项过滤器，对tokenizer分出的词进行过滤处理。
+    如转小写、停用词处理、同义词处理。一个analyzer可包含0个或多个词项过滤器，按配置顺序进行过滤。
+
+3.es内建的character filter
+  HTML Strip Character Filter
+  	html_strip ：过滤html标签，解码HTML entities like &amp;.
+  Mapping Character Filter
+  	mapping ：用指定的字符串替换文本中的某字符串。
+  Pattern Replace Character Filter
+  	pattern_replace ：进行正则表达式替换。
+
+
+4.内建的Tokenizer
+  Standard Tokenizer
+  Keyword Tokenizer
+
+
+5.内建的Token Filter
+  Lowercase Token Filter  ：lowercase    转小写
+  Stop Token Filter ：stop   停用词过滤器
+  Synonym Token Filter： synonym   同义词过滤器
+
+  Synonym Token Filter  同义词过滤器定义
+  PUT /test_index
+  {
+      "settings": {
+          "index" : {
+              "analysis" : {
+                  "analyzer" : {
+                      "my_ik_synonym" : {
+                          "tokenizer" : "ik_smart",
+                          "filter" : ["synonym"]
+                      }
+                  },
+                  "filter" : {
+                      "synonym" : {
+                          "type" : "synonym",
+                          "synonyms_path" : "analysis/synonym.txt" #synonyms_path：指定同义词文件（相对config的位置）
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+  同义词定义格式
+  在analysis/synonym.txt中用solr格式定义如下同义词(文件一定要UTF-8编码)
+  张三,李四
+  电饭煲,电饭锅 => 电饭煲
+  电脑 => 计算机,computer
+  注意：一行一类同义词，=> 表示标准化为
+
+6.自定义 Analyzer

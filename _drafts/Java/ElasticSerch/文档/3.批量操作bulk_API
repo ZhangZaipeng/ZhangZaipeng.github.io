@@ -1,0 +1,22 @@
+1.批量操作意义
+  批量操作API /_bulk 让我们可以在一次调用中执行多个索引、删除操作。这可以大大提高索引数据的速度。
+2.批量操作规则
+  action_and_meta_data\n
+  optional_source\n
+  action_and_meta_data\n
+  optional_source\n
+  ....
+  action_and_meta_data\n
+  optional_source\n
+
+  action_and_meta_data:   action可以是 index, create, delete and update
+
+  POST _bulk
+  { "index" : { "_index" : "test", "_type" : "_doc", "_id" : "1" } }
+  { "field1" : "value1" }
+  { "delete" : { "_index" : "test", "_type" : "_doc", "_id" : "2" } }
+  { "create" : { "_index" : "test", "_type" : "_doc", "_id" : "3" } }
+  { "field1" : "value3" }
+  { "update" : {"_id" : "1", "_type" : "_doc", "_index" : "test"} }
+  { "doc" : {"field2" : "value2"} }
+  请求端点可以是:  /_bulk,  /{index}/_bulk,  {index}/{type}/_bulk

@@ -1,0 +1,43 @@
+1.字段定义属性
+  analyzer   指定分词器
+  normalizer   指定标准化器
+  boost        指定权重值
+  coerce      强制类型转换
+  copy_to    值复制给另一字段
+  doc_values  是否存储docValues
+  dynamic
+  enabled    字段是否可用
+  fielddata
+  eager_global_ordinals
+  format    指定时间值的格式
+  ignore_above
+  ignore_malformed
+  index_options
+  index
+  fields：
+    使用方式：当我们需要对一个字段进行多种不同方式的索引时，可以使用fields多重字段定义。
+      如一个字符串字段即需要进行text分词索引，也需要进行keyword 关键字索引来支持排序、聚合；
+      或需要用不同的分词器进行分词索引。
+    PUT my_index
+    {
+      "mappings": {
+        "properties": {
+          "city": {
+            "type": "text",
+            "fields": {
+              "raw": {
+                "type":  "keyword"
+              }
+            }
+          }
+        }
+      }
+    }
+  norms
+  null_value
+  position_increment_gap
+  properties
+  search_analyzer
+  similarity
+  store
+  term_vector

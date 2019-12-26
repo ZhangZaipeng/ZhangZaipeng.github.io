@@ -1,0 +1,36 @@
+1.动态索引是什么
+  索引文档时，当有新字段时， ES将根据我们字段的json的数据类型为我们自动加人字段定义到mapping中。
+
+2.动态索引规则
+  JSON datatype 	  Elasticsearch datatype
+  null 	            No field is added.
+  true or false 	  boolean field
+  floating point number 	float field
+  integer 	        long field
+  object 	          object field
+  array 	          Depends on the first non-null value in the array.
+  string 	Either a date field (if the value passes date detection), a double or long field (if the value passes numeric detection) or a text field, with a keyword sub-field.
+
+3.时间侦测
+  date_detection 默认是开启的，默认的格式dynamic_date_formats为：
+  [ "strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"]
+
+  自定义时间格式：
+  PUT my_index
+  {
+    "mappings": {
+      "_doc": {
+        "dynamic_date_formats": ["MM/dd/yyyy"]
+      }
+    }
+  }
+
+  禁用时间侦测：
+  PUT my_index
+  {
+    "mappings": {
+      "_doc": {
+        "date_detection": false
+      }
+    }
+  }

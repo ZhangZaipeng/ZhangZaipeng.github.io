@@ -1,0 +1,88 @@
+1.是什么
+  让我们可以将一个索引中的数据重索引到另一个索引中（拷贝），要求源索引的_source 是开启的。
+  目标索引的setting 、mapping 信息与源索引无关。
+
+2.使用
+  POST _reindex
+  {
+    "source": {
+      "index": "twitter"
+    },
+    "dest": {
+      "index": "new_twitter"
+    }
+  }
+
+  使用源目标索引中的version
+  POST _reindex
+  {
+    "source": {
+      "index": "twitter"
+    },
+    "dest": {
+      "index": "new_twitter",
+      "version_type": "external" # 当不指定该字段或者设置为internal，则使用目标索引中的版本号
+    }
+  }
+
+  只索引源索引的一部分数据
+  POST _reindex
+  {
+    "source": {
+      "index": "twitter",
+      "type": "_doc",
+      "query": {
+        "term": {
+          "user": "kimchy"
+        }
+      }
+    },
+    "dest": {
+      "index": "new_twitter"
+    }
+  }
+
+  可以从多个源获取数据
+  POST _reindex
+  {
+    "source": {
+      "index": ["twitter", "blog"],
+      "type": ["_doc", "post"]
+    },
+    "dest": {
+      "index": "all_together"
+    }
+  }
+
+  可以限定文档数量
+  POST _reindex
+  {
+    "size": 10000,
+    "source": {
+      "index": "twitter",
+      "sort": { "date": "desc" }
+    },
+    "dest": {
+      "index": "new_twitter"
+    }
+  }
+
+  可以选择复制源文档的哪些字段
+  POST _reindex
+  {
+    "source": {
+      "index": "twitter",
+      "_source": ["user", "_doc"]
+    },
+    "dest": {
+      "index": "new_twitter"
+    }
+  }
+
+  可以用script来改变文档
+  可以指定路由值
+  从远程源复制
+
+
+  通过_task 来查询执行状态
+  GET _tasks?detailed=true&actions=*reindex

@@ -4,7 +4,32 @@
 
 2.别名的种类
   1.带过滤器的别名
+  POST /_aliases
+  {
+    "actions" : [
+      {
+        "add" : {
+           "index" : "test1",
+           "alias" : "alias2",
+           "filter" : { "term" : { "user" : "kimchy" } }
+        }
+      }
+    ]
+  }
   2.带routing的别名
+  POST /_aliases
+  {
+    "actions" : [
+      {
+        "add" : {
+           "index" : "test",
+           "alias" : "alias2",
+           "search_routing" : "1,2",
+           "index_routing" : "2"
+        }
+      }
+    ]
+  }
   3.同时都有routing和过滤器的
 
 3.别名 aliases 的定义
@@ -33,6 +58,15 @@
       { "add" : { "index" : "test1", "alias" : "alias1" } }
     ]
   }
+  批量操作
+  {
+    "actions" : [
+      { "add" : { "index" : "test1", "alias" : "alias1" } }
+      { "add" : { "index" : "test*", "alias" : "alias1" } }  # 通配符，后添加进来的索引不会自动更新
+      { "remove" : { "index" : "test1", "alias" : "alias1" } }
+    ]
+  }
+
   3.删除别名
   POST /_aliases
   {

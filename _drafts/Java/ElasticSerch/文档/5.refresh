@@ -1,0 +1,15 @@
+1.是什么
+  对于索引、更新、删除操作如果想操作完后立马重刷新可见
+
+2.使用
+  PUT /test/_doc/1?refresh
+  {"test": "test"}
+
+  PUT /test/_doc/2?refresh=true
+  {"test": "test"}
+
+  refresh 可选值说明
+    未给值或=true，则立马会重刷新读索引。
+    false ，相当于没带refresh 参数，遵循内部的定时刷新。
+    wait_for ，登记等待刷新，当登记的请求数达到index.max_refresh_listeners
+      参数设定的值时(defaults to 1000)，将触发重刷新。

@@ -1,0 +1,145 @@
+1.新建文档
+  指定文档id，新增
+  PUT twitter/_doc/1
+  {
+    "id": 1,
+    "user" : "kimchy",
+    "post_date" : "2009-11-15T14:12:12",
+    "message" : "trying out Elasticsearch"
+  }
+
+  新增，自动生成文档id
+  POST twitter/_doc/
+  {
+    "id": 1,
+    "user" : "kimchy",
+    "post_date" : "2009-11-15T14:12:12",
+    "message" : "trying out Elasticsearch"
+  }
+
+  结果
+  {
+    "_index": "twitter", 所属索引
+    "_type": "_doc", 所属mapping type
+    "_id": "p-D3ymMBl4RK_V6aWu_V", 文档id
+    "_version": 1, 文档版本
+    "result": "created",
+    "_shards": {
+      "total": 3, 所在分片有三个副本
+      "successful": 1, 1个副本上成功写入
+      "failed": 0 失败副本数
+    },
+    "_seq_no": 0, 第几次操作该文档
+    "_primary_term": 3 词项数
+  }
+
+2.查询
+  查看是否存储
+    HEAD twitter/_doc/11
+  获取单个文档
+    GET twitter/_doc/1
+    GET twitter/_doc/1?_source=false
+    GET twitter/_doc/1/_source
+  获取多个文档 _mget
+    GET /_mget
+    {
+      "docs" : [
+        {
+          "_index" : "twitter",
+          "_type" : "_doc",
+          "_id" : "1"
+        },
+        {
+          "_index" : "twitter",
+          "_type" : "_doc",
+          "_id" : "2"
+          "stored_fields" : ["field3", "field4"]
+        }
+      ]
+    }
+
+    GET /twitter/_mget
+    {
+        "docs" : [
+            {
+                "_type" : "_doc",
+                "_id" : "1"
+            },
+            {
+                "_type" : "_doc",
+                "_id" : "2"
+            }
+        ]
+    }
+
+    GET /twitter/_doc/_mget
+    {
+        "docs" : [
+            {
+                "_id" : "1"
+            },
+            {
+                "_id" : "2"
+            }
+        ]
+    }
+
+    GET /twitter/_doc/_mget
+    {
+        "ids" : ["1", "2"]
+    }
+
+3.删除
+  指定文档id进行删除
+    DELETE twitter/_doc/1
+
+  用版本来控制删除
+    DELETE twitter/_doc/1?version=1
+
+  查询删除
+    POST twitter/_delete_by_query
+    {
+      "query": {
+        "match": {
+          "message": "some message"
+        }
+      }
+    }
+
+  当有文档有版本冲突时，不放弃删除操作
+    POST twitter/_doc/_delete_by_query?conflicts=proceed
+    {
+      "query": {
+        "match_all": {}
+      }
+    }
+
+  通过task api 来查看 查询删除任务
+    GET _tasks?detailed=true&actions=*/delete/byquery
+
+  查询具体任务的状态
+    GET /_tasks/taskId:1
+
+  取消任务
+     POST _tasks/task_id:1/_cancel
+
+4.更新
+  指定文档id进行修改
+    PUT twitter/_doc/1
+    {
+      "id": 1,
+      "user" : "kimchy",
+      "post_date" : "2009-11-15T14:12:12",
+      "message" : "trying out Elasticsearch"
+    }
+  乐观锁并发更新控制
+    PUT twitter/_doc/1?version=1
+    {
+      "id": 1,
+      "user" : "kimchy",
+      "post_date" : "2009-11-15T14:12:12",
+      "message" : "trying out Elasticsearch"
+    }
+  Scripted update 通过脚本来更新文档
+
+  查询更新
