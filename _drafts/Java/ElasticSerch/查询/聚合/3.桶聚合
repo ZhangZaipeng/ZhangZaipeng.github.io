@@ -1,0 +1,249 @@
+1.Terms Aggregation
+  根据字段值项分组聚合
+  POST /bank/_search?size=0
+  {
+    "aggs": {
+      "age_terms": {
+        "terms": {
+          "field": "age"
+        }
+      }
+    }
+  }
+  结果
+  "aggregations": {
+      "age_terms": {
+        "doc_count_error_upper_bound": 0, ###文档计数的最大偏差值
+        "sum_other_doc_count": 463, ###未返回的其他项的文档数
+        "buckets": [  ###默认情况下返回按文档计数从高到低的前10个分组
+          {
+            "key": 31,
+            "doc_count": 61
+          },
+          {
+            "key": 39,
+            "doc_count": 60
+          },
+          {
+            "key": 26,
+            "doc_count": 59
+          },
+          ….
+         ]
+      }
+    }
+
+2.size 指定返回多少个分组
+  POST /bank/_search?size=0
+  {
+    "aggs": {
+      "age_terms": {
+        "terms": {
+          "field": "age",
+          "size": 20,
+          "shard_size":20,  ### shard_size 指定每个分片上返回多少个分组
+          "show_term_doc_count_error": true  ### 每个分组上显示偏差值
+        }
+      }
+    }
+  }
+
+  shard_size 的默认值为：索引只有一个分片：= size多分片：=  size * 1.5 + 10
+
+3.order  指定分组的排序
+  根据文档计数排序
+  POST /bank/_search?size=0
+  {
+    "aggs": {
+      "age_terms": {
+        "terms": {
+          "field": "age",
+          "order" : { "_count" : "asc" }
+        }
+      }
+    }
+  }
+
+  根据分组值排序
+  POST /bank/_search?size=0
+  {
+    "aggs": {
+      "age_terms": {
+        "terms": {
+          "field": "age",
+          "order" : { "_key" : "asc" }
+        }
+      }
+    }
+  }
+
+4.取分组指标值
+  聚合里面、再聚合
+  POST /bank/_search?size=0
+  {
+    "aggs": {
+      "age_terms": {
+        "terms": {
+          "field": "age",
+          "order": {
+            "max_balance": "asc"
+          }
+        },
+        "aggs": {
+          "max_balance": {
+            "max": {
+              "field": "balance"
+            }
+          },
+          "min_balance": {
+            "min": {
+              "field": "balance"
+            }
+          }      }    }  }}
+
+5.筛选分组
+  用文档计数来筛选
+  POST /bank/_search?size=0
+  {
+    "aggs": {
+      "age_terms": {
+        "terms": {
+          "field": "age",
+          "min_doc_count": 60
+        }
+      }
+    }
+  }
+
+  筛选指定的值列表
+  POST /bank/_search?size=0
+  GET /_search
+  {
+      "aggs" : {
+          "JapaneseCars" : {
+               "terms" : {
+                   "field" : "make",
+                   "include" : ["mazda", "honda"]
+               }
+           },
+          "ActiveCarManufacturers" : {
+               "terms" : {
+                   "field" : "make",
+                   "exclude" : ["rover", "jensen"]
+               }
+           }
+      }
+  }
+
+  正则表达式匹配值
+  GET /_search
+  {
+      "aggs" : {
+          "tags" : {
+              "terms" : {
+                  "field" : "tags",
+                  "include" : ".*sport.*",
+                  "exclude" : "water_.*"
+              }
+          }
+      }
+  }
+
+  缺失值处理
+  GET /_search
+  {
+      "aggs" : {
+          "tags" : {
+               "terms" : {
+                   "field" : "tags",
+                   "missing": "N/A"
+               }
+           }
+      }
+  }
+
+
+6.filter Aggregation
+  对满足过滤查询的文档进行聚合计算
+
+7.Range Aggregation
+  范围分组聚合
+  POST /bank/_search?size=0
+  {
+    "aggs": {
+      "age_range": {
+        "range": {
+          "field": "age",
+          "keyed": true,
+          "ranges": [
+            {"to":25,"key": "Ld"}, ### 为组指定key
+            {"from": 25,"to": 35,"key": "Md"},
+            {"from": 35,"key": "Od"}
+          ]
+        }
+      }
+    }
+  }
+
+8.Date Range Aggregation
+  时间范围分组聚合
+  POST /sales/_search?size=0
+  {
+      "aggs": {
+          "range": {
+              "date_range": {
+                  "field": "date",
+                  "format": "MM-yyy",
+                  "ranges": [
+                      { "to": "now-10M/M" },
+                      { "from": "now-10M/M" }
+                  ]
+              }
+          }
+      }
+  }
+
+
+9.Date Histogram Aggregation
+  时间直方图（柱状）聚合
+  就是按天、月、年等进行聚合统计。
+  可按 year (1y), quarter (1q), month (1M), week (1w), day (1d), hour (1h), minute (1m), second (1s)
+  间隔聚合或指定的时间间隔聚合。
+
+  POST /sales/_search?size=0
+  {
+      "aggs" : {
+          "sales_over_time" : {
+              "date_histogram" : {
+                  "field" : "date",
+                  "interval" : "month"
+              }
+          }
+      }
+  }
+
+  POST /sales/_search?size=0
+  {
+      "aggs" : {
+          "sales_over_time" : {
+              "date_histogram" : {
+                  "field" : "date",
+                  "interval" : "90m"
+              }
+          }
+      }
+  }
+
+10.Missing Aggregation
+  缺失值的桶聚合
+  POST /bank/_search?size=0
+  {
+      "aggs" : {
+          "account_without_a_age" : {
+              "missing" : { "field" : "age" }
+          }
+      }
+  }
+
+11.Geo Distance Aggregation
+  地理距离分区聚合
