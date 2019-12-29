@@ -1,0 +1,30 @@
+min_score  限制最低评分得分。
+  GET /_search
+  {
+    "min_score": 0.5,
+    "query" : {
+      "term" : { "user" : "kimchy" }
+    }
+  }
+
+post_filter  后置过滤：在查询命中文档、完成聚合后，再对命中的文档进行过滤。
+  如：要在一次查询中查询品牌为gucci且颜色为红色的shirts，
+  同时还要得到gucci品牌各颜色的shirts的分面统计。
+  GET /shirts/_search
+  {
+    "query": {
+      "bool": {
+        "filter": {
+          "term": { "brand": "gucci" }
+        }
+      }
+    },
+    "aggs": {
+      "colors": {
+        "terms": { "field": "color" }
+      }
+    },
+    "post_filter": {
+      "term": { "color": "red" }
+    }
+  }

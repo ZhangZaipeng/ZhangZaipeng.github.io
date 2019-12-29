@@ -1,0 +1,61 @@
+高亮的详细设置请参考官网：
+https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-highlighting.html
+1.使用
+  GET /hl_test/_search
+  {
+    "query": {
+      "match": {
+        "title": "lucene"
+      }
+    },
+    "highlight": {
+      "fields": {
+        "title": {},
+        "content": {}
+      }
+    }
+  }
+
+
+2.多字段高亮
+  GET /hl_test/_search
+  {
+    "query": {
+      "match": {
+        "title": "lucene"
+      }
+    },
+    "highlight": {
+      "require_field_match": false,
+      "fields": {
+        "title": {},
+        "content": {}
+      }
+    }
+  }
+
+  高亮结果在返回的每个文档中以hightlight节点给出
+  "highlight": {
+    "title": [
+  	"<em>lucene</em> solr and elaticsearch"
+  ]}
+
+3.指定高亮标签
+  GET /hl_test/_search
+  {
+    "query": {
+      "match": {
+        "title": "lucene"
+      }
+    },
+    "highlight": {
+      "require_field_match": false,
+      "fields": {
+        "title": {
+          "pre_tags":["<strong>"],
+          "post_tags": ["</strong>"]
+        },
+        "content": {}
+      }
+    }
+  }

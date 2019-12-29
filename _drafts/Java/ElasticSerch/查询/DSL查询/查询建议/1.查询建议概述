@@ -1,0 +1,42 @@
+1.是什么
+  查询建议，为用户提供良好的使用体验。主要包括：
+    拼写检查；
+    自动建议查询词（自动补全）
+
+2.使用方法
+  查询建议也是使用_search端点地址。在DSL中suggest节点来定义需要的建议查询。
+  POST twitter/_search
+  {
+    "query" : {
+      "match": {
+        "message": "tring out Elasticsearch"
+      }
+    },
+    "suggest" : {
+      "my-suggestion" : {
+        "text" : "tring out Elasticsearch", ## 查询文本
+        "term" : { ## 使用词项建议器
+          "field" : "message" ## 指定在哪个字段上获取建议词
+        }
+      }
+    }
+  }
+
+  多个建议查询可以使用全局的查询文本
+  POST _search
+  {
+    "suggest": {
+      "text" : "tring out Elasticsearch",
+      "my-suggest-1" : {
+        "term" : {
+          "field" : "message"
+        }
+      },
+      "my-suggest-2" : {
+         "term" : {
+          "field" : "user"
+         }
+      }
+    }
+  }
+

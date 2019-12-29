@@ -1,0 +1,16 @@
+1.DSL查询概述
+  一个查询可由两部分字句构成：
+    Leaf query clauses 叶子查询字句
+      Leaf query clauses 在指定的字段上查询指定的值,
+      如：match, term, or range queries. 叶子字句可以单独使用.
+    Compound query clauses  复合查询字句
+      以逻辑方式组合多个叶子、复合查询为一个查询
+
+2.Query context  查询上下文
+  用在查询上下文中的字句回答“这个文档有多匹配这个查询?”。
+  除了决定文档是否匹配，字句匹配的文档还会计算一个字句评分，来评定文档有多匹配。
+  查询上下文由  query 元素表示。
+
+3.Filter context  过滤上下文
+  过滤上下文由 filter 元素或 bool 中的 must not 表示。
+  用在过滤上下文中的字句回答“这个文档是否匹配这个查询？”，不参与相关性评分。

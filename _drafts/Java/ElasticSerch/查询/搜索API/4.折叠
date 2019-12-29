@@ -1,0 +1,57 @@
+1.什么是折叠
+  根据条件进行分组，然后取其中一条数据作为代表
+
+2.使用
+  GET /bank/_search
+  {
+    "query": {
+      "match_all": {}
+    },
+    "collapse" : {
+      "field" : "age"
+    },
+    "sort": ["balance"]
+  }
+
+  GET /bank/_search
+  {
+      "query": {
+          "match_all": {}
+      },
+      "collapse" : {
+          "field" : "age" ,
+          "inner_hits": {                     #指定inner_hits来解释折叠
+              "name": "details", # 自命名
+              "size": 5,                      #指定每组取几个文档
+              "sort": [{ "balance": "asc" }]  #组内排序
+          },
+          "max_concurrent_group_searches": 4 # 指定组查询的并发数
+      },
+      "sort": ["balance"]
+  }
+
+3.在inner_hits 中返回多个角度的组内topN
+  GET /twitter/_search
+  {
+      "query": {
+          "match": {
+              "message": "elasticsearch"
+          }
+      },
+      "collapse" : {
+          "field" : "user",
+          "inner_hits": [
+              {
+                  "name": "most_liked",
+                  "size": 3,
+                  "sort": ["likes"]
+              },
+              {
+                  "name": "most_recent",
+                  "size": 3,
+                  "sort": [{ "date": "asc" }]
+              }
+          ]
+      },
+      "sort": ["likes"]
+  }

@@ -1,0 +1,125 @@
+文档参考
+https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html
+
+1.Term query
+  term 查询用于查询指定字段包含某个词项的文档。
+  GET _search
+  {
+    "query": {
+      "bool": {
+        "should": [
+          {
+            "term": {
+              "status": {
+                "value": "urgent",
+                "boost": 2.0   # 加权重
+              }
+            }
+          },
+          {
+            "term": {
+              "status": "normal"
+            }
+          }
+        ]
+      }
+    }
+  }
+
+2.Terms query
+  查询用于查询指定字段包含某些词项的文档。
+  GET /_search
+  {
+    "query": {
+      "terms" : { "user" : ["kimchy", "elasticsearch"]}
+    }
+  }
+
+3.Range query
+  范围查询
+  GET _search
+  {
+      "query": {
+          "range" : {
+              "date" : {
+                  "gte" : "now-1d/d",
+                  "lt" :  "now/d"
+              }
+          }
+      }
+  }
+  GET _search
+  {
+      "query": {
+          "range" : {
+              "born" : {
+                  "gte": "01/01/2012",
+                  "lte": "2013",
+                  "format": "dd/MM/yyyy||yyyy"
+              }
+          }
+      }
+  }
+  时间查询可以四舍五入
+
+4.Exists  query
+  查询指定字段值不为空的文档。相当 SQL 中的  column is not null
+  GET /_search
+  {
+      "query": {
+          "exists" : { "field" : "user" }
+      }
+  }
+
+5.Prefix Query
+  词项前缀查询
+  GET /_search
+  { "query": {
+      "prefix" : { "user" : "ki" }
+    }
+  }
+  GET /_search
+  { "query": {
+      "prefix" : { "user" :  { "value" : "ki", "boost" : 2.0 } }
+    }
+  }
+
+6.regexp query
+  正则查询
+  GET /_search
+  {
+      "query": {
+          "regexp":{
+              "name.first": "s.*y"
+          }
+      }
+  }
+
+7.fuzzy query
+  模糊查询
+  GET /_search
+  {
+      "query": {
+          "fuzzy" : {
+              "user" : {
+                  "value": "ki",
+                  "boost": 1.0,
+                  "fuzziness": 2,
+                  "prefix_length": 0,
+                  "max_expansions": 100
+              }
+          }
+      }
+  }
+
+8.ids query
+  根据文档id查询
+  GET /_search
+  {
+      "query": {
+          "ids" : {
+              "type" : "_doc",
+              "values" : ["1", "4", "100"]
+          }
+      }
+  }

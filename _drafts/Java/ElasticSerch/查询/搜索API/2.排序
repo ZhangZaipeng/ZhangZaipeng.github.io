@@ -1,0 +1,63 @@
+1.可以指定按一个或多个字段排序。
+  GET /bank/_search
+  {
+    "query": {
+      "match_all": {}
+    },
+    "sort": [
+      {
+        "age": {
+          "order": "desc"
+        }    },
+      {
+        "balance": {
+          "order": "asc"
+        }    },
+      "_score"
+    ]
+  }
+
+2.多值字段排序
+  通过mode参数指定按多值的：
+  min 	最小值
+  max 	最大值
+  sum 	和
+  avg 	平均
+  median 	中值
+
+  PUT /my_index/_doc/1?refresh
+  {
+     "product": "chocolate",
+     "price": [20, 4]
+  }
+
+  POST /_search
+  {
+     "query" : {
+        "term" : { "product" : "chocolate" }
+     },
+     "sort" : [
+        {"price" : {"order" : "asc", "mode" : "avg"}}
+     ]
+  }
+
+
+3.地理空间距离排序
+  参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-sort.html#geo-sorting
+  GET /_search
+  {
+      "sort" : [
+          {
+              "_geo_distance" : {
+                  "pin.location" : [-70, 40],
+                  "order" : "asc",
+                  "unit" : "km",
+                  "mode" : "min",
+                  "distance_type" : "arc"
+              }
+          }
+      ],
+      "query" : {
+          "term" : { "user" : "kimchy" }
+      }
+  }

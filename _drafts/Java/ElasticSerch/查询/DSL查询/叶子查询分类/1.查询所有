@@ -1,0 +1,7 @@
+1.查询所有
+  GET /_search
+  {
+    "query": {
+      "match_all": {}
+    }
+  }

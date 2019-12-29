@@ -1,0 +1,135 @@
+1.Full text querys 是什么
+  全文查询，用于对分词的字段进行搜索。会用查询字段的分词器对查询的文本进行分词生成查询。
+  https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html
+
+2.Match Query
+  全文查询的标准查询，它可以对一个字段进行模糊、短语查询。
+  match queries 接收text/numerics/dates, 对它们进行分词分析, 再组织成一个boolean查询。
+  可通过operator 指定bool组合操作（or、and 默认是 or ），
+  以及minimum_should_match 指定至少需多少个should(or)字句需满足。
+  还可用ananlyzer指定查询用的特殊分析器。
+
+  参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html
+  实例：
+  GET /_search
+  {
+    "query": {
+      "match" : {
+        "message" : "this is a test"
+      }
+    }
+  }
+  操作operator
+  GET ftq/_search
+  {
+    "query": {
+      "match": {
+        "title": {
+          "query": "lucene java",
+          "operator": "and"
+        }
+      }
+    }
+  }
+
+  指定最少需满足两个词匹配：minimum_should_match
+  GET ftq/_search
+  {
+    "query": {
+      "match": {
+        "content": {
+          "query": "ucen elatic java",
+          "fuzziness": 2,
+          "minimum_should_match": 2
+        }
+      }
+    }
+  }
+
+  fuzziness：模糊查询，最大编辑数为2
+  GET ftq/_search
+  {
+    "query": {
+      "match": {
+        "title": {
+          "query": "ucen elatic",
+          "fuzziness": 2
+        }
+      }
+    }
+  }
+
+3.Match Phrase Query
+  match_phrase 查询用来对一个字段进行短语查询，可以指定 analyzer、slop移动因子。
+  GET ftq/_search
+  {
+    "query": {
+      "match_phrase": {
+        "title": "lucene solr"
+      }
+    }
+  }
+
+  GET ftq/_search
+  {
+    "query": {
+      "match_phrase": {
+        "title": {
+          "query": "lucene elasticsearch",
+          "slop": 2
+        }
+      }
+    }
+  }
+
+4.Match Phrase Prefix Query
+  match_phrase_prefix  在 match_phrase 的基础上支持对短语的最后一个词进行前缀匹配
+
+  指定前缀匹配选用的最大词项数量
+  GET /_search
+  {
+      "query": {
+          "match_phrase_prefix" : {
+              "message" : {
+                  "query" : "quick brown f",
+                  "max_expansions" : 10
+              }
+          }
+      }
+  }
+
+5.Multi Match Query
+  在多个字段上进行文本搜索，可用multi_match
+
+  给字段的相关性评分加权重
+  GET ftq/_search?explain=true
+  {
+    "query": {
+      "multi_match" : {
+        "query":    "lucene elastic",
+        "fields": [ "title^5", "content" ]
+      }
+    }
+  }
+
+  通配符号
+  GET ftq/_search
+  {
+    "query": {
+      "multi_match" : {
+        "query":    "lucene java",
+        "fields": [ "title", "cont*" ]
+      }
+    }
+  }
+
+6.Common Terms Query
+
+7.Query String Query
+  query_string 查询，让我们可以直接用lucene查询语法写一个查询串进行查询，
+  ES中接到请求后，通过查询解析器解析查询串生成对应的查询。
+
+  参考文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+
+  lucene语法介绍
+8.Simple Query String Query

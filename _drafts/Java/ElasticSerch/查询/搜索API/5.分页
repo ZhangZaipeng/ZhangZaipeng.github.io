@@ -1,0 +1,45 @@
+1.使用
+  GET /_search
+  {
+      "from" : 0, "size" : 10,
+      "query" : {
+          "term" : { "user" : "kimchy" }
+      }
+  }
+  注意：搜索请求耗用的堆内存和时间与 from + size 大小成正比。
+  分页越深耗用越大，为了不因分页导致OOM或严重影响性能，
+  ES中规定from + size 不能大于索引setting参数 index.max_result_window 的值，默认值为 10,000。
+
+2.Search after  在指定文档后取文档， 可用于深度分页
+  首次查询第一页
+  GET twitter/_search
+  {
+      "size": 10,
+      "query": {
+          "match" : {
+              "title" : "elasticsearch"
+          }
+      },
+      "sort": [
+          {"date": "asc"},
+          {"_id": "desc"}
+      ]
+  }
+  后续页的查询
+  GET twitter/_search
+  {
+      "size": 10,
+      "query": {
+          "match" : {
+              "title" : "elasticsearch"
+          }
+      },
+      "search_after": [1463538857, "654323"],
+      "sort": [
+          {"date": "asc"},
+          {"_id": "desc"}
+      ]
+  }
+  注意：使用search_after，要求查询必须指定排序，
+  并且这个排序组合值每个文档唯一（最好排序中包含_id字段）。
+  search_after的值用的就是这个排序值。用search_after时 from 只能为0、-1。

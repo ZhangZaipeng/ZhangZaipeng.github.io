@@ -1,0 +1,66 @@
+1.指定返回哪些内容
+
+  source filter  对_source字段进行选择
+  GET /_search
+  {
+    "_source": false,
+    "query" : {
+      "term" : { "user" : "kimchy" }
+    }
+  }
+
+  GET /_search
+  {
+    "_source": [ "obj1.*", "obj2.*" ],
+    "query" : {
+      "term" : { "user" : "kimchy" }
+    }
+  }
+
+  GET /_search
+  {
+    "_source": "obj.*",
+    "query" : {
+      "term" : { "user" : "kimchy" }
+    }
+  }
+
+  GET /_search
+  {
+    "_source": {
+      "includes": [ "obj1.*", "obj2.*" ],
+      "excludes": [ "*.description" ]
+    },
+    "query" : {
+      "term" : { "user" : "kimchy" }
+    }
+  }
+
+  stored_fields    来指定返回哪些stored字段
+  GET /_search
+  {
+    "stored_fields" : ["user", "postDate"],
+    "query" : {
+      "term" : { "user" : "kimchy" }
+    }
+  }
+
+  docValue Field    返回存储了docValue的字段值
+  GET /_search
+  {
+    "query" : {
+      "match_all": {}
+    },
+    "docvalue_fields" : ["test1", "test2"]
+  }
+
+  version    来指定返回文档的版本字段
+  GET /_search
+  {
+      "version": true,
+      "query" : {
+          "term" : { "user" : "kimchy" }
+      }
+  }
+
+

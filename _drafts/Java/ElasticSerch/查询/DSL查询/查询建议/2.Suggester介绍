@@ -1,0 +1,85 @@
+1.Term suggester
+  term 词项建议器，对给入的文本进行分词，为每个词进行模糊查询提供词项建议。
+  对于在索引中存在词默认不提供建议词，不存在的词则根据模糊查询结果进行排序后取一定数量的建议词。
+
+  常用的建议选项：
+  text 	指定搜索文本
+  field 	获取建议词的搜索字段
+  analyzer 	指定分词器
+  size 	每个词返回的最大建议词数
+  sort 	如何对建议词进行排序，可用选项：
+    score: 先按评分排序、再按文档频率排、term顺序；
+    frequency: 先按文档频率排，再按评分、term顺序排。
+  suggest_mode 	建议模式，控制提供建议词的方式：
+    missing: 仅在搜索的词项在索引中不存在时才提供建议词，默认值；
+    popular: 仅建议文档频率比搜索词项高的词 .
+    always: 总是提供匹配的建议词。
+
+2.phrase suggester
+  phrase 短语建议，在term的基础上，会考量多个term之间的关系，
+  比如是否同时出现在索引的原文里，相邻程度，以及词频等
+  POST /ftq/_search
+  {
+    "query": {
+      "match_all": {}
+    },
+
+    "suggest" : {
+      "myss":{
+        "text": "java sprin boot",
+        "phrase": {
+          "field": "title"
+        }
+      }
+    }
+  }
+
+3.Completion suggester
+  针对自动补全场景而设计的建议器。此场景下用户每输入一个字符的时候，
+  就需要即时发送一次查询请求到后端查找匹配项，在用户输入速度较高的情况下对后端响应速度要求比较苛刻。
+  因此实现上它和前面两个Suggester采用了不同的数据结构，索引并非通过倒排来完成，而是将analyze过的数据编码成FST和索引一起存放。
+  对于一个open状态的索引，FST会被ES整个装载到内存里的，进行前缀查找速度极快。但是FST只能用于前缀查找，这也是Completion Suggester的局限所在。
+
+  参考
+  https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-completion.html
+
+  使用
+  # 建立索引
+  PUT music
+  {
+      "mappings": {
+          "_doc" : {
+              "properties" : {
+                  "suggest" : { ## 用于自动补全的字段
+                      "type" : "completion"
+                  },
+                  "title" : {
+                      "type": "keyword"
+                  }
+              }
+          }
+      }
+  }
+
+  # 放入文档
+  PUT music/_doc/1?refresh
+  {
+    "suggest" : {
+      "input": [ "Nevermind", "Nirvana" ], ### Input 指定输入词
+      "weight" : 34 ### Weight 指定排序值（可选）
+    }
+  }
+
+  # 搜索
+  POST music/_search?pretty
+  {
+      "suggest": {
+          "song-suggest" : {
+              "prefix" : "nir",
+              "completion" : {
+                  "field" : "suggest"
+                  "skip_duplicates": true  ### 去重
+              }
+          }
+      }
+  }

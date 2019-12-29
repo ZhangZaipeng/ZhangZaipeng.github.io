@@ -1,0 +1,33 @@
+1.是什么
+  Bool 查询用bool操作来组合多个查询字句为一个查询。
+
+  must	 必须满足
+  filter	必需满足，但执行的是filter上下文，不影响评分
+  should	或
+  must_not	必须不满足，在 filter 上下文中执行
+
+2.使用
+  POST _search
+  {
+    "query": {
+      "bool" : {
+        "must" : {
+          "term" : { "user" : "kimchy" }
+        },
+        "filter": {
+          "term" : { "tag" : "tech" }
+        },
+        "must_not" : {
+          "range" : {
+            "age" : { "gte" : 10, "lte" : 20 }
+          }
+        },
+        "should" : [
+          { "term" : { "tag" : "wow" } },
+          { "term" : { "tag" : "elasticsearch" } }
+        ],
+        "minimum_should_match" : 1,
+        "boost" : 1.0
+      }
+    }
+  }

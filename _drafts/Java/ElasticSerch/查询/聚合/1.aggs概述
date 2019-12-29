@@ -1,0 +1,17 @@
+1.概述
+  聚合分析是数据库中重要的功能特性，完成对一个查询的数据集中数据的聚合计算，
+  如：找出某字段（或计算表达式的结果）的最大值、最小值，计算和、平均值等。ES作为搜索引擎兼数据库，同样提供了强大的聚合分析能力。
+
+2.用法
+  "aggregations" : {
+      "<aggregation_name>" : {
+          "<aggregation_type>" : {
+              <aggregation_body>
+          }
+          [,"meta" : {  [<meta_data_body>] } ]?
+          [,"aggregations" : { [<sub_aggregation>]+ } ]?
+      }
+      [,"<aggregation_name_2>" : { ... } ]*
+  }
+
+  aggregations 也可简写为 aggs
