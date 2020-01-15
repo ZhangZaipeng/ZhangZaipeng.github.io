@@ -11,6 +11,14 @@
 三、撤销权限
 	revoke 权限列表 on 库名。表名 from '用户名'@'链接地址'
 	例子：revoke all on jm_test.test from 'select'@'100.100.100.1';
+
+	revoke all on payment_wallet.* from 'admin'@'%';
+	revoke all on *.* from 'admin'@'%';
+  show grants for 'admin'@'%';
+  revoke all on *.* from 'admin'@'%';
+  grant all on payment.* to 'admin'@'%';
+  grant all on `xxl-job`.* to 'admin'@'%';
+
 四、权限列表
 	ALL: 设置除`grants option`之外的所有权限
 	CREATE USER：用户管理权限
