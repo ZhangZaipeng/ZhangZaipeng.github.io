@@ -1,4 +1,4 @@
-1.安装docker
+0.安装docker
 ## Node节点安装docker
 --- docker
 yum install -y yum-utils device-mapper-persistent-data lvm2
@@ -21,12 +21,15 @@ systemctl start docker.service
 ## 设置docker开机启动
 systemctl enable docker.service
 
+
+1.解压k8s-node.tar.gz包、覆盖kube-proxy，kubelet文件
+
 2.安装kubelet
   1.修改配置文件 kubelet.conf
     --hostname-override=k8s-node1
     --pod-infra-container-image=gcr.io/google_containers/pause-amd64:3.0
   2.修改配置文件 bootstrap.kubeconfig
-    server: https://192.172.1.179:6443
+    server: https://192.172.1.179:6443（master节点IP）
     token必须与在apiserver配置的token一致
 
 3.安装kube-proxy
@@ -38,9 +41,6 @@ systemctl enable docker.service
 4.移动 kubelet.service  kube-proxy.service 到 /usr/lib/systemd/system
   mv  *.service  /usr/lib/systemd/system
 
-安装 cni
-wget https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-amd64-v0.8.2.tgz
-
 5.cp ssl证书
   scp  ca.pem  kube-proxy*pem  root@192.172.1.178:/opt/kubernetes/ssl
 
@@ -49,6 +49,9 @@ wget https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni
 
   systemctl start kubelet.service # 启动
   systemctl start kube-proxy.service # 启动
+
+  systemctl restart kubelet.service
+  systemctl restart kube-proxy.service
 
   systemctl status kubelet.service # 查看启动状态
   systemctl status kube-proxy.service # 查看启动状态

@@ -1,0 +1,20 @@
+1.类的创建
+class dog {
+  public $name;
+  public $age;
+  function wang($a) {
+    echo "wang wang wang".$a;
+  }
+}
+
+2.类的使用
+  成员变量的访问
+    $dog = new dog();
+    $dog -> name;
+  方法的使用
+    $dog = new dog();
+    $dog -> wang();
+
+3.类的方法 $this、_construct()、_destruct()
+  _construct()构造方法
+  _destruct()回收、配合unset()函数

@@ -13,7 +13,7 @@
   2.修改 --bind-address= 192.172.1.179
   3.修改 --advertise-address= 192.172.1.179
 
-6.修改kubernetes/cfg中文件 kube-controller-manager
+6.修改kubernetes/cfg中文件 kube-controller-manager.conf
 
 7.修改kubernetes/cfg中文件 kube-scheduler.conf
 
@@ -27,6 +27,10 @@
   systemctl start kube-apiserver.service # 启动
   systemctl start kube-controller-manager.service # 启动
   systemctl start kube-scheduler.service # 启动
+
+  systemctl restart kube-apiserver.service
+  systemctl restart kube-controller-manager.service
+  systemctl restart kube-scheduler.service
 
   systemctl status kube-apiserver.service # 查看启动状态
   systemctl status kube-controller-manager.service # 查看启动状态

@@ -1,0 +1,10 @@
+1.定义
+  interface demo {
+    const Name = "hahah";
+    function fun1();
+  }
+
+2.使用
+  class dog implement demo {
+
+  }

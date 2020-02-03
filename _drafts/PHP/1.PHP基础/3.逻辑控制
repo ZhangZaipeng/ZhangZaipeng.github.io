@@ -1,0 +1,35 @@
+1.if
+  if (true) {
+    echo "123";
+  } else if (false) {
+    echo "123";
+  } else {
+    echo "123";
+  }
+
+2.for
+  for ($i = 0; $i < 100; $i++) {
+    循环体;
+  }
+
+3.switch
+    switch (表达式) {
+        case 常量1 :
+            表达式;
+            break;
+        case 常量2 :
+            表达式;
+            break;
+        default:
+            echo "默认";
+    }
+
+4.while
+  while (循环条件) {
+    循环体;
+  };
+
+  do {
+
+  } while (循环条件);
+

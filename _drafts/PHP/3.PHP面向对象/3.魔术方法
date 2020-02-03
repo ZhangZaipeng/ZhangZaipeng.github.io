@@ -1,0 +1,36 @@
+1.语法
+  function __方法名() {
+  }
+
+2.__set作用
+  在类外部对私有属性进行访问
+  public function __set($name, $value){
+      $this -> $name = $value;
+  }
+
+
+3.__get作用
+  在类外部对私有属性进行取值
+  public function __get($name) {
+      return $this -> $name;
+  }
+
+4.__call作用
+  定义错误，对象调用不存在的方法，会自动调用call方法
+  public function __call($fun, $array) {
+    // $fun 方法名称
+    // $array 调用方法时候的入参
+    echo $fun."方法不存在;
+  }
+
+5.__clone();克隆对象
+  开辟两个空间、彼此独立
+
+
+sleep();
+weakup();
+
+autoload(); 自动加载类的方法，
+  public function __autoload($className) {
+    include($className.".class.php");
+  }

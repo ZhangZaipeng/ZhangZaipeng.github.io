@@ -28,5 +28,5 @@
 8.检查集群状况
   /opt/etcd/bin/etcdctl \
   --ca-file=/opt/etcd/ssl/ca.pem --cert-file=/opt/etcd/ssl/server.pem --key-file=/opt/etcd/ssl/server-key.pem \
-  --endpoints="https://192.172.1.179:2379,https://192.172.1.178:2379,https://192.172.1.177:2379" \
+  --endpoints="https://172.31.32.31:2379,https://172.31.45.64:2379,https://172.31.35.178:2379" \
   cluster-health

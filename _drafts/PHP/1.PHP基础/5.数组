@@ -1,0 +1,44 @@
+1、数组的定义
+  数字索引数组
+    $food = array("1","2","3","4");
+    print_r($food);
+    var_dump($food);
+
+  数字索引数组访问
+    $food[0],$food[1],$food[2]
+
+  key-value数组
+    $food = array("name" => "123","age" => 11);
+
+  多维数组
+    
+2.数组的遍历
+  for循环
+    for ($i=0; $i<count($food); $i++) {
+        echo $food[$i];
+    }
+  foreach循环
+    foreach ($food as $item) {
+        echo $item;
+    }
+    foreach ($food as $key => $item) {
+        echo $item;
+    }
+
+3.数组的排序
+  索引数组
+    sort($array,[parm])函数：按照升序排列数组，参数可区分数字，字符串排序，注意不能对key-value数组排序
+    rsort()函数：按照降序排列数组
+    shuffle()函数：随机排列数组
+
+  关联数组
+    asort()函数：按照元素升序排序
+    ksort()函数：拍照索引关键字降序排序
+    arsort()函数：按照元素升序排序
+    krsort()函数：拍照索引关键字降序排序
+
+4.向数组中添加元素
+  array_push($array,$array2): 将一个或多个单元压入数组的末尾（入栈）
+
+
+5.字符串转换成数组

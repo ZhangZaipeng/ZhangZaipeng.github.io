@@ -14,20 +14,21 @@
 
 
 ## 修改主机名称
-  hostnamectl set-hostname swarm1
+  hostnamectl set-hostname k8s-master
 
 
 ## 修改时区
-  yum -y install ntp
-  ntpdate -u cn.pool.ntp.org
   timedatectl set-timezone Asia/Shanghai
   yum -y install vim wget lrzsz net-tools
+  yum -y install ntp
+  ntpdate -u cn.pool.ntp.org
+
 
 
 ## 添加hosts
   vim /etc/hosts
 
-  192.172.1.179   k8s-master
-  192.172.1.178   k8s-node1
-  192.172.1.177   k8s-node2
+172.31.32.31   k8s-master
+172.31.45.64   k8s-node1
+172.31.35.178   k8s-node2
   192.172.1.176   k8s-node3
