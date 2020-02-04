@@ -1,0 +1,1 @@
+只需要修改kube-apiserver配置文件中使用的server-key.pem  server.pem文件

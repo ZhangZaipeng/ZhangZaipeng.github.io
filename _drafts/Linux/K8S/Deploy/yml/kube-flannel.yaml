@@ -170,7 +170,9 @@ spec:
       initContainers:
       - name: install-cni
         # 国内镜像
-        image: lizhenliang/flannel:v0.11.0-amd64
+        # image: lizhenliang/flannel:v0.11.0-amd64
+        # 国外镜像
+        image: quay.io/coreos/flannel:v0.10.0-arm64
         command:
         - cp
         args:
@@ -185,7 +187,9 @@ spec:
       containers:
       - name: kube-flannel
         # 国内镜像
-        image: lizhenliang/flannel:v0.11.0-amd64
+        # image: lizhenliang/flannel:v0.11.0-amd64 quay.io/coreos/flannel:v0.10.0-arm64
+        # 国外镜像
+        image: quay.io/coreos/flannel:v0.10.0-arm64
         command:
         - /opt/bin/flanneld
         args:
