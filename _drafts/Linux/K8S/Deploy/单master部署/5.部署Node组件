@@ -21,7 +21,6 @@ systemctl start docker.service
 ## 设置docker开机启动
 systemctl enable docker.service
 
-
 1.解压k8s-node.tar.gz包、覆盖kube-proxy，kubelet文件
 
 2.安装kubelet
@@ -66,3 +65,7 @@ systemctl enable docker.service
 
 9.master查看node
   kubectl get node
+
+  k8s-node3   NotReady   <none>   8s    v1.16.2
+
+10.部署网络至 Ready
