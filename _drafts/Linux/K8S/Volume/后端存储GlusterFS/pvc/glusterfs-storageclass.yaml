@@ -1,0 +1,20 @@
+# kubectl create  -f base/pvc/GlusterFS/pvc/glusterfs-storageclass.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: glusterfs-storageclass
+provisioner: kubernetes.io/glusterfs
+reclaimPolicy: Retain
+parameters:
+  # Heketi的URL地址，于自动完成GlusterFSvolume的设置
+  resturl: "http://172.31.45.64:30080"
+  # 是否对Gluster Rest服务启用安全机制
+  restauthenabled: "true"
+  # 用户名
+  restuser: "admin"
+  # 密码
+  restuserkey: "My Secret"
+  gidMin: "40000"
+  gidMax: "50000"
+  volumetype: "replicate:3"
+allowVolumeExpansion: true

@@ -1,0 +1,25 @@
+1.先在计划用于GlusterFS的各Node上安装GlusterFS客户端
+  yum -y install glusterfs glusterfs-fuse
+
+  注意升级版本，容器中glusterfs与GlusterFS客户端中需要保持一致
+  yum install -y centos-release-gluster
+
+2.给要部署GlusterFS的节点打上标签“storagenode=glusterfs”
+  kubectl  label  node  k8s-node1  storagenode=glusterfs
+  kubectl  label  node  k8s-node2  storagenode=glusterfs
+  kubectl  label  node  k8s-node3  storagenode=glusterfs
+
+
+3.所有节点内核加载对应模块
+  modprobe dm_snapshot
+  modprobe dm_mirror
+  modprobe dm_thin_pool
+
+  查看是否加载
+  lsmod | grep dm_snapshot
+  lsmod | grep dm_mirror
+  lsmod | grep dm_thin_pool
+
+
+4.下载
+  wget https://github.com/heketi/heketi/releases/download/v9.0.0/heketi-client-v9.0.0.linux.amd64.tar.gz

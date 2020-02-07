@@ -13,6 +13,9 @@ spec:
   # ReadWriteMany： 读写权限、允许被多个 Node 挂载。
   accessModes:
     - ReadWriteMany
+  # Retain – 保留数据，需要手工处理。
+  # Recycle – 清除 PV 中的数据，效果相当于执行 rm -rf /thevolume/*。
+  # Delete – 删除（Delete）：与 PV 相连的后端存储完成 volume 的删除操作（AWS GCE）
   persistentVolumeReclaimPolicy: Retain
   # 存储类别  具有特定“类别”的 PV 只能与请求了该“类别”的 PVC 进行绑定
   storageClassName: nfs

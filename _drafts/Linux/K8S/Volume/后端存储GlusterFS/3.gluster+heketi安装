@@ -1,0 +1,47 @@
+1.创建Namespace
+  kubectl create ns glusterfs
+
+
+2.GlusterFS管理服务容器集群
+  kubectl create -f glusterfs-daemonset.yaml -n glusterfs
+
+  kubectl get pods -n glusterfs
+
+
+2.创建heketi的service account对象
+  kubectl create -f heketi-service-account.yaml
+
+
+3.创建heketi对应的权限和secret
+  kubectl create clusterrolebinding heketi-gluster-admin --clusterrole=edit --serviceaccount=glusterfs:heketi-service-account
+  注意：Namespace 需要使用glusterfs
+
+  kubectl create secret generic heketi-config-secret --from-file=./heketi.json -n glusterfs
+
+
+4.初始化部署heketi
+  kubectl create -f heketi-bootstrap.yaml
+
+
+5.创建gfs集群
+  复制二进制文件：cp bin/heketi-cli /usr/local/bin/
+
+  测试heketi
+    kubectl get svc -n glusterfs
+    curl http://[ClusterIP]:8080/hello
+
+  使用heketi创建gfs集群
+    export HEKETI_CLI_SERVER=http://[ClusterIP]:8080
+
+  heketi在创建gfs集群时需要带上参数，声明用户名及密码，相应值在heketi.json文件中
+    heketi-cli -s $HEKETI_CLI_SERVER --user admin --secret 'My Secret' topology load --json=topology.json
+
+  kubectl查看Pod日志
+    kubectl logs -f deploy-heketi-6c687b4b84-l5b6j
+
+  查看gfs集群信息
+    heketi-cli -s $HEKETI_CLI_SERVER --user admin --secret 'My Secret' topology info
+
+
+6.持久化heketi配置
+  https://www.cnblogs.com/ssgeek/p/11725648.html
