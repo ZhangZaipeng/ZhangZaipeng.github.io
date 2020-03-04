@@ -1,0 +1,76 @@
+一.Activity是一个工作流引擎。负责流程运行时的各种实时数据的监控和管理流程的运行
+
+二.BPMN业务流程建模与标注。描述流程的基本符号，包括图文如何组合成一个业务流程图
+
+三.Activity23张表结构
+  ACT_RE_*: 'RE'表示repository 这个前缀的表包含了流程定义和流程静态资源 （图片，规则，等等）
+  ACT_RU_*: 'RU'表示runtime 这些运行时的表，包含流程实例，任务，变量，异步任务，等运行中的数据 Activiti只在流程实例执行过程中保存这些数据， 在流程结束时就会删除这些记录
+  ACT_ID_*: 'ID'表示identity 这些表包含身份信息，比如用户，组等等
+  ACT_HI_*: 'HI'表示history 这些表包含历史数据，比如历史流程实例，变量，任务等等
+  ACT_GE_*: 通用数据， 用于不同场景下，如存放资源文件
+
+四.Activity创建表的方式
+  1.jdbc方式
+    //1.创建Activity引擎管理者
+    ProcessEngineConfiguration configuration  = ProcessEngineConfiguration.createStandaloneProcessEngineConfiguration();
+    //2.设置数据库连接信息
+    configuration.setJdbcUrl("jdbc:mysql://localhost:3306/activity?createDatabaseIfNotExist=true");
+    configuration.setJdbcDriver("com.mysql.jdbc.Driver");
+    configuration.setJdbcUsername("root");
+    configuration.setJdbcPassword("");
+    //设置数据建表策略
+    /**
+     * DB_SCHEMA_UPDATE_FALSE 每次都是先删除，再去创建
+     * DB_SCHEMA_UPDATE_CREATE_DROP 如果不存在直接抛出异常
+     * DB_SCHEMA_UPDATE_TRUE 如果不存在表就创建表，存在表就使用
+     */
+    configuration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
+    //3.使用配置对象创建流程引擎实例（检查数据库等连接环境）
+    ProcessEngine processEngine = configuration.buildProcessEngine();
+    System.out.println(processEngine);
+
+  2.spring-xml方式
+    activiti.cfg.xml(里面定义的数据主要是jdbc与数据建表策略数据)
+    ProcessEngine processEngine = ProcessEngineConfiguration.createProcessEngineConfigurationFromResource("activiti.cfg.xml").buildProcessEngine();
+    System.out.println(processEngine);
+
+五.Activity流程基本组件
+  开始节点：StartEvent
+  审批节点：UserTask
+  连接线：SequenceFlow
+  网关节点：Gateway
+    排他网关：条件满足的流程会被选中，让流程继续运行
+    并行网关：允许将流程分成多条分支，也可以把多条分支 汇聚到一起
+  结束节点：EndEvent
+
+六.Activi流程发布
+  1.bmp文件方式
+  Deployment deployment =
+    processEngine.getRepositoryService()//与流程定义和部署相关的Service
+    .createDeployment() //创建一个部署对象
+    .name("helloword") //添加部署的名称
+    .addClasspathResource("diagrams/helloword.bpmn")//从classpath下加载资源，一次一个
+    .addClasspathResource("diagrams/helloword.png").deploy();//完成部署
+  2.zip方式
+
+七.Activi流程启动
+  String processDefinitionKey = "helloword";
+  //与正在执行的流程实例和执行对象相关的Service
+  ProcessInstance processInstance = processEngine.getRuntimeService()
+  .startProcessInstanceByKey(processDefinitionKey);//根据Key值来查询流程,也可以根据ID
+
+八.个人任务列表
+  String assignee = "张三";
+  //与正在执行的任务管理相关的Service
+  List<Task> list = processEngine.getTaskService()
+    .createTaskQuery()//创建任务查询对象
+    .taskAssignee(assignee)//指定个人任务查询，指定代理人
+    .list();//以list形式记录对象
+
+九.连线设置流程变量与传值
+  基本类型JavaBean类型
+  TaskService taskService = processEngine.getTaskService();
+  Task task = taskService.createTaskQuery().processInstanceId("流程实例ID")
+    .taskAssignee(assignee).singleResult();
+  taskService.setVariable(task.getId(), "key", object);
+  对应数据库变动：act_ru_variable、act_ru_execution

@@ -1,0 +1,47 @@
+--- 了解
+  --- 运维
+    服务注册 Nacos
+    服务配置 Apollo
+    服务熔断 Netflix Hystrix
+    服务监控 Open-Falcon
+    微服务2.0 Service Mesh
+    服务治理Istio
+
+
+
+--- 熟悉
+  --- 运维
+    Kubernetes包管理 Helm
+
+  --- 基础
+    数据结构、算法
+    设计模式
+
+  --- JAVA
+    spring 源码
+    mybatis 源码
+    activity 学习
+
+  --- Android
+    Android基础学习
+
+  --- 网络协议
+    Wireshark腾讯课程学习
+
+
+--- 熟练
+
+
+
+
+
+
+
+
+
+
+Wireshark数据包分析实战 PDF下载
+
+
+
+

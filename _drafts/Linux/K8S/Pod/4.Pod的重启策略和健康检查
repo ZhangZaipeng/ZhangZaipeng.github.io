@@ -1,0 +1,54 @@
+五、Pod生命周期
+  Pending：API Server己经创建该Pod，但Pod内还有一个或多个容器的镜像没有创建，包括正在下我镜像的过程
+  Running：Pod内所有容器已经创建，且至少有一个容器处于运行状态、正在启动状态或正在重启状态
+  Succeeded：Pod内所有容器均成功执行退出，且不会再重启
+  Failed：Pod内所有容器均已退出，但至少有一个容器退出为失败状态
+  Unknown：由于某种原因无法火气Pod的状态，可能由于网络不通
+
+六、Pod重启策略
+  Pod的重启策略包括Always、OnFailure、Never。默认值为Always
+    1、Always: Pod 一旦终止运行，则无论容器是如何终止的，kubelet 都将重启它。
+    2、OnFailure：只有 Pod 以非零退出码终止时， kubelet 才会重启该容器．
+      如果容楼正常结束（退出码为 0），则 kubelet 将不会重启它。
+    3、Never: Pod 终止后， kubelet 将退出码报告给 Master，不会再重启该Pod。
+
+  控制器对Pod的重启策略要求
+    RC和DaemonSet：必须设置为Always，需要
+    Job: OnFailure或Never，确保容器执行完成后不再重启
+    kubelet：在Pod失效时自动重启它，不论将RestartPolicy设置为什么值，也不会对P o d进行健康检查。
+
+七、Pod的健康检查
+  1.LivenessProbe探针：用于判断容器是否存活（running状态）。
+    如果LivenessProbe探针探测到容器不健康，则kubelet将杀掉该容器，并根据容器的重启策略做相应的处理。
+    如果一个容器不包含LivenessProbe探针，那么kubelet认为该容器的LivenessProbe探针返回的值永远是"Success"。
+
+  2.ReadinessProbe就绪探针：用于判断容器是否启动完成（ready状态），可以接收请求。
+    如果ReadinessProbe探针检测到成功，则Pod的状态将被修改。
+    否则Endpoint Controller将从Service的Endpoint中删除包含该容器所在Pod的Endpoint。
+
+  3.LivenessProbe探针三种实现方式：
+    - ExecAction：容器内部执行一个命令，如果该命令的返回码为0，则表明容器健康
+    - TCPSocketAction：通过容器的IP地址和端口号执行TCP检查，如果能够建立TCP链接，则表明容器健康
+    - HTTPGetAction：通过容器的IP地址和端口号执行HTTPGet请求，如果返回的状态码大于等于200小于等400，则表示容器健康
+
+    - initialDelaySeconds : 30s 启动容器后进行首次健康检查的等待时间
+    - timeoutSeconds : 1s 健康检查发送请求后等待响应的超时时间
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

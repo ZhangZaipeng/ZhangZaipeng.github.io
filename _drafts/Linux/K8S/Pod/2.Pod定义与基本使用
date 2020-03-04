@@ -1,0 +1,109 @@
+pod的yaml文件定义
+  apiVersion :  v1
+  kind:  Pod
+  metadata :
+    name : string
+    namespace:  string
+    labels:
+      - name:  string
+    annotations:
+      - name:  string
+  spec:
+    containers :
+    - name : string
+      image :  string
+      imagePullPolicy: [Always  I  Never  I  IfNotPresent]
+      command :  [string]
+      args:  [string]
+      workingDir:  string
+      volumeMounts:
+      - name:  string
+        mountPath:'  string
+        readOnly:  boolean
+      ports:
+      - name:  string
+        containerPort:  int
+        hostPort :  int
+        protocol :  string
+      env:
+      - name:  string
+        value :  string
+      resources :
+        limits:
+          cpu :  string
+          memory :  string
+        requests :
+        cpu:  string
+        memory :string
+      livenessProbe:
+        exec:
+          command:  [string]
+        httpGet:
+        path:  string
+        port：口umber
+        host:  string
+        scheme:  string
+        httpHeaders:
+        - name:  string
+          value:  string
+        tcpSocket:
+          port :  number
+        initialDelaySeconds : 0
+        timeoutSeconds:  0
+        periodSeconds:  0
+        successThreshold:  0
+        failureThreshold : 0
+    securityContext :
+      privileged:  false
+    restartPolicy:  [Always  I  Never  I  OnFailure]
+    nodeSelector:  object
+    imagePullSecrets :
+     - name:  string
+    hostNetwork :  false
+    volumes:
+    - name :  string
+      emptyDir : {}
+      hostPath :
+        path :  string
+      secret :
+        secretName :  string
+        items:
+        - key :  string
+          path:  string
+      configMap:
+        name:  string
+        items :
+        - key :  string
+          path:  string
+
+
+一、Pod基本命令:
+  创建：kubectl create -f  [pod定义文件]
+  查看：kubectl get pods
+  详细信息：kubectl describe pod [pod名称]
+  进去pod命令：kubectl exec -ti [pod名称] [shell名称]
+
+二、pod容器共享Volume
+  volumeMounts:
+    -name: Volume名称
+      mountPath: 挂载到容器的目录位置
+
+三、pod资源对象ConfigMap
+  1.ConfigMap的种类：存储key-value形式。存储文件的形式
+  2.创建方式：
+    --from-file：参数从文件中创建和参数从目录中创建
+      kubectl create configmap  NAME --from-file=config-files-dir
+    --from-literal：从文本中创建
+      kubectl create configmap NAME-- from-literal=keyl=valuel
+  3.使用
+    1.通过环境变量的方式
+    2.通过volumeMount方式
+  4.使用的限制条件
+    1.必须在Pod之前创建
+    2.受Namespace限制，只有处于相同的Namespace中的Pod才能使用
+    3.容器内只能挂载目录不能挂载文件，容器中被挂载的目录会被configMap自身覆盖
+
+四、Pod的Downward API
+  1.环境变量：可以将Pod的信息注入到容器内部
+  2.Volume挂载：将数组类信息生成为文件，挂载到容器内部
+

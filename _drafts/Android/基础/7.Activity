@@ -1,0 +1,17 @@
+1.ActionBar的去除
+  全局去除： xml中application标签android:theme属性
+  页面局部去除： activity标签android:theme属性
+  代码去除：requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+2.Activity跳转
+  startActivity(Intent intent); 一去不回
+  startActivityForResult(Intent intent, int requestCode); 有去有回
+    setResult(int resultCode, Intent intent) 传值
+    onActivityResult(int requestCode, int resultCode, Intent intent);接受值
+
+3.Handler + Thread + Message 子线程与主线程UI界面沟通的桥梁
+
+4.CountDownTimer(总时间, 调用函数时间间隔)
+  onTick 时间间隔内调用的函数
+  onFinish 结束调用
+  countDownTimer.start();开始执行

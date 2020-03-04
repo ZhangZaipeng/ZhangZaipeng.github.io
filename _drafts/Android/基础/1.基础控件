@@ -1,0 +1,37 @@
+0.标签通用属性
+    android:id：标签设置标识
+    android:layout_width：宽布局
+    android:layout_height：高布局
+    android:onClick="" 标签设置点击函数
+
+
+1.文本标签 <TextView>
+    常用基本属性：
+
+
+2.按钮标签 <Button>
+    常用基本属性：
+      text：text按钮名字
+      textSize：名字大小
+
+
+3.ImageView标签 <ImageView>
+  常用基本属性：
+    android:src：保持原图比例
+    android:background：不会保持原图比例
+
+
+4.EditText标签 <TextView>
+  常用基本属性：
+    android:hint: 设置提醒信息
+
+
+5.<!-- Selector 选择器
+  实现：1.创建资源文件；参考item_selector.xml
+  android:state_pressed 控件是否按压
+  android:state_focused 控件是否获得焦点
+  android:state_selected控件是否被选中
+  android:state_enabled 控件是否可用
+-->
+
+

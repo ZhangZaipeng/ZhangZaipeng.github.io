@@ -1,0 +1,27 @@
+0.ListView标签
+  divider 设置分割线的颜色
+  dividerHeight 设置分割线的高度
+
+  scrollbars 设置滚动条的隐藏或显示
+  fadeScrollbars 设置滚动条的自动隐藏或显示
+
+1.实现ListView的一般步骤
+  - 布局文件中编写xml标签
+      ListView xml
+      ListView中布局对象xml
+  - Activity中获取ListView对象
+      ListView listView = findViewById(R.id.lv1);
+  - 准备数据源
+      网络资源 或者 静态资源
+  - 配置适配器
+      getView(int position, View convertView, ViewGroup parent)
+      LayoutInflater 获取布局中控件对象
+      给布局对象赋值，返回布局对象
+  - 将适配器关联到ListView
+      listView.setAdapter(adapter);
+
+2.适配器
+  - 种类
+    ArrayAdapter
+    SimpleAdapter 适用于简单的图文混合列表
+    自定义Adapter：实现步骤： 1.继承BaseAdapter 2.实现getView方法(获取布局，并给控件赋值) 3.关联ListView

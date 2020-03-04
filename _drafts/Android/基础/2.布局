@@ -1,0 +1,38 @@
+0.常用的4种布局方式。线性布局、相对布局、帧布局、格子布局
+
+1.线性布局
+  android:orientation:子控件排列方式
+    vertical：垂直布局
+    horizontal：横向布局
+
+  android:gravity: 设置子控件的位置
+    center 水平垂直居中、
+    center_vertical 垂直居中、
+    center_horizontal 水平居中、
+    top 顶部、bottom 底部、
+    left 靠左、right 靠右
+
+  android:layout_weight:子控件按照权重分配剩下的空间
+    在控件自身属性上增加，标识在父布局中所占控件比例
+    不设置时，默认值为0
+
+
+2.相对布局
+  元素与容器的相对位置
+    android:layout_alignParentTop="true"   设置本空间在容器的顶部
+    android:layout_alignParentBottom="true" 设置本空间在容器的底部
+    android:layout_alignParentLeft="true" 设置本空间在容器的左
+    android:layout_alignParentRight="true"设置本空间在容器的右
+    android:layout_centerHorizontal="true"  水平居中
+    android:layout_centerVertical="true"    垂直居中
+
+  元素与元素的相对位置
+    android:layout_above="@id/image_centor"  设置本空间在某控件的上方
+    android:layout_below="@id/image_centor"  设置本空间在某控件的下方
+    android:layout_toLeftOf="@id/image_centor"   设置本空间在某控件的左方
+    android:layout_toRightOf="@id/image_centor"  设置本空间在某控件的右方
+
+
+3.padding和margin属性
+  layout_margin：设置控件外部边距
+  padding：设置控件内部边距
