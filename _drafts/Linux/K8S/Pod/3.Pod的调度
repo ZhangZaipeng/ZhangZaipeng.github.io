@@ -1,0 +1,126 @@
+在 Kubemctes 系统中， Pod 在大部分场景下都只是容器的载体而己，
+通常需要通过Deployment 、 Daemonset 、 RC 、 Job 等对象来完成一组 Pod 的调度与自动控制功能．
+一、Pod调度
+  1.Deployment/RC 全自动调度
+    Deployment 或 RC 的主要功能之一就是自动部署一个容器应用的多份副本，以及持续监控副本的数量，在集群内始终维持用户指定的副本数量。
+
+  2.NodeSelector 半自动定向调度
+    - NodeSelector为硬性条件
+    - 注意：需要注意的是，如果我们指定了 Pod的nodeSelector条件，
+      且集群中不存在包含相应标签的 Node, 则即使集群中还有其他可供使用的Node, 这个Pod也无法被成功调度 。
+
+  3.NodeAffinity 亲和性调度
+    - 表示方式更丰富
+    - 可以使用软限制、优先采用等限制方式，代替之前的硬限制，这样调度器在无法满足优先需求的情况下，会退而求其次，继续运行该Pod
+    - 可以依据节点上正在运行的其他Pod的标签来进行限制，而非节点本身的标签。
+      这样就可以定义一种规则来描述 Pod 之间的亲和或互斥关系。
+    - RequiredDuringschcduIingIgnoredDuringExecution ：必须满足指定的规则才可以调度 Pod 到 Node 上，相当于硬限制。
+    - PreferredDuringSchedulingIgnoredDuringExecution ：强调优先满足指定规则，调度器会尝试调度 Pod 到 Node 上，但并不强求，相当于软限制。
+      多个优先级规则还可以设置权重（weight）值，以定义执行的先后顺序。
+    - 使用方法：
+      affinity:
+        nodeAffinity:(亲和)
+          requiredDuringSchedulingignoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution
+
+  4.PodAffinity 亲和性互斥调度策略
+    - 使用方法：
+      affinity:
+        podAffinity: (互斥)
+          requiredDuringSchedulingignoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:
+        podAntAffinity:
+          requiredDuringSchedulingignoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:
+    - topologyKey作用
+    - 注意事项
+      1.除了设置 Label selector和topologyKey作用，还可以指定namespace列表来进行限制，同样，使用Label selector对namespace 进行选择。
+        namespace的定义和Label Selector及topologyKey同级。省略namespace的设置，表示使用定义了 affinity/anti-affinity的Pod所在的 namespace。
+        如果 namcspace 设置为空值 ，则表示所有 namespace 。
+      2.在所有关联 requiredDuringSchedulingignoredDuringExecution的 matchExpressions 全都满足之后，系统才能将Pod调度到某个Node上。
+
+  5.Taints和Tolerations （污点与容忍）
+    - Taints能让Node拒绝Pod的运行，Node上设置一个或者多个Taints之后，除非Pod明确声明能够容忍这些“污点”，否则无法在这些Node上运行.
+        Taints是Node的属性，Tolerations是Pod属性
+    - 使用方式
+      Node污点设置：
+        kubectl taint nodes nodel key=value:NoSchedule ：
+          污点必须让Pod容忍，否则Pod无法调度到Node上
+        kubectl taint nodes nodel key=value:PreferNoSchedule ：
+          如果Pod没有容忍这个污点，系统会尽量避免把Pod调度到该节点上，但不是强制的。
+          可以算是NoSchedule的软限制条件。
+        kubectl taint nodes nodel key=value:NoExecuter ：
+          Node上正在运行的所有无对应Tolerations的Pod都会被立即驱逐，
+          如果Pod设置了tolerationSeconds表明Pod还能再Node上存活过久，而相对于容忍的Pod不会驱逐。
+
+      Pod容忍设置：
+        tolerations :
+        - key : "key"
+          operator : "Equal"
+          value : "value"
+          effect : "NoSchedule"
+        tolerations :
+          - key : "key"
+            operator : "Exists" (Exists无须指定value)
+            effect : "NoSchedule"
+        tolerations:
+          - key : "key"
+            operator : "Equal"
+            value : "valuel"
+            effect : "NoExecute"
+            tolerationSeconds : 3600 (存活时长)
+      特例与规律：
+        1.空的Key匹配Exists操作符能够匹配所有的键和值
+        2.空的effect匹配所有effect
+
+    - 应用
+      独占节点
+        想拿出一部分节点，专门给一些特定的应用使用
+      具有特殊硬件设备节点
+        在集群中可能有一小部分安装了特殊硬件的设备，希望把不需要占用这类硬件的Pod排除在外。
+      定义驱逐行为，应对节点故障
+        没有设置 Toleration 的 Pod 会被立刻驱逐。
+        配置了对应 Toleration的Pod ，如果没有为 tolerationSeconds赋值，则会一直留在这一节点中。
+        配置了对应 TOleration的Pod且指定了tolerationseconds值，则会在指定时间后驱逐。
+
+  6.DaemonSet
+    Daemonset的Pod调度策略与RC类似，除了使用系统内置的算法在每台Node上进行调优,
+    也可以在Pod的定义中使用NodeSelector或NodeAffinity来指定满足条件的 Node范围进行调度
+
+  7.Job: 批处理调度
+    处理模式
+      1.Job Template Expansion模式：一个Job对象对应一个待处理的Work item,有几个Work
+      item就产生几个独立的Job, 通常适合Work item数量少、每个Work item要处理的数
+      据量比较大的场景。
+      2.Queue with Pod Per Work Item模式：采用一个任务队列存放Work item, —个Job对象
+      作为消费者去完成这些Work item，在这种模式下，Job会启动N个Pod,每个Pod对应一个Work item。
+      3.Queue with Variable Pod Count模式：也是采用一个任务队列存放Work item, —个Job
+      对象作为消费者去完成这些Work item,但与上面的模式不同，Job启动的Pod数量是可变的。
+
+  8.CronJob: 定时任务
+  9.自定义调度器
+    如果自身调度器的众多特性还无法满足我们的独特调度需求，则还可用自己开发的调度器进行调度。
+    可以用任何语言来实现简单或者复制的自定义调度。
+
+二、初始化容器
+  1.概述：
+    Init container与应用容器本质上是一样的，但它是仅运行一次就结束的任务，并且必须在成功执行完成后，
+    系统才能继续执行下一个容器。当 init container 执行失败，在设置了RestartPolicy=Never时，Pod将会启动失败;
+    而设置RestartPolicy=Always时，Pod将会被系统自动重启
+
+  2.应用
+    等待其他关联组件正确运行（例如数据库或某个后台服务）；
+    基于环境变量或配罝模板生成配罝文件；
+    从远程数据库获取本地所离配置，或者将自身注册到某个中央数据库中；
+    下载相关依赖包，或者对系统进行一些预配置操作；
+
+  3.Init container与应用容器的区别
+    (1) Init container的运行方式与应用容器不同，它们必须先于应用容器执行完成，当设置了多个init container时，
+    将按顺序逐个运行，并且只有前一个init container运行成功后才能运行后一个init container。当所有init container都成功运行后，
+    K8s才会初始化Pod的各种信息，并开始创建和运行应用容器。
+    (2) 在init container的定义中也可以设置资源限制、volume的使用和安全策略等等。但资源限制的设置与应用容器略有不同。
+    (3) init container不能设置rcadinessProbe探针，因为必须在它们成功运行后才能继续运行Pod中定义的普通容器。在Pod重新启动（Restart)时，
+    init container将会重新运行，常见的Pod車.启场景如下。
+        init container的镜像被更新时，init container将会重新运行，导致Pod重启。仅更新应用容器的镜像只会使得应用容器被重启。
+        Pod的 infrastructure容器(pause)更新时，Pod将会重启 。
+        若Pod中的所有应用容器都终止了，并且RestartPolicy= Always, 则Pod将会重启。

@@ -1,0 +1,5 @@
+# 连接
+./redis-cli -h 127.0.0.1 -p 46379 -a 123456
+
+# 批量删除
+./redis-cli -h 127.0.0.1 -n 2 -p 6379 -a 123456  keys "KLINE*" | xargs redis-cli -h 127.0.0.1 -n 2 -p 6379 -a 123456 del

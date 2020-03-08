@@ -1,0 +1,32 @@
+一、作用
+  当集群中的某个服务需要升级时，需要停止目前与该服务相关的所有Pod，然后下载新版本镜像并创建新的Pod。
+  如果集群规模比较大，则这个工作就变成了一个挑战，而且先全部停止然后逐步升级的方式会导致较长时间的服务不可用，
+  K8s 提供了滚动升级功能来解决方案。
+
+二、使用
+  1. Deployment的升级
+    例子
+    - kubectl set image deployment/nginx-deployment nginx=nginx:1.9.1
+    - 先修改yaml文件中镜像配置，再kubectl edit deployment/nginx-deployment
+
+  2.Deployment的升级过程
+    当更新Deployment时， 系统创建了一个新的ReplicaSet，并将其副本数扩展到1 ,然后将旧的ReplicaSet缩减为2。
+    之后，系统继续按照相同的更新策略对新旧两个ReplicaSet进行逐个调整。最后，新的ReplicaSet运行了 3个新版本Pod副本，
+    旧的ReplicaSet副本数则缩减为0。整个升级过程系统确保Pod的总数量最多比需要的Pod数多一个
+
+  3.Pod更新的策略
+    Recreate（重建）：会先杀掉所有正在运行的Pod，然后创建新的Pod，spec.strategy.type=Recreate
+    RollingUpdate（滚动更新，默认值）：会以滚动更新的方式来逐个更新Pod，spec.strategy.type=RollingUpdate，
+      滚动更新时两个主要参数：
+        spec.strategy.rollingUpdate.maxUnavailable：更新过程中不可用状态Pod数量的上限
+        spec.strategy.rollingUpdate.maxSurge：更新pod过程中Pod总数超过Pod期望副本数部分的最大值
+
+    注意多重更新：当上一次的更新操作还没有结束时，有开始发出更新操作，那么Deployment会为每一次更新都创建一个
+    ReplicaSet,而每次新的ReplicaSet创建成功后，会逐个增加Pod副本数，同时将之前止在扩容的ReplicaSet停止更新，
+    并将其加入旧版本ReplicaSet列表中，然后开始缩容至0操作。
+
+  4.标签选择器的更新
+    (1)添加选择器标签时，必须同步修改Deployment配置的Pod的标签，为Pod添加新的标签，否则Deployment的更新会报验证错误而失败
+    (2)更新标签选择器，即更改选择器中标签的键或者值，也会产生与添加选杼器标的效果
+    (3)删除标签选择器，即从Deployment的标签选择器中删除一个或者多个标签，该Deployment的
+    ReplicaSet和Pod不会受到任何影响。但需要注意的是，被删除的标签仍会存于现有的Pod和ReplicaSets上

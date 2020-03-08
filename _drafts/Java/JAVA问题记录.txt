@@ -1,0 +1,42 @@
+1.es学习api学习总结
+
+2.订单数据与es直接数据同步
+  https://zhuanlan.zhihu.com/p/90004737
+
+4.mycat 学习
+
+
+雪花算法
+TCP/IP
+
+监听器、过滤器、拦截器 什么关系？
+
+tomcat
+tomcat与servlet是什么关系？
+tomcat是如何解析TCP请求？
+
+
+spring 入口程序在哪里？
+是怎么管理Bean
+管理的Bean有什么特性？
+
+spring mvc 入口程序程序在哪里？
+他干了些什么？
+是怎么渲染页面？
+
+mybatis 入口程序入口程序程序在哪里？
+他干了些什么？
+是怎么封装jdbc的？
+是怎么解析xml标签的？
+
+
+JAVA基础
+面向对象
+注解
+反射
+xml技术
+设计模式
+  观察者模式
+  责任链
+  JDK代理
+  CGLIB代理

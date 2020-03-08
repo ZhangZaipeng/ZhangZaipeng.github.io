@@ -1,0 +1,135 @@
+1.shiro的配置
+  继承 AuthorizingRealm
+  配置自定义Realm
+    授权
+      protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        SysUser sysUser = (SysUser) principals.getPrimaryPrincipal();
+        List<String> sysPermissions = sysPermissionService.selectPermissionByUserId(sysUser.getUserId());
+
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        info.addStringPermissions(sysPermissions);
+        LOGGER.info("doGetAuthorizationInfo");
+        return info;
+      }
+    认证
+      protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+        UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
+        SysUser sysUser = sysUserService.findByUserName(token.getUsername());
+        if (sysUser == null) {
+            return null;
+        }
+        LOGGER.info("doGetAuthenticationInfo");
+        return new SimpleAuthenticationInfo(sysUser, sysUser.getPassword().toCharArray(),
+            ByteSource.Util.bytes(sysUser.getSalt()), getName());
+      }
+    凭证匹配器
+      UserRealm userRealm = new UserRealm();
+      userRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+
+  配置securityManager 安全管理器
+    // 安全管理器绑定Realm
+    DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+    securityManager.setRealm(userRealm());
+
+  配置shiroFilterFactoryBean 设置过滤规则
+    /admins/**=anon # 表示该 uri 可以匿名访问
+    /admins/**=auth # 表示该 uri 需要认证才能访问
+    /admins/**=authcBasic # 表示该 uri 需要 httpBasic 认证
+    /admins/**=perms[user:add:*] # 表示该 uri 需要认证用户拥有 user:add:* 权限才能访问
+    /admins/**=port[8081] # 表示该 uri 需要使用 8081 端口
+    /admins/**=rest[user] # 相当于 /admins/**=perms[user:method]，其中，method 表示 get、post、delete 等
+    /admins/**=roles[admin] # 表示该 uri 需要认证用户拥有 admin 角色才能访问
+    /admins/**=ssl # 表示该 uri 需要使用 https 协议
+    /admins/**=user # 表示该 uri 需要认证或通过记住我认证才能访问
+    /logout=logout # 表示注销,可以当作固定配置
+
+    注意：
+    anon，authcBasic，auchc，user 是认证过滤器。
+    perms，roles，ssl，rest，port 是授权过滤器。
+
+    URL匹配模式
+      - ? : 匹配一个字符
+      - * ：匹配零个或多个字符
+      - **：匹配路径中的零个或多个路径
+
+    URL匹配顺序
+      URL权限采取第一次匹配优先的方式
+
+  配置Cache
+
+
+使用
+  Subject user = SecurityUtils.getSubject();
+
+  UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+  user.login(token); // 登录
+
+  SecurityUtils.getSubject().isAuthenticated(); // 是否认证
+
+  SecurityUtils.getSubject().logout(); // 退出登录
+
+授权方式
+  - 编程
+    subject.hasRole
+  - 注解
+    @RequiresPermissions
+      需要权限
+    @RequiresAuthentication
+      表示当前Subject需要已经通过login进行了身份认证
+    @RequiresUser
+      表示当前Subject有身份验证
+    @RequiresGuest
+      表示当前Subject没有身份验证，游客身份
+    @RequiresRoles
+      标识当前Subject需要xx角色
+
+  - 标签
+    <@shiro.guest>
+    游客访问 <a href = "login.jsp"></a>
+    </@shiro.guest>
+
+    user 标签：用户已经通过认证\记住我 登录后显示响应的内容
+    <@shiro.user>
+    欢迎[<@shiro.principal/>]登录，<a href="/logout.html">退出</a>
+    </@shiro.user>
+
+     authenticated标签：用户身份验证通过，即 Subjec.login 登录成功 不是记住我登录的
+    <@shiro.authenticated>
+        用户[<@shiro.principal/>]已身份验证通过
+    </@shiro.authenticated>
+
+    notAuthenticated标签：用户未进行身份验证，即没有调用Subject.login进行登录,包括"记住我"也属于未进行身份验证
+    <@shiro.notAuthenticated>
+        当前身份未认证（包括记住我登录的）
+    </@shiro.notAuthenticated>
+
+
+    principal 标签：显示用户身份信息，默认调用
+    Subjec.getPrincipal()获取，即Primary Principal
+    <@shiro.principal property="username"/>
+
+
+    hasRole标签：如果当前Subject有角色将显示body体内的内容
+    <@shiro.hasRole name="admin">
+        用户[<@shiro.principal/>]拥有角色admin<br/>
+    </@shiro.hasRole>
+
+    hasAnyRoles标签：如果Subject有任意一个角色(或的关系)将显示body体里的内容
+    <@shiro.hasAnyRoles name="admin,user,member">
+    用户[<@shiro.principal/>]拥有角色admin或user或member<br/>
+    </@shiro.hasAnyRoles>
+
+    lacksRole:如果当前 Subjec没有角色将显示body体内的内容
+    <@shiro.lacksRole name="admin">
+    用户[<@shiro.principal/>]不拥有admin角色
+    </@shiro.lacksRole>
+
+    hashPermission:如果当前Subject有权限将显示body体内容
+    <@shiro.hasPermission name="user:add">
+        用户[<@shiro.principal/>]拥有user:add权限
+    </@shiro.hasPermission>
+
+    lacksPermission:如果当前Subject没有权限将显示body体内容
+    <@shiro.lacksPermission name="user:add">
+    用户[<@shiro.principal/>]不拥有user:add权限
+</@shiro.lacksPermission>
