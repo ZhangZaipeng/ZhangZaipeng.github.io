@@ -1,0 +1,65 @@
+  数据从一台主机发送到网络中的另一台机器需要经过很多步骤。首先需要有相互沟通的意向。
+  其次要有能沟通的物理渠道，再次双方见面时语言要能够交流，而且双方说话的步调要一致
+
+一、TCP状态转换（对照TCP状态转换图）
+  TCP通信过程包括三个步骤：建立TCP连接通道（三次握手）、数据传输、断开TCP连接通道（四次挥手）。
+  1.CLOSED：起始点，在超时或者连接关闭时候进入此状态，这并不是一个真正的状态，而是假想起点和终点。
+  2.LISTEN：服务器端等待连接的状态。服务器经过 socket，bind，listen 函数之后进入此状态，开始监听客户端发过来的连接请求。
+  3.SYN_SENT：第一次握手发生阶段，客户端发起连接。客户端调用 connect，发送 SYN 给服务器端，然后进入 SYN_SENT 状态，等待服务器端确认（三次握手中的第二个报文）。
+    如果服务器端不能连接，则直接进入CLOSED状态。
+  4.SYN_RCVD：第二次握手发生阶段，跟 3 对应，这里是服务器端接收到了客户端的 SYN，此时服务器由 LISTEN 进入 SYN_RCVD状态，同时服务器端回应一个 ACK，
+    然后再发送一个 SYN 即 SYN+ACK 给客户端。
+  5.ESTABLISHED：第三次握手发生阶段，客户端接收到服务器端的 ACK 包（ACK，SYN）之后，也会发送一个 ACK 确认包，客户端进入 ESTABLISHED 状态，
+    表明客户端这边已经准备好，但TCP 需要两端都准备好才可以进行数据传输。服务器端收到客户端的 ACK 之后会从 SYN_RCVD 状态转移到 ESTABLISHED 状态，
+    表明服务器端也准备好进行数据传输了。这样客户端和服务器端都是 ESTABLISHED 状态，就可以进行后面的数据传输了。所以 ESTABLISHED 也可以说是一个数据传送状态。
+  6.FIN_WAIT_1：第一次挥手。主动关闭的一方（执行主动关闭的一方既可以是客户端，也可以是服务器端，），终止连接时，发送 FIN 给对方，然后等待对方返回 ACK 。
+    调用 close() 第一次挥手就进入此状态。
+  7.CLOSE_WAIT：接收到FIN 之后，被动关闭的一方进入此状态。具体动作是接收到 FIN，同时发送 ACK。
+    之所以叫 CLOSE_WAIT 可以理解为被动关闭的一方此时正在等待上层应用程序发出关闭连接指令。前面已经说过，TCP关闭是全双工过程，客户端执行了主动关闭，
+    被动方服务器端接收到FIN 后也需要调用 close 关闭，这个 CLOSE_WAIT 就是处于这个状态，等待发送 FIN，发送了FIN 则进入 LAST_ACK 状态。
+  8.FIN_WAIT_2：主动端先执行主动关闭发送FIN，然后接收到被动方返回的 ACK 后进入此状态。
+  9.LAST_ACK：被动方发起关闭请求，由状态2 进入此状态，具体动作是发送 FIN给对方，同时在接收到ACK 时进入CLOSED状态。
+    CLOSING：两边同时发起关闭请求时（即主动方发送FIN，等待被动方返回ACK，同时被动方也发送了FIN，主动方接收到了FIN之后，发送ACK给被动方），
+    主动方会由FIN_WAIT_1 进入此状态，等待被动方返回ACK。
+  10.TIME_WAIT：从状态变迁图会看到，四次挥手操作最后都会经过这样一个状态然后进入CLOSED状态。共有三个状态会进入该状态
+
+二、影响网络传输的因素
+  网络宽带：物理链路上能够传输的最大比特数
+  传输距离：由距离引起，传输延迟无法避免
+  TCP拥塞控制：
+
+三、TCP 网络参数优化
+  1.调试命令：netstat -n | awk '/^tcp/ {++state[$NF]} END {for(key in state) print key,"\t",state[key]}'
+  2.内核网络参数：
+    net.ipv4.ip_local_port_range = 1024 65000 用于向外连接的端口范围。缺省情况下很小：32768到61000，改为1024到65000。
+    net.ipv4.tcp_tw_reuse = 1 开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0
+    net.ipv4.tcp_tw_recycle = 1 开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。
+    net.ipv4.tcp_fin_timeout = 30 设置FIN-WAIT-2状态等待回收时间，它决定了它保持在FIN-WAIT-2状态的时间。
+    net.ipv4.tcp_max_syn_backlog = 8192 SYN队列的长度，默认为1024，加大队列长度为8192，可以容纳更多等待连接的网络连接数。
+    net.ipv4.netdev_max_backlog = 1000 表示进入包的最大队列，默认300，改大
+    net.ipv4.tcp_syncookies = 1 开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击；
+
+    echo 1 > /proc/sys/net/ipv4/tcp_window_scaling 设置TCP/IP会话的滑动窗口大小是否可变
+    echo 10000 > /proc/sys/net/core/somaxconn 设置每一个处于监听状态的端口的监听队列的长度，默认是128
+    echo 2000000 > /proc/sys/fs/file-max 设置最大打开文件数
+    echo 16777216 > /proc/sys/net/core/rmem_max 设置最大socket数据接收缓存大小,可参考的优化值: 16777216
+    echo 262144 > /proc/sys/net/core/rmem_default 设置默认最大socket数据接收缓存大小,可参考的优化值: 262144
+    echo 16777216 > /proc/sys/net/core/wmem_max 设置最大socket数据发送缓存大小,可参考的优化值:16777216
+    echo 262144 > /proc/sys/net/core/wmem_default 设置最大socket数据发送缓存大小,可参考的优化值:262144
+    echo "4096 87380 16777216" > /proc/sys/net/ipv4/tcp_rmem 设置最大的TCP数据发送缓存大小, 三个值分别是最小、默认、最大可参考的优化值: 4096 87380 16777216
+    echo "4096 87380 16777216" > /proc/sys/net/ipv4/tcp_wmem 设置最大的TCP数据接收缓存大小, 三个值分别是最小、默认、最大可参考的优化值: 4096 87380 16777216
+
+    net.ipv4.tcp_keepalive_time = 1200 当keepalive起用的时候，TCP发送keepalive消息的频度。缺省是2小时
+    net.ipv4.tcp_keepalive_probes = 3 probe 3次(每次30秒)不成功,内核才彻底放弃。
+    tcp_keepalive_time = 7200 seconds (2 hours)
+    net.core.tcp_max_tw_buckets = 5000 系统同时保持TIME_WAIT套接字的最大数量，如果超过这个数字，
+    TIME_WAIT套接字将立刻被清除并打印警告信息。默认为180000，改为 5000。
+
+    /proc/sys/net/core/optmem_max socket buffer的最大初始化值,默认10K.
+    /proc/sys/net/ipv4/tcp_retries2 TCP失败重传次数,默认值15.减少到5,以尽早释放内核资源.
+    net.core.somaxconn = 32768 socket监听（listen）的backlog上限，是socket的监听队列。比如nginx 定义NGX_LISTEN_BACKLOG默认到511
+
+四、网络IO优化
+  1.减少网络交互的次数（数据库访问）
+  2.减少网络传输数据量的大小（http gzip压缩）
+  3.尽量减少编码

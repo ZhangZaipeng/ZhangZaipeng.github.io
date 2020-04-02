@@ -1,0 +1,45 @@
+1.XML介绍
+　　XML是可扩展标记语言（Extensible Markup Language ），XML是一种数据格式，类似 HTML，是使用标签进行内容描述的技术，
+  与HTML不同的是，XML的标签和属性都是根据业务需求自定义的。
+
+  特点：
+    XML与操作系统、编程语言的开发平台都无关（通用的数据交换格式）
+    实现不同系统之间的数据交换（包括系统的配置文件）
+    是一种标记语言，没有固定的标记，可以自定义创建
+
+2.XML文档结构
+  如同树枝
+
+3.XML的声明
+  <?xml version="1.0" standalone="yes" encoding="UTF-8"?>
+  <bookstore>
+    <book category="COOKING">
+      <title lang="en">Everyday Italian</title>
+      <author>Giada De Laurentiis</author>
+      <year>2019</year>
+      <price>30.00</price>
+    </book>
+    <book category="CHILDREN">
+      <title lang="en">Harry Potter</title>
+      <author>J K. Rowling</author>
+      <year>2005</year>
+      <price>29.99</price>
+    </book>
+    <!-- this is comment -->
+    <book category="WEB">
+      <title lang="en">Learning XML</title>
+      <author>Erik T. Ray</author>
+      <year>2015</year>
+      <price>39.95</price>
+    </book>
+  </bookstore>
+
+  version: 说明这个文档符合1.0规范
+  standalone: 说明文档在这一个文件里还是需要从外部导入, standalone 的值设为yes 说明所有的文档都在这一文件里完成
+  encoding: 指文档字符编码
+  标签：用尖括号括起来的各种标签来标记数据，标签成对出现来界定字符数据，XML文档中可以包含任意数量的标签。
+  根元素：根元素是一个完全包含文档中其他所有元素的元素
+  元素：元素的基本结构由 开始标记，数据内容，结束标记组成
+  属性：标签的属性可以有多个，多个属性写在标签上使用空格隔开就行。如：<元素名  属性名="属性值" 属性名="属性值"></>
+  XML注释：<!-- this is comment -->
+  XML中特殊字符的处理： 1.<![CDATA[要显示的字符]]> 2.预定义的实体引用

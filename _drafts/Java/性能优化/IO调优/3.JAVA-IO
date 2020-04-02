@@ -1,0 +1,29 @@
+1.java程序需要和"外部"进行通信的通道，这个"外部"可以是很多介质（磁盘，网络，进程）
+
+2.IO流的分类
+  1.字节
+    InputStream: 字节输入流(外部 -> 内存)
+      ByteArrayInputStream
+      FileInputStream 字节文件操作流
+      ZipInputStream
+      BufferedInputStream 字节缓冲流（高效流）
+      ObjectInputStream
+      DataInputStream
+    OutputStream: 字节输出流(内存 -> 外部)
+      ByteArrayOutputStream
+      FileOutputStream 字节文件操作流
+      ZipOutputStream
+      BufferedOutputStream 字节缓冲流（高效流）
+      ObjectOutputStream
+      DataOutputStream
+  2.字符
+    Reader: 字符输入流(外部 -> 内存)
+      FileReader
+      BufferedReader 字符缓冲流（高效流）
+      StringReader
+      CharArrayReader
+    Writer: 字符输出流(内存 -> 外部)
+      FileWriter
+      BufferedWriter 字符缓冲流（高效流）
+      StringWriter
+      CharArrayWriter

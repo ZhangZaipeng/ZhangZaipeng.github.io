@@ -9,11 +9,6 @@
 雪花算法
 TCP/IP
 
-监听器、过滤器、拦截器 什么关系？
-
-tomcat
-tomcat与servlet是什么关系？
-tomcat是如何解析TCP请求？
 
 
 spring 入口程序在哪里？
@@ -31,12 +26,15 @@ mybatis 入口程序入口程序程序在哪里？
 
 
 JAVA基础
-面向对象
-注解
-反射
+面向对象实例代码
 xml技术
 设计模式
-  观察者模式
-  责任链
-  JDK代理
   CGLIB代理
+
+ThreadLocal
+
+java 命令详解
+
+
+shiro的使用
+activity使用

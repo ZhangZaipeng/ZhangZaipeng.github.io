@@ -1,0 +1,41 @@
+1.注解的本质与作用
+  本质：是一个继承了Annotation 接口的接口。
+  作用：1)编译检查，2) 在反射中使用 Annotation，3) 根据 Annotation 生成帮助文档
+
+2.元注解：用于修饰注解的注解
+  @Target：用于指明被修饰的注解最终可以作用的目标是谁
+    @Target(value = {ElementType.FIELD})
+      ElementType.TYPE：允许被修饰的注解作用在类、接口和枚举上
+      ElementType.FIELD：允许作用在属性字段上
+      ElementType.METHOD：允许作用在方法上
+      ElementType.PARAMETER：允许作用在方法参数上
+      ElementType.CONSTRUCTOR：允许作用在构造器上
+      ElementType.LOCAL_VARIABLE：允许作用在本地局部变量上
+      ElementType.ANNOTATION_TYPE：允许作用在注解上
+      ElementType.PACKAGE：允许作用在包上
+  @Retention：指明当前注解的生命周期
+    @Retention(value = RetentionPolicy.RUNTIME)
+      RetentionPolicy.SOURCE：当前注解编译期可见，不会写入 class 文件
+      RetentionPolicy.CLASS：类加载阶段丢弃，会写入 class 文件
+      RetentionPolicy.RUNTIME：永久保存，可以反射获取
+  @Documented：注解是否应当被包含在 JavaDoc 文档中
+  @Inherited：是否允许子类继承该注解
+  @Repeatable：
+
+3.注解属性类型
+  1.基本数据类型
+  2.String
+  3.枚举类型
+  4.注解类型
+  5.Class类型
+  6.以上类型的一维数组类型
+
+3.注解属性获取,反射
+  Class 类中提供了以下一些方法用于反射注解。
+    getAnnotation：返回指定的注解
+    isAnnotationPresent：判定当前元素是否被指定注解修饰
+    getAnnotations：返回所有的注解
+    getDeclaredAnnotation：返回本元素的指定注解
+    getDeclaredAnnotations：返回本元素的所有注解，不包含父类继承而来的
+
+4.注解的源代码分析

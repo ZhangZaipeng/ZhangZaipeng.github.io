@@ -1,0 +1,37 @@
+一、Filter简介
+  Filter也称之为过滤器，它是Servlet技术中最激动人心的技术，WEB开发人员通过Filter技术，对web服务器管理的所有web资源。
+　Servlet API中提供了一个Filter接口，开发web应用时，如果编写的Java类实现了这个接口，则把这个java类称之为过滤器Filter。
+
+二、工作原理
+  当客户端发出Web资源的请求时，Web服务器根据应用程序配置文件设置的过滤规则进行检查，若客户请求满足过滤规则，
+  则对客户请求／响应进行拦截，对请求头和请求数据进行检查或改动，并依次通过过滤器链，最后把请求/响应交给请求的Web资源处理。
+
+三、Filter的生命周期
+  Filter的创建 --> 初始化调用其init方法 --> 拦截成功后doFilter方法被执行 --> Filter的销毁
+
+四、Filter使用
+  1.开发：编写java类实现Filter接口，并实现其doFilter方法。
+    1、可以在filter中根据条件决定是否调用chain.doFilter(request, response)方法，即是否让目标资源执行
+    2、在让目标资源执行之前，可以对request\response作预处理，再让目标资源执行
+    3、在目标资源执行之后，可以捕获目标资源的执行结果，从而实现一些特殊的功能
+  2.注册Filter
+    开发好Filter之后，需要在web.xml文件中进行注册，这样才能够被web服务器调用
+    <filter>定义
+    <filter-name>用于为过滤器指定一个名字，该元素的内容不能为空。
+    <filter-class>元素用于指定过滤器的完整的限定类名。
+    <init-param>元素用于为过滤器指定初始化参数，它的子元素<param-name>指定参数的名字，<param-value>指定参数的值。
+      在过滤器中，可以使用FilterConfig接口对象来访问初始化参数。
+  3.映射Filter
+    <filter-mapping>定义
+    <filter-name>子元素用于设置filter的注册名称。该值必须是在<filter>元素中声明过的过滤器的名字
+    <url-pattern>设置 filter 所拦截的请求路径
+      精准匹配：/foo.htm
+      路径匹配：/foo/*
+      后缀匹配：*.htm
+    <dispatcher>指定过滤器所拦截的资源被 Servlet 容器调用的方式
+      REQUEST：当用户直接访问页面时，Web容器将会调用过滤器。
+      INCLUDE：如果目标资源是通过RequestDispatcher的include()方法访问时，那么该过滤器将被调用。
+      FORWARD：如果目标资源是通过RequestDispatcher的forward()方法访问时，那么该过滤器将被调用。
+      ERROR：如果目标资源是通过声明式异常处理机制调用时，那么该过滤器将被调用。
+
+

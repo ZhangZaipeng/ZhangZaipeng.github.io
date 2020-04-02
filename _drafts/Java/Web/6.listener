@@ -1,0 +1,43 @@
+一、Listener简介
+    Listener使用得非常广泛，它是基于观察者模式设计的，Listener的设计为开发Servlet应用程序提供了一种快捷的手段，
+  能够方便地从另-个纵叫维度控制程序和数椐。Servlet监听器用于监听web应用程序中的 ServletContext，HttpSession和
+  ServletRequest等域对象的创建和销毁事件，以及监听这些域对象中的属性发生修改的事件。
+
+二、Listener生命周期
+  request对象Listener
+    是一个请求，当一个响应返回时，即被销毁，当发送一个请求时被创建。
+  session对象Listener
+    当第一次访问web应用的一个JSP或Servlet时，且该JSP或Servlet中还需要创建 session对象，此时服务器会创建一个session 对象。
+  application对象Listener
+    贯穿于当前的 WEB 应用的生命周期，当前 WEB 应用被加载时创建application对象，当前WEB应用被卸载时销毁application对象
+
+三、Listener种类
+  1、由某个操作事件触发
+    HttpSessionAttributeListener接口
+      attributeAdded(HttpSessionBindingEvent event) 调用session.setAttribute方法时触发
+      attributeRemoved(HttpSessionBindingEvent event) 调用session.removeAttribute方法时触发
+      attributeReplaced(HttpSessionBindingEvent event) 替换这个Attribute时这个接口被触发
+    ServletContextAttributeListener接口
+      attributeAdded(ServletContextAttributeEvent event) 调用servletContex.setAttribute方法时触发
+      attributeRemoved(ServletContextAttributeEvent event) 调用servletContex.removeAttribute方法时触发
+      attributeReplaced(ServletContextAttributeEvent event) 替换这个Attribute时这个接口被触发
+    ServletRequestAttributeListener接口
+      attributeAdded(ServletRequestAttributeEvent srae) 调用request.setAttribute方法时触发
+      attributeRemoved(ServletRequestAttributeEvent srae) 调用request.removeAttribute方法时触发
+      attributeReplaced(ServletRequestAttributeEvent srae) 替换这个Attribute时这个接口被触发
+    ServletRequestListener接口
+      requestInitialized(ServletRequestEvent sre) 当HttpServletRequest对象被传递到用户的Servlet的service方法之前该方法被触发
+      requestDestroyed(ServletRequestEvent sre) 当HttpServletRequest对象调用用户的Servlet的service方法之后该方法被触发
+
+  2、生命周期中不同状态触发
+    HttpSessionListener接口
+      sessionCreated(HttpSessionEvent se) 当一个session被创建时触发
+      sessionDestroyed(HttpSessionEvent se) 当一个session失效触发
+    ServletContextListener接口
+      contextInitialized(ServletContextEvent sce) Context容器初始化时触发
+      contextDestroyed(ServletContextEvent sce) Context容器销毁时触发
+
+四、Listener使用
+  1.开发：编写java类实现监听器接口，并重载接口方法。
+  2.注册Listener
+    在web.xml标签中添加<listener>

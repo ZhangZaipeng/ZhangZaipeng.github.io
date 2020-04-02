@@ -31,11 +31,11 @@
 ```
 - 2.Cookie的添加  
     - Cookie一旦创建，名称便不可更改,如果需要修改则需要覆盖。  
-    <font color=red>注意：注意：修改、删除Cookie时，新建的Cookie除value、maxAge之外的所有属性，例如name、path、domain等，都要与原Cookie完全一样。否则，浏览器将视为两个不同的Cookie不予覆盖，导致修改、删除失败。</font>
+    注意：注意：修改、删除Cookie时，新建的Cookie除value、maxAge之外的所有属性，例如name、path、domain等，都要与原Cookie完全一样。否则，浏览器将视为两个不同的Cookie不予覆盖，导致修改、删除失败。
     
 - 3.Cookie的域名
     - Cookie是不可跨域名的。
-    <font color=red>如果设置为“.google.com”，则所有以“google.com”结尾的域名都可以访问该Cookie。注意第一个字符必须为“.”</font>
+    如果设置为“.google.com”，则所有以“google.com”结尾的域名都可以访问该Cookie。注意第一个字符必须为“.”
 ```text
     Cookie cookie = new Cookie("time","20080808"); // 新建Cookie
     cookie.setDomain(".helloweenvsfei.com"); // 设置域名
@@ -48,10 +48,10 @@
     - domain属性决定运行访问Cookie的域名，而path属性决定允许访问Cookie的路径
     - 设置为“/”时允许所有路径使用Cookie。path属性需要使用符号“/”结尾。
     - name相同但domain不同的两个Cookie也是两个不同的Cookie。
-    <font color=red>注意：页面只能获取它属于的Path的Cookie。例如/session/test/a.jsp不能获取到路径为/session/abc/的Cookie。使用时一定要注意。</font>
-        - 1.domain表示的是cookie所在的域，默认为请求的地址，如网址为www.test.com/test/test.aspx，那么domain默认为www.test.com。而跨域访问，如域A为t1.test.com，域B为t2.test.com，那么在域A生产一个令域A和域B都能访问的cookie就要将该cookie的domain设置为.test.com；如果要在域A生产一个令域A不能访问而域B能访问的cookie就要将该cookie的domain设置为t2.test.com。
-        - 2.path表示cookie所在的目录，默认为/，就是根目录。在同一个服务器上有目录如下：/test/,/test/cd/,/test/dd/，现设一个cookie1的path为/test/，cookie2的path为/test/cd/，那么test下的所有页面都可以访问到cookie1，而/test/和/test/dd/的子页面不能访问cookie2。这是因为cookie能让其path路径下的页面访问。
-        - 3.浏览器会将domain和path都相同的cookie保存在一个文件里，cookie间用*隔开。
+    注意：页面只能获取它属于的Path的Cookie。例如/session/test/a.jsp不能获取到路径为/session/abc/的Cookie。使用时一定要注意。
+      - 1.domain表示的是cookie所在的域，默认为请求的地址，如网址为www.test.com/test/test.aspx，那么domain默认为www.test.com。而跨域访问，如域A为t1.test.com，域B为t2.test.com，那么在域A生产一个令域A和域B都能访问的cookie就要将该cookie的domain设置为.test.com；如果要在域A生产一个令域A不能访问而域B能访问的cookie就要将该cookie的domain设置为t2.test.com。
+      - 2.path表示cookie所在的目录，默认为/，就是根目录。在同一个服务器上有目录如下：/test/,/test/cd/,/test/dd/，现设一个cookie1的path为/test/，cookie2的path为/test/cd/，那么test下的所有页面都可以访问到cookie1，而/test/和/test/dd/的子页面不能访问cookie2。这是因为cookie能让其path路径下的页面访问。
+      - 3.浏览器会将domain和path都相同的cookie保存在一个文件里，cookie间用*隔开。
 ```text
     Cookie cookie = new Cookie("time","20080808"); // 新建Cookie
     cookie.setPath("/session/"); // 设置路径

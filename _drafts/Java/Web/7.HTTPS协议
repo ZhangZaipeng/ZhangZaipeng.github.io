@@ -1,0 +1,42 @@
+一、HTTPS安全通信演化过程
+  1、裸奔————明文传输
+  2、有人偷听————对称加密算法
+  3、可以公开的密钥————非对称加密算法
+  4、有点慢————非对称加密算法+对称加密算法
+  5、防止中间人攻击————数字证书
+
+二、HTTPS数字证书
+  1.基本组成部分
+    公钥信息
+    证书其他信息
+    摘要信息 (数字摘要算法 加密 公钥信息与证书信息)
+    数字签名 (用CA的私钥加密 加密 摘要信息)
+
+三、HTTPS简易安全通信过程
+  1.浏览器基于Https发送访问请求
+  2.服务器返回数字证书
+  3.浏览器用内置的CA相匹配的公钥解密，并用数字摘要算法对数字证书中公钥等信息生成本地数字签名，并与证书中的数字签名匹配
+  4.浏览器产生随机的对称秘钥，并用Server的公钥加密
+  5.Server用自己的私钥进行解密得到对称秘钥
+  6.双方用对称秘钥梯通信
+
+四、HTTPS验证server的SSL握手过程
+  1)SSLclient通过Client Hello消息将它支持的SSL版本号、加密算法、密钥交换算法、MAC算法等信息发送给SSLserver。
+  2)SSLserver确定本次通信采用的SSL版本号和加密套件，并通过Server Hello消息通知给SSLclient。
+    如果SSLserver同意SSLclient在以后的通信中重用本次会话，则SSLserver会为本次会话分配会话ID。并通过Server Hello消息发送给SSLclient。
+  3)SSLserver将携带自己公钥信息的数字证书通过Certificate消息发送给SSLclient。
+  4)SSLserver发送Server Hello Done消息。通知SSLclient版本号和加密套件协商结束。开始进行密钥交换。
+  5)SSLclient验证SSLserver的证书合法后，利用证书中的公钥加密SSLclient随机生成的premaster secret，并通过Client Key Exchange消息发送给SSLserver。
+  6)SSLclient发送Change Cipher Spec消息，通知SSLserver兴许报文将採用协商好的密钥和加密套件进行加密和MAC计算。
+  7)SSLclient计算已交互的握手消息（除Change Cipher Spec消息外全部已交互的消息）的Hash值，利用协商好的密钥和加密套件处理Hash值（计算并加入MAC值、加密等），
+    并通过Finished消息发送给SSLserver。SSLserver利用相同的方法计算已交互的握手消息的Hash值，并与Finished消息的解密结果比較，假设二者相同，且MAC值验证成功，
+    则证明密钥和加密套件协商成功。
+  8)相同地。SSLserver发送Change Cipher Spec消息，通知SSLclient兴许报文将採用协商好的密钥和加密套件进行加密和MAC计算。
+  9)SSLserver计算已交互的握手消息的Hash值，利用协商好的密钥和加密套件处理Hash值（计算并加入MAC值、加密等），并通过Finished消息发送给SSLclient。SSLclient利用相同的方法计算已交互的握手消息的Hash值，并与Finished消息的解密结果比較，假设二者相同。且MAC值验证成功。则证明密钥和加密套件协商成功。
+
+
+参考文献
+  HTTPS安全通信过程
+  博客：https://www.cnblogs.com/xtiger/p/11026870.html
+  SSL工作原理
+  博客：https://www.cnblogs.com/bhlsheji/p/4586597.html
