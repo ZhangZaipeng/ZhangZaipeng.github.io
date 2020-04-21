@@ -1,0 +1,75 @@
+一、Minor GC日志样例
+  2015-05-26T14:27:40.915-0200:
+    116.115: [GC (Allocation Failure)
+    [PSYoungGen: 2694440K->1305132K (2796544K)] 9556775K->8438926K
+    (11185152K), 0.2406675 secs]
+  [Times: user=1.77 sys=0.01, real=0.24 secs]11
+
+二、Minor GC分析
+  1. 2015-05-26T14:27:40.915-0200
+    GC事件开始的时间. 其中-0200表示西二时区,而中国所在的东8区为 +0800
+  2. 116.115
+    GC事件开始时,相对于JVM启动时的间隔时间,单位是秒。
+  3. GC
+    用来区分 Minor GC 还是 Full GC 的标志。GC表明这是一次小型GC(Minor GC)
+  4. Allocation Failure
+    触发GC的原因。本次GC事件, 是由于年轻代中没有空间来存放新的数据结构引起的。
+  5. PSYoungGen – 使用的垃圾收集器的名字.
+       PSYoungGen 这个名字代表的是:
+       并行的 标记-复制(mark-copy), 全线暂停(STW) 垃圾收集器。
+  6. 2694440K->1305132K
+    在垃圾收集之前和之后的年轻代使用量。
+  7. (2796544K)
+    年轻代的总大小。
+  8. 9556775K->8438926K
+    在垃圾收集之前和之后整个堆内存的使用量。
+  9. (11185152K)
+    总的可用的堆内存
+  10. 0.2406675 secs
+    GC事件的持续时间(Duration),单位是秒.
+  11. [Times: user=1.77 sys=0.01, real=0.24 secs] – GC事件的持续时间,通过三个部分来进行衡量:
+     user – 此次垃圾回收, 垃圾收集线程消耗的所有CPU时间(Total CPU time).
+     sys – 操作系统调用(OS call) 以及等待系统事件的时间(waiting for system event)
+     real – 应用程序暂停的时间(Clock time). 由于串行垃圾收集器(Serial Garbage Collector)只会使用单个线程, 所以 real time 等于 user 以及 system time 的总和.
+
+三、Full GC日志样例
+  2015-05-26T14:27:41.155-0200:
+    116.356 : [Full GC (Ergonomics)
+    [PSYoungGen: 1305132K->0K(2796544K)]
+    [ParOldGen :7133794K->6597672K(8388608K)]
+    8438926K->6597672K (11185152K),
+    [Metaspace: 6745K->6745K(1056768K)], 0.9158801 secs,
+  [Times: user=4.49 sys=0.64, real=0.92 secs]
+
+四、Full GC分析
+  2015-05-26T14:27:41.155-0200
+    GC事件开始的时间. 其中-0200表示西二时区,而中国所在的东8区为 +0800。
+  116.356
+    GC事件开始时,相对于JVM启动时的间隔时间,单位是秒。
+  [Full GC
+    用来表示此次是 Full GC 的标志。Full GC表明本次清理的是年轻代和老年代
+  Ergonomics
+    触发垃圾收集的原因。Ergonomics 表示JVM内部环境认为此时可以进行一次垃圾收集
+  [PSYoungGen: 1305132K->0K(2796544K)]
+    和上面的示例一样, 清理年轻代的垃圾收集器是名为“PSYoungGen” 的STW收集器
+    采用标记-复制(mark-copy)算法
+    年轻代使用量从 1305132K 变为 0, 一般 Full GC 的结果都是这样。
+  ParOldGen
+    用于清理老年代空间的垃圾收集器类型
+    在这里使用的是名为 ParOldGen 的垃圾收集器, 这是一款并行 STW垃圾收集器, 算法为 标记-清除-整理(mark-sweep-compact)。
+  7133794K->6597672K
+    在垃圾收集之前和之后老年代内存的使用情况。
+  (8388608K)
+    老年代的总空间大小。
+  8438926K->6597672K
+    在垃圾收集之前和之后堆内存的使用情况。
+  (11185152K)
+    可用堆的总空间大小。
+  [Metaspace: 6745K->6745K(1056768K)]
+    类似的信息,关于 Metaspace 空间的。可以看出, 在GC事件中 Metaspace 里面没有回收任何对象。
+  0.9158801 secs
+    GC事件持续的时间,以秒为单位。
+
+
+参考资料
+  https://blog.csdn.net/renfufei/article/details/54885190

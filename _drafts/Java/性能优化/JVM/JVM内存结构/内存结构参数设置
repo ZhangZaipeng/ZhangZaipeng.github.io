@@ -1,0 +1,10 @@
+-server
+-Xmx1g
+-Xms1g
+-Xmn256m
+-XX:MetaspaceSize=128m
+-XX:MaxMetaspaceSize=256m
+-Xss512k
+-XX:SurvivorRatio=8
+-XX:MaxTenuringThreshold=7
+-XX:GCTimeRatio=19

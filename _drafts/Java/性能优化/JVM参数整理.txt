@@ -1,0 +1,103 @@
+ -server
+ -Xmx1g -Xms1g -Xmn256m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -Xss512k -XX:SurvivorRatio=8
+ -XX:+UseParNewGC -XX:ParallelGCThreads=4 -XX:GCTimeRatio=95
+ -XX:+UseConcMarkSweepGC
+ -XX:+CMSClassUnloadingEnabled -XX:-CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
+ -Xnoclassgc -XX:+UseCompressedOops -XX:+UseFastAccessorMethods -XX:MaxTenuringThreshold=7
+ -XX:-HeapDumpOnOutOfMemoryError -XX:+DisableExplicitGC -XX:+PrintGCDetails -Xloggc:/home/www
+ -XX:SoftRefLRUPolicyMSPerMB=0 -XX:+PerfBypassFileSystemCheck
+
+常规优化：
+    1、禁用System.gc -XX:-DisableExplicitGC
+    2、逃逸分析与标题替换 默认是启用的 -XX:+DoEscapeAnalysis
+    3、关闭偏向锁优化
+    4、指针压缩 -XX:+UseCompressedOops
+      间接的提高内存的利用率。
+    5、getter方法优化 -XX:UseFastAccessorMethods
+JIT优化：
+    1、开启服务端模式 -server
+    2、增加内联函数的可能性
+    3、提高编译的可能性 -XX:CompileThreshold=10000
+    4、降低线程优先级
+    5、热度衰减与半衰周期
+
+常用优化：
+  1、内存设置：-Xmx1g -Xms1g -Xmn256m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -Xss512k -XX:SurvivorRatio=8
+    -Xmx1g：设置JVM最大可用内存为1G。
+    -Xms1g：设置JVM初始内存为1G。此值可以设置与-Xmx相同，以避免每次垃圾回收完成后JVM重新分配内存。
+    -Xmn256m：设置年轻代大小为256m。
+        整个堆内存大小 = 年轻代大小 + 年老代大小 + 持久代大小 。
+        持久代一般固定大小为64m，所以增大年轻代后，将会减小年老代大小。
+        此值对系统性能影响较大，Sun官方推荐配置为整个堆的3/8。
+    -Xss512k：每个线程的Stack大小
+    -XX:MetaspaceSize=128m：
+    -XX:MaxMetaspaceSize=256m：
+    -XX:SurvivorRatio=8：新生代中的Eden区域与Survivor区域的容器比值。
+        则两个Survivor区与一个Eden区的比值为2:8，一个Survivor区占整个年轻代的1/10。
+
+  2、通用参数
+    -Xnoclassgc
+      关闭CLASS的垃圾回收功能，就是虚拟机加载的类，即便是不使用，没有实例也不会回收。
+      如果一个类20分钟还没有使用，虚拟机会卸载这个类。
+      如果这个类再次使用，虚拟机会重新加载这个类，由于虚拟机加载类包含了IO和内存分配的操作，因此加载时会对性能有所影响。
+    -XX:+HeapDumpOnOutOfMemoryError： 当堆内存空间溢出时输出堆的内存快照。
+    -XX:HeapDumpPath=/home/www/快照位置
+    -XX:PetenureSizeThreshold=1000000，1M：直接晋升到老年代的对象大小
+    -XX:MaxTenuringThreshold=30： 默认为15
+        如果设置为0的话，则年轻代对象不经过Survivor区直接进入年老代。
+        对于年老代比较多的应用，可以提高效率。如果将此值 设置为一个较大值，则年轻代对象会在Survivor区进行多次复制，
+        这样可以增加对象再年轻代的存活时间，增加在年轻代即被回收的概率。
+        设置为30表示 一个对象如果在Survivor空间移动30次还没有被回收就放入年老代。
+    -XX:HandlePromotionFailure
+    -XX:TargetSurvivorRatio=90
+    -XX:SoftRefLRUPolicyMSPerMB=0
+    -XX:+PerfBypassFileSystemCheck
+
+  3、SerialGC收集器参数
+    -XX:+UseSerialGC
+      收集器组合：Serial + Serial Old
+
+  4、Parallel收集器参数
+    -XX:+UseParNewGC
+      收集器组合：ParNew + Serial Old
+
+    -XX:+UseParallelGC
+      收集器组合：Parallel Scavenge + Serial Old
+      -XX:GCTimeRatio=99： GC时间占总时间的比率，默认值为99
+          即允许1%的GC时间，仅在使用Parallel Scavenge收集器时生效
+      -XX:MaxGCPauseMillis=10：设置GC最大停顿时间
+          仅在使用Parallel Scavenge收集器时生效
+    -XX:+UseParallelOldGC
+      收集器组合：Parallel Scavenge + Parallel Old
+
+    -XX:+ScavcngeBeforeFullGC：  Full GC前触发MinorGC
+    -XX:ParallelGCThreads=8：配置并行收集器的线程数，
+      即：同时多少个线程一起进行垃圾回收。此值最好配置与处理器数目相等。
+
+  5、CMS收集器参数
+    -XX:+UseConcMarkSweepGC：设置年老代为并发收集。
+    -XX:ParallelCMSThreads:  设置并发CMS GC时的线程数
+    -XX:CMSInitiatingOccupancyFraction    当旧生代使用占到多少百分比时触发CMS GC
+    -XX:+UscCMSInitiatingOccupancyOnly    默认为 false， 代表允许hotspot根据成本来决定什么时候执行CMSGC
+    -XX:+UscCMSCompactAtFullCollection    当Full GC完成垃圾收集后是否要进行一次内存碎片整理。仅使用CMS收集器时生效
+    -XX:CMSMaxAbortablePrecleanTime=5000  设置Preclean步骤的超时时间，单位为毫秒
+    -XX:+CMSClassUnloadingEnabled         永久代采用CMS GC回收
+    -XX:+CMSParallelRemarkEnabled：降低标记停顿
+
+
+  6、GC日志参数
+    -verbose:gc               可以辅助输出一些详细的GC信息
+    -XX:+PrintGCDetails       输出 GC 的详细信息
+    -XX:+PrintGCTimeStamps
+    -XX:+PrintGCDateStamps    GC发生的时间信息
+    -XX:+PrintHeapAtGC        在GC前后输出堆中各个区域的大小
+    -Xloggc:[file]            将GC信息输出到单独的文件中
+
+
+2.查看java 进程的线程数
+    ps -eLf | grep java |grep api| wc -l
+    注意: Linux服务器每进程不允许超过1000个线程
+
+
+
+

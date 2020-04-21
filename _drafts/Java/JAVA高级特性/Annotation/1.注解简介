@@ -30,7 +30,7 @@
   5.Class类型
   6.以上类型的一维数组类型
 
-3.注解属性获取,反射
+4.注解属性获取,反射
   Class 类中提供了以下一些方法用于反射注解。
     getAnnotation：返回指定的注解
     isAnnotationPresent：判定当前元素是否被指定注解修饰
@@ -38,4 +38,4 @@
     getDeclaredAnnotation：返回本元素的指定注解
     getDeclaredAnnotations：返回本元素的所有注解，不包含父类继承而来的
 
-4.注解的源代码分析
+5.注解的源代码分析

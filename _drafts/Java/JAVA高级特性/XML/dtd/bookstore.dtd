@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bookstore [
+  <!ELEMENT bookstore (book+)>
+
+  <!ELEMENT book (bookname,author,year,price)>
+  <!ATTLIST book
+    id ID #REQUIRED
+    >
+
+  <!ELEMENT year (#PCDATA)>
+
+  <!ELEMENT bookname (#PCDATA)>
+  <!ATTLIST bookname
+    lang CDATA #REQUIRED
+    >
+
+  <!ELEMENT author (#PCDATA)>
+  <!ELEMENT price (#PCDATA)>
+]>

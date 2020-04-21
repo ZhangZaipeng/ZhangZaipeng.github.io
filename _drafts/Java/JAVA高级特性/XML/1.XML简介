@@ -7,10 +7,7 @@
     实现不同系统之间的数据交换（包括系统的配置文件）
     是一种标记语言，没有固定的标记，可以自定义创建
 
-2.XML文档结构
-  如同树枝
-
-3.XML的声明
+2.XML的声明
   <?xml version="1.0" standalone="yes" encoding="UTF-8"?>
   <bookstore>
     <book category="COOKING">
@@ -34,6 +31,7 @@
     </book>
   </bookstore>
 
+3.XML文档结构
   version: 说明这个文档符合1.0规范
   standalone: 说明文档在这一个文件里还是需要从外部导入, standalone 的值设为yes 说明所有的文档都在这一文件里完成
   encoding: 指文档字符编码
@@ -43,3 +41,12 @@
   属性：标签的属性可以有多个，多个属性写在标签上使用空格隔开就行。如：<元素名  属性名="属性值" 属性名="属性值"></>
   XML注释：<!-- this is comment -->
   XML中特殊字符的处理： 1.<![CDATA[要显示的字符]]> 2.预定义的实体引用
+
+
+
+参考博客
+  Java高级特性 第12节 XML技术
+  https://www.cnblogs.com/yutianbao/p/10747842.html
+
+  XML文件中xmlns、xmlns:xsi和xsi:schemaLocation、dtd文件的作用
+  https://www.jianshu.com/p/8f74e8b431e7

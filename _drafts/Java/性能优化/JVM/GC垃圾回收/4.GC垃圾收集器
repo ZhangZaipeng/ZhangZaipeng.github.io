@@ -1,0 +1,39 @@
+一、Serial GC
+  Serial GC 对年轻代使用 mark-copy(标记-复制)算法,
+  对老年代使用 mark-sweep-compact(标记-清除-整理)算法
+  顾名思义, 两者都是单线程的垃圾收集器,不能进行并行处理。两者都会触发全线暂停(STW),停止所有的应用线程。
+
+
+  触发条件与规则
+    当Eden空间不足时就触发Minor GC，触发GC时首先会检查Young区晋升到Old区的的对象大小是否大于Old区的剩余空间，
+    如果大于则触发直接触发Full GC，如果小于要看-XX:HandlePromotionFailure的值，如果为true仅触发Minor GC，否则
+    再触发Full GC
+
+
+  优点
+    简单、高效在Client模式下是一个很好的选择
+
+  缺点
+    单线程的方式进行
+    需要暂停所有应用程序
+
+二、Parallel GC(并行GC)
+  1.根据Minor GC 和 Full GC的不同分为三种
+    ParNewGC、ParallelGC、ParallelOldGC
+
+  2.触发条件
+
+
+  4.优点
+    多线程的方式进行
+  5.缺点
+    需要暂停所有应用程序
+
+三、Concurrent Mark and Sweep(并发标记-清除)
+
+  触发条件
+
+  优点
+
+  缺点
+    产生内存碎片

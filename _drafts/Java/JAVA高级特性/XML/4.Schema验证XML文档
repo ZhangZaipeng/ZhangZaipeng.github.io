@@ -1,0 +1,121 @@
+一、概述
+  XML Schema 是基于 XML DTD 的替代者，XML Schema 描述 XML 文档的结构。
+  XML Schema 语言也称作 XML Schema 定义（XML Schema Definition 简称 XSD）。
+  DTD 不是通过 XML 语法定义文档结构，不能定义数据类型和限制；Schema 通过 XML 语法定义文档结构，可以定义数据类型和限制。
+
+二、XML Schema 对 XML 文件的主要约定有：
+  定义可出现在 XML 文档中的元素；
+  定义可出现在 XML 文档中的属性；
+  定义哪个元素是子元素；
+  定义子元素的次序；
+  定义子元素的数目；
+  定义元素是否为空，或者是否可包含文本；
+  定义元素和属性的数据类型；
+  定义元素和属性的默认值以及固定值；
+
+三、Schema文档结构
+  <?xml version="1.0"?>
+  <!--每个Schema中都必须包含xs:schema根节点，然后在根节点中定义内容！-->
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  　　　　　　targetNamespace="http://www.w3school.com.cn"
+  　　　　　　xmlns="http://www.w3school.com.cn"
+  　　　　　　elementFormDefault="qualified">
+      <xs:element name="student" type="xs:string" minOccurs="1" maxOccurs="unbounded" />
+  </xs:schema>
+  说明：
+    1.xmlns:xs="http://www.w3.org/2001/XMLSchema"：显示 schema 中用到的元素和数据类型来自命名空间 "http://www.w3.org/2001/XMLSchema"。
+    2.还规定了来自命名空间 "http://www.w3.org/2001/XMLSchema" 的元素和数据类型应该使用前缀 xs：
+    3.targetNamespace="http://www.w3school.com.cn" ：显示被此 schema 定义的元素验证的XML来自的命名空间。
+    4.xmlns="http://www.w3school.com.cn" ：指定默认的命名空间 。
+    5.elementFormDefault="qualified" ：指目标XML是否遵循本Schema，qualified表示遵循,unqualified表示不遵循。
+
+四、在XML中引用Schema文档
+
+五、Schema常用数据类型
+  简单类型
+    基本的数据类型
+      string	  字符串
+      boolean 	布尔类型
+      decimal 	特定精度的数字
+      float 	  单精度浮点数
+      double 	  双精度浮点数
+      duration 	表示持续时间/日期格式
+      dateTime 	完整日期格式
+      time	    代表时分秒
+      date 	    代表日期
+    扩展的数据类型
+      ID	    用于唯一表示元素
+      IDREF	  应用ID元素的属性或属性
+      ENTITY  实体类型
+      long    表示长整型：-9223372036854775808~9223372036854775807
+      int	    表示整型：-2147483648~--2147483647
+      short	  表示短整型：-32768~32767
+      byte    整型：-128~127
+    用户自定义的简单类型（通过simpleType定义）
+  复合类型（通过complexType定义）
+
+六、Schema中的元素类型
+  1.根元素：schema
+    属性：
+      xmlns：schema的命名空间。
+      targetNamespace：要验证的XML文件的命名空间。
+      elementFormDefault：要验证的XML是否遵循当前的验证命名空间。
+
+  2.用于定义元素和属性的元素：element、attribute、group、attributeGroup
+    1) element:声明一个元素
+      属性：
+        name：需要限定XML文档元素的名称
+        type：需要限定XML文档元素的类型
+        ref：引用外部定义的元素
+        minOccurs：元素最小出现的次数
+        maxOccurs：元素最大出现的次数
+    eg：<xs:element name="student" type="xs:string" minOccurs="1" maxOccurs="unbounded" />
+
+    2) group：声明一个分组（将多个元素声明放到一个分组中，然后在其他元素中通过group引用）
+      <!--外部定义一个标记-->
+      <xs:element name="student">
+      　　<xs:complexType>
+      　　　　<!--引用分组标记-->
+      　　　　<xs:group ref="stuinfo" maxOccurs="unbounded"></xs:group>
+      　　</xs:complexType>
+      </xs:element>
+
+      <!--定义一个分组标记-->
+      <xs:group name="stuinfo">
+      　　<xs:sequence>
+      　　　　<!--自定义的子元素:name和age，name类型为string,age类型为byte，只能出现1次-->
+      　　　　<xs:element name="name" type="xs:string"></xs:element>
+      　　　　<xs:element name="age" type="xs:byte"></xs:element>
+      　　</xs:sequence>
+      </xs:group>
+
+    3)attribute元素（用于声明一个节点元素有哪些属性）
+      属性：
+        name：属性名称
+        type：属性类型
+        user：是否必选，required必选，optional可选，默认可选
+        default：默认值
+        fixed：固定值
+      注意：默认值和固定值不能同时出现。
+
+    4)attributeGroup属性组（和前面的元素组类型，在外部定义属性组，然后在元素中引用属性组）
+      <!--定义属性组：stuattgroup-->
+      <xs:attributeGroup name="stuattgroup">
+          <xs:attribute name="name" type="xs:string"/>
+          <xs:attribute name="age" type="xs:byte"/>
+      </xs:attributeGroup>
+
+      <!--引用属性组-->
+      <xs:element name="student" maxOccurs="unbounded">
+          <xs:complexType>
+              <xs:attributeGroup ref="stuattgroup"></xs:attributeGroup>
+          </xs:complexType>
+      </xs:element>
+
+  3.用于定义简单类型：simpleType（它决定了元素和属性值得约束和相关信息）
+    1) restriction：约束
+    2) list：列表
+  4.用于定义复杂类型：complexType
+  5.用于进行约束：choice、list、sequence、restriction
+    1) choice （把一组属性声明组合到一起，一边被复合类型所应用，XML中只能出现限定选项中的一个元素）
+    2) sequence （表示元素必须按照规定的序列进行显示）

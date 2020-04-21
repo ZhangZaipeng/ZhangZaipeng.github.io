@@ -1,0 +1,7 @@
+JVM启动参数:
+  -verbose:gc               可以辅助输出一些详细的GC信息
+  -XX:+PrintGCDetails       输出 GC 的详细信息
+  -XX:+PrintGCTimeStamps
+  -XX:+PrintGCDateStamps    GC发生的时间信息
+  -XX:+PrintHeapAtGC        在GC前后输出堆中各个区域的大小
+  -Xloggc:[file]            将GC信息输出到单独的文件中

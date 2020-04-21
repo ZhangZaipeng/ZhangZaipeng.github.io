@@ -18,3 +18,4 @@
   SHA-3：基于Keccak算法，是与SHA-2不同的设计方式，可避免已有的攻击方式，而且能够提供SHA-2不具备的一些性
   HMAC：
   CRC：
+  Bcrypt:比MD5更安全，https://www.jianshu.com/p/344fe5a26d79

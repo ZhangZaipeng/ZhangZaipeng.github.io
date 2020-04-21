@@ -32,7 +32,8 @@
     并通过Finished消息发送给SSLserver。SSLserver利用相同的方法计算已交互的握手消息的Hash值，并与Finished消息的解密结果比較，假设二者相同，且MAC值验证成功，
     则证明密钥和加密套件协商成功。
   8)相同地。SSLserver发送Change Cipher Spec消息，通知SSLclient兴许报文将採用协商好的密钥和加密套件进行加密和MAC计算。
-  9)SSLserver计算已交互的握手消息的Hash值，利用协商好的密钥和加密套件处理Hash值（计算并加入MAC值、加密等），并通过Finished消息发送给SSLclient。SSLclient利用相同的方法计算已交互的握手消息的Hash值，并与Finished消息的解密结果比較，假设二者相同。且MAC值验证成功。则证明密钥和加密套件协商成功。
+  9)SSLserver计算已交互的握手消息的Hash值，利用协商好的密钥和加密套件处理Hash值（计算并加入MAC值、加密等），并通过Finished消息发送给SSLclient。
+    SSLclient利用相同的方法计算已交互的握手消息的Hash值，并与Finished消息的解密结果比較，假设二者相同。且MAC值验证成功。则证明密钥和加密套件协商成功。
 
 
 参考文献

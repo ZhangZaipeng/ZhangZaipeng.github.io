@@ -1,3 +1,11 @@
-1.
+加密策略主要分为：
+  1.数字摘要；2.对称加密；3.非对称加密；4.数字签名；5.数字证书，这5种策略
+  BASE64
 
 
+参考博客
+  常见加密算法特点及适用场景
+  https://www.cnblogs.com/xtiger/p/10891999.html
+
+  JAVA开发必须掌握的5中加密策略
+  https://blog.csdn.net/huang_yx/article/details/79752565

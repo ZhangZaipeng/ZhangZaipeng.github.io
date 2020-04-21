@@ -1,0 +1,11 @@
+JVM将整个堆划分为Young区、Old区和Perm区，分别存放不同年龄的对象，这三个区存放的对象有如下区别。
+
+1.Young区又分为Eden区和两个Survivor区，其中所有新创建的对象都在Eden区，
+  当Eden区满后会触发minor GC将Eden区仍然存活的对象复制到其中一个Survivor区中，
+  另外一个Survivor区中的存活对象也复制到这个Survivor中，以保证始终有一个Survivor区是空的。
+
+2.Old区存放的是Young区的Survivor满后触发minor GC后仍然存活的对象，当Eden区满后会将对象存放到Survivor区中，
+  如果Survivor区仍然存不下这些对象，GC收集器会将这些对象直接存放到Old区。如果在Survivor区中的对象足够老，
+  也直接存放到Old区。如果Old区也满了，将会触发Full GC，回收整个堆内存。
+
+3.Perm区存放的主要是类的Class对 象，如果一个类被频繁地加载，也可能会导致Perm区满，Perm区的垃圾回收也是由Full GC触发的

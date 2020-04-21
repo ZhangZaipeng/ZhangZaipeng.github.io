@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<!DOCTYPE bookstore [
+  <!ELEMENT bookstore (book+)>
+
+  <!ELEMENT book (bookname,author,year,price)>
+  <!ATTLIST book
+    id ID #REQUIRED
+    >
+
+  <!ELEMENT year (#PCDATA)>
+
+  <!ELEMENT bookname (#PCDATA)>
+  <!ATTLIST bookname
+    lang CDATA #REQUIRED
+    >
+
+  <!ELEMENT author (#PCDATA)>
+  <!ELEMENT price (#PCDATA)>
+]>-->
+<bookstore >
+  <book id="11">
+    <bookname lang="en">Everyday Italian</bookname>
+    <author>Giada De Laurentiis</author>
+    <year>2019</year>
+    <price>30.00</price>
+  </book>
+
+  <book id="21">
+    <bookname lang="en">Harry Potter</bookname>
+    <author>J K. Rowling</author>
+    <year>2005</year>
+    <price>29.99</price>
+  </book>
+
+  <book id="31">
+    <bookname lang="en">Learning XML</bookname>
+    <author>Erik T. Ray</author>
+    <year>2015</year>
+    <price>39.95</price>
+  </book>
+</bookstore>

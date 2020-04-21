@@ -132,4 +132,4 @@
     lacksPermission:如果当前Subject没有权限将显示body体内容
     <@shiro.lacksPermission name="user:add">
     用户[<@shiro.principal/>]不拥有user:add权限
-</@shiro.lacksPermission>
+    </@shiro.lacksPermission>
