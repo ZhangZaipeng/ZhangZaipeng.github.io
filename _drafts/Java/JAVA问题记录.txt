@@ -6,10 +6,6 @@
 4.mycat 学习
 
 
-雪花算法
-
-
-
 spring 入口程序在哪里？
 是怎么管理Bean
 管理的Bean有什么特性？
@@ -26,7 +22,6 @@ mybatis 入口程序入口程序程序在哪里？
 
 JAVA基础
 面向对象实例代码
-xml技术
 设计模式
   CGLIB代理
 
@@ -35,5 +30,4 @@ ThreadLocal
 java 命令详解
 
 
-shiro的使用
 activity使用

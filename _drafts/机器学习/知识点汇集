@@ -1,0 +1,47 @@
+python语言
+
+python爬虫
+  Scrapy
+
+数据分析包
+  Numpy
+  Pandas
+  Mataplotlib
+  Seaborn
+  Statsmodels
+  Scipy
+
+
+机器学习框架
+  Scikit-Learn
+  NLTK
+  TensorFlow
+  mxnet多GPU
+  Opencv
+
+
+机器学习算法
+  K-近邻算法
+  决策树
+  贝叶斯
+  朴素贝叶斯
+
+  线性回归
+  逻辑回归
+  GBDT梯度提升决策树
+  随机森林
+  支持向量机
+  聚类算法KMeans
+  降维算法
+  推荐算法ALS交替最小二乘法
+
+
+MLP多层感知机算法
+CNN卷积神经网络
+RNN循环神经网络
+LSTM长短期记忆神经网络
+Seq2Seq端到端神经网络
+GAN生成对抗网络
+深度强化学习DQN
+
+
