@@ -1,0 +1,8 @@
+export KEY_COUNTRY="CN"
+export KEY_PROVINCE="GD"
+export KEY_CITY="guangzhou"
+export KEY_ORG="test"
+export KEY_EMAIL="me@myhost.mydomain"
+export KEY_OU="MyOrganizationalUnit"
+# X509 Subject Field
+export KEY_NAME="EasyRSA"

@@ -1,380 +1,60 @@
 一、VpnServer安装
-    1.在vpnserver上开启ip转发功能，编辑/etc/sysctl.conf(/etc/sysctl.d/99-sysctl.conf),修改net.ipv4.ip_forward为1
+    在vpnserver上开启ip转发功能，编辑/etc/sysctl.conf(/etc/sysctl.d/99-sysctl.conf),修改net.ipv4.ip_forward为1
         net.ipv4.ip_forward = 1
 
-    2.使用-p选项使参数修改生效
+    使用-p选项使参数修改生效
         [root@vpnserver ~]# sysctl -p
-        net.ipv4.ip_forward = 1
 
-    3.停止iptables,防止由于iptables的原因造成的问题
+    停止iptables,防止由于iptables的原因造成的问题
         [root@vpnserver ~]# /etc/init.d/iptables stop
         iptables: Setting chains to policy ACCEPT: filter          [ OK  ]
         iptables: Flushing firewall rules:                         [  OK  ]
         iptables: Unloading modules:                               [  OK  ]
         [root@vpnserver ~]# /etc/init.d/iptables stop
-    4.安装基础依赖包
-        yum install openssl* -y
+    安装基础依赖包
+        yum -y  install openssl*  pam-devel easy-rsa
 
-    5.安装lzo包,编译
-        tar -zxvf lzo-2.09.tar.gz -C /usr/src
-        ./configure
-        make && make install
-
-    6.安装openvpn软件
-        tar -zxvf openvpn-2.2.2.tar.gz -C /usr/src
-        ./configure --with-lzo-lib=/usr/local/lib --with-lzo-headers=/usr/local/include
-        make && make install
+    安装openvpn软件
+        yum -y install lzo openvpn
         检查安装结果 --> which openvpn
 
-    7.生成CA证书
-        cd /usr/src/openvpn-2.2.2/easy-rsa/2.0
+    创建相关目录
+        mkdir /var/log/openvpn                      # 放openvpn相关日志文件
+        mkdir -p /etc/openvpn/easy-rsa                 # 放easy-rsa包提供的相关工具
+        mkdir -p /etc/openvpn/ccd                      # openvpn客户端的配置目录，后面会用到
+        mkdir -p /etc/openvpn/server/certs #秘钥相关
 
-        [root@vpnserver 2.0]# ll
-        total 128
-        -rwxrwxr-x. 1 sunny sunny  119 Nov 25  2011 build-ca   #生成CA证书
-        -rwxrwxr-x. 1 sunny sunny  352 Nov 25  2011 build-dh  #生成密码协议交换文件
-        -rwxrwxr-x. 1 sunny sunny  188 Nov 25  2011 build-inter
-        -rwxrwxr-x. 1 sunny sunny  163 Nov 25  2011 build-key        #生成免密码客户端密钥对
-        -rwxrwxr-x. 1 sunny sunny  157 Nov 25  2011 build-key-pass   #生成带密码客户端密钥对
-        -rwxrwxr-x. 1 sunny sunny  249 Nov 25  2011 build-key-pkcs12
-        -rwxrwxr-x. 1 sunny sunny  268 Nov 25  2011 build-key-server    #生成服务端密钥对
-        -rwxrwxr-x. 1 sunny sunny  213 Nov 25  2011 build-req
-        -rwxrwxr-x. 1 sunny sunny  158 Nov 25  2011 build-req-pass
-        -rwxrwxr-x. 1 sunny sunny  428 Nov 25  2011 clean-all     #初始化配置，清空所有keys
-        -rwxrwxr-x. 1 sunny sunny 1457 Nov 25  2011 inherit-inter
-        -rwxrwxr-x. 1 sunny sunny  295 Nov 25  2011 list-crl
-        -rw-rw-r--. 1 sunny sunny  413 Nov 25  2011 Makefile
-        -rwxrwxr-x. 1 sunny sunny 7768 Oct 21  2010openssl-0.9.6.cnf
-        -rwxrwxr-x. 1 sunny sunny 8325 Nov 25  2011openssl-0.9.8.cnf
-        -rwxrwxr-x. 1 sunny sunny 8222 Nov 25  2011openssl-1.0.0.cnf
-        -rwxrwxr-x. 1 sunny sunny 12675 Nov 25  2011 pkitool    #各证书生成主要调用此命令执行
-        -rw-rw-r--. 1 sunny sunny 9299 Nov 25  2011 README
-        -rwxrwxr-x. 1 sunny sunny  918 Nov 25  2011 revoke-full     #证书吊销
-        -rwxrwxr-x. 1 sunny sunny  178 Nov 25  2011 sign-req
-        -rwxrwxr-x. 1 sunny sunny 1841 Nov 25  2011 vars       #预先定义的证书基本信息
-        -rwxrwxr-x. 1 sunny sunny  714 Nov 25  2011 whichopensslcnf
+        cp -a /usr/share/easy-rsa/3/* /etc/openvpn/easy-rsa/
 
 
-        修改证书预定义信息vars
-        首先对vars进行备份
-            cp vars vars.back
+    生成相关秘钥
+      生成证书时用到的变量
+        source vars
+      生成 CA 根证书
+       ./easyrsa init-pki
+       ./easyrsa build-ca nopass
+       ./easyrsa build-server-full server nopass
+       ./easyrsa gen-dh
+       openvpn --genkey --secret ta.key
+
+    移动到统一管理目录
+      cd /etc/openvpn/server/certs
+      cp /etc/openvpn/easy-rsa/pki/dh.pem ./
+      cp /etc/openvpn/easy-rsa/pki/ca.crt ./
+      cp /etc/openvpn/easy-rsa/pki/issued/server.crt ./
+      cp /etc/openvpn/easy-rsa/pki/private/server.key ./
+      cp /etc/openvpn/easy-rsa/ta.key ./
+
+    启动 open VPN
+      systemctl start openvpn@server  # 启动
+      systemctl enable openvpn@server  # 开机自启动
+      systemctl status openvpn@server  # 查看服务状态
 
 
-        编辑最后11行修改为如下内容：
-        export KEY_COUNTRY="CN"
-        export KEY_PROVINCE="HB"
-        export KEY_CITY="WuHan"
-        export KEY_ORG="sunny"
-        export KEY_EMAIL="282354184@qq.com"
-        export KEY_EMAIL=282354184@qq.com
-        export KEY_CN=sunny
-        export KEY_NAME=sunny
-        export KEY_OU=sunny
-        export PKCS11_MODULE_PATH=changeme
-        export PKCS11_PIN=1234
+    生成客户端用户
+      准备sample.ovpn 到
+      bash ovpn_user.sh testuser1
 
-        载入vars配置，新开窗口制作证书时，需要重新加载vars文件
-        [root@vpnserver 2.0]# source vars
-        NOTE: If you run ./clean-all, I will be doing a rm -rf on/application/openvpn-2.2.2/easy-rsa/2.0/keys
-
-
-        初始化配置
-        [root@vpnserver 2.0]# ./clean-all
-        [root@vpnserver 2.0]# ll keys/
-        total 4
-        -rw-r--r--. 1 root root 0 Jul 7 16:57 index.txt
-        -rw-r--r--. 1 root root 3 Jul 7 16:57 serial
-
-
-        制作CA证书，由于已经预先定义好了各个配置,一路回车，表示使用默认配置
-        [root@vpnserver 2.0]# ./build-ca
-        Generating a 1024 bit RSA private key
-        .....++++++
-        ....................................++++++
-        writing new private key to 'ca.key'
-        -----
-        You are about to be asked to enter information that will be incorporated
-        into your certificate request.
-        What you are about to enter is what is called a Distinguished Name or a DN.
-        There are quite a few fields but you can leave some blank
-        For some fields there will be a default value,
-        If you enter '.', the field will be left blank.
-        -----
-        Country Name (2 letter code) [CN]:
-        State or Province Name (full name) [HB]:
-        Locality Name (eg, city) [WuHan]:
-        Organization Name (eg, company) [sunny]:
-        Organizational Unit Name (eg, section) [sunny]:
-        Common Name (eg, your name or your server's hostname) [sunny]:
-        Name [sunny]:
-        Email Address [282354184@qq.com]:
-
-
-        查看生成的证书文件,ca.crt就是新生成的证书文件，ca.key就是私钥
-        [root@vpnserver 2.0]# ls -l keys
-        total 12
-        -rw-r--r--. 1 root root 1277 Jul 7 16:58 ca.crt   CA证书文件
-        -rw-------. 1 root root  916Jul  7 16:58 ca.key          CA的私钥
-        -rw-r--r--. 1 root root    0Jul  7 16:57 index.txt
-        -rw-r--r--. 1 root root    3Jul  7 16:57 serial
-
-
-        生成服务端证书与密钥
-        生成服务端证书调用的命令为build-key-server，后面直接跟服务端证书名即可，这里服务端证书名取为server
-        [root@vpnserver 2.0]# ./build-key-server server
-        Generating a 1024 bit RSA private key
-        ....................++++++
-        ............................................++++++
-        writing new private key to 'server.key'
-        -----
-        You are about to be asked to enter information that will beincorporated
-        into your certificate request.
-        What you are about to enter is what is called a Distinguished Nameor a DN.
-        There are quite a few fields but you can leave some blank
-        For some fields there will be a default value,
-        If you enter '.', the field will be left blank.
-        -----
-        Country Name (2 letter code) [CN]:
-        State or Province Name (full name) [HB]:
-        Locality Name (eg, city) [WuHan]:
-        Organization Name (eg, company) [sunny]:
-        Organizational Unit Name (eg, section) [sunny]:
-        Common Name (eg, your name or your server's hostname) [server]:
-        Name [sunny]:
-        Email Address [519209@qq.com]:
-        Please enter the following 'extra' attributes
-        to be sent with your certificate request
-        A challenge password []:123456                     ***注意
-        An optional company name []:sunny                  ***注意
-        Using configuration from/application/openvpn-2.2.2/easy-rsa/2.0/openssl-1.0.0.cnf
-        Check that the request matches the signature
-        Signature ok
-        The Subject's Distinguished Name is as follows
-        countryName          :PRINTABLE:'CN'
-        stateOrProvinceName  :PRINTABLE:'HB'
-        localityName         :PRINTABLE:'WuHan'
-        organizationName     :PRINTABLE:'sunny'
-        organizationalUnitName:PRINTABLE:'sunny'
-        commonName            :PRINTABLE:'server'
-        name                 :PRINTABLE:'sunny'
-        emailAddress         :IA5STRING:'282354184@qq.com'
-        Certificate is to be certified until Jul  5 09:04:46 2026 GMT (3650 days)
-        Sign the certificate? [y/n]:y
-        1 out of 1 certificate requests certified, commit? [y/n]y
-        Write out database with 1 new entries
-        Data Base Updated
-
-
-        着色的是手动输入的，需要两次确认
-        检查生成的证书密钥对
-        [root@vpnserver 2.0]# ll keys/server*
-        -rw-r--r--. 1 root root 3943 Jul 7 17:04 keys/server.crt    #服务端证书
-        -rw-r--r--. 1 root root  757Jul  7 17:04 keys/server.csr  #服务端证书请求文件
-        -rw-------. 1 root root  916Jul  7 17:04 keys/server.key  #服务端私钥
-
-
-        生成客户端证书与密钥
-        [root@hadoop2 2.0]#  ./build-key test
-        Generating a 1024 bit RSA private key
-        ......++++++
-        ...........................++++++
-        writing new private key to 'test.key'
-        -----
-        You are about to be asked to enter information that will be incorporated
-        into your certificate request.
-        What you are about to enter is what is called a Distinguished Name or a DN.
-        There are quite a few fields but you can leave some blank
-        For some fields there will be a default value,
-        If you enter '.', the field will be left blank.
-        -----
-        Country Name (2 letter code) [CN]:
-        State or Province Name (full name) [HB]:
-        Locality Name (eg, city) [WuHan]:
-        Organization Name (eg, company) [sunny]:
-        Organizational Unit Name (eg, section) [sunny]:
-        Common Name (eg, your name or your server's hostname) [test]:
-        Name [sunny]:
-        Email Address [282354184@qq.com]:
-
-        Please enter the following 'extra' attributes
-        to be sent with your certificate request
-        A challenge password []:123456
-        An optional company name []:sunny
-        Using configuration from /usr/src/openvpn-2.2.2/easy-rsa/2.0/openssl-1.0.0.cnf
-        Check that the request matches the signature
-        Signature ok
-        The Subject's Distinguished Name is as follows
-        countryName           :PRINTABLE:'CN'
-        stateOrProvinceName   :PRINTABLE:'HB'
-        localityName          :PRINTABLE:'WuHan'
-        organizationName      :PRINTABLE:'sunny'
-        organizationalUnitName:PRINTABLE:'sunny'
-        commonName            :PRINTABLE:'test'
-        name                  :PRINTABLE:'sunny'
-        emailAddress          :IA5STRING:'282354184@qq.com'
-        Certificate is to be certified until Mar 12 03:08:03 2028 GMT (3650 days)
-        Sign the certificate? [y/n]:y
-
-        1 out of 1 certificate requests certified, commit? [y/n]y
-        Write out database with 1 new entries
-        Data Base Updated
-
-
-        生成一个需要密码验证的客户端密钥sunny,密码为123456，生产环境此密码需要设置较复杂
-        [root@vpnserver 2.0]# ./build-key-pass sunny
-        Generating a 1024 bit RSA private key
-        ...++++++
-        ...............................................++++++
-        writing new private key to 'sunny.key'
-        Enter PEM pass phrase:                          #此处需要输入用户密码
-        Verifying - Enter PEM pass phrase:              #此处需要确认用户密码
-        -----
-        You are about to be asked to enter information that will beincorporated
-        into your certificate request.
-        What you are about to enter is what is called a Distinguished Nameor a DN.
-        There are quite a few fields but you can leave some blank
-        For some fields there will be a default value,
-        If you enter '.', the field will be left blank.
-        -----
-        Country Name (2 letter code) [CN]:
-        State or Province Name (full name) [HB]:
-        Locality Name (eg, city) [WuHan]:
-        Organization Name (eg, company) [sunny]:
-        Organizational Unit Name (eg, section) [sunny]:
-        Common Name (eg, your name or your server's hostname) [sunny]:
-        Name [sunny]:
-        Email Address [519209@qq.com]:
-
-        Please enter the following 'extra' attributes
-        to be sent with your certificate request
-        A challenge password []:123456
-        An optional company name []:sunny
-        Using configuration from/application/openvpn-2.2.2/easy-rsa/2.0/openssl-1.0.0.cnf
-        Check that the request matches the signature
-        Signature ok
-        The Subject's Distinguished Name is as follows
-        countryName          :PRINTABLE:'CN'
-        stateOrProvinceName  :PRINTABLE:'HB'
-        localityName         :PRINTABLE:'WuHan'
-        organizationName      :PRINTABLE:'sunny'
-        organizationalUnitName:PRINTABLE:'sunny'
-        commonName           :PRINTABLE:'sunny'
-        name                 :PRINTABLE:'sunny'
-        emailAddress         :IA5STRING:'519209@qq.com'
-        Certificate is to be certified until Jul  5 09:16:29 2026 GMT (3650 days)
-        Sign the certificate? [y/n]:
-        1 out of 1 certificate requests certified, commit? [y/n]y
-        Write out database with 1 new entries
-        Data Base Updated
-
-
-        查看生成的客户端密钥
-        [root@vpnserver 2.0]# ls -l keys/{test,sunny}*
-        -rw-r--r--. 1 root root 3821 Jul 7 17:16 keys/sunny.crt
-        -rw-r--r--. 1 root root  757Jul  7 17:16 keys/sunny.csr
-        -rw-------. 1 root root 1041 Jul 7 17:16 keys/sunny.key
-        -rw-r--r--. 1 root root 3816 Jul 7 17:13 keys/test.crt
-        -rw-r--r--. 1 root root  757Jul  7 17:13 keys/test.csr
-        -rw-------. 1 root root  916Jul  7 17:13 keys/test.key
-
-
-        生成密码协议交换文件
-        使用命令build-dh命令生成密码协议交换文件，直接执行命令即可。
-        [root@vpnserver 2.0]# ./build-dh
-        Generating DH parameters, 1024 bit long safe prime, generator 2
-        This is going to take a long time
-        .........................................+.............................++*++*++*
-        [root@vpnserver 2.0]# ls keys/dh1024.pem
-        keys/dh1024.pem
-
-
-        生成防攻击key文件
-        生成防止攻击的key文件
-        [root@vpnserver 2.0]# openvpn --genkey --secret keys/ta.key
-        [root@vpnserver 2.0]# ll keys/ta.key
-        -rw-------. 1 root root 636 Jul 7 17:22 keys/ta.key
-
-
-        编辑服务端配置文件
-        创建配置文件目录
-        mkdir /etc/openvpn
-        cd /etc/openvpn
-
-
-        将keys目录拷贝到配置文件目录
-        [root@vpnserver openvpn]# cp -ap /usr/src/openvpn-2.2.2/easy-rsa/2.0/keys.
-        [root@vpnserver openvpn]# ll
-        total 4
-        drwx------. 2 root root 4096 Jul 7 17:22 keys
-
-
-        将服务端配置文件拷贝到/etc/openvpn目录
-        cp -ap /usr/src/openvpn-2.2.2/sample-config-files/server.conf server.back
-        grep -Ev "#|;|^$" server.bak > server.conf
-
-
-        编辑server.conf文件，修改后的文件内容如下：
-        local 192.168.3.201
-        port 52115
-        proto tcp
-        dev tun
-        ca /etc/openvpn/keys/ca.crt
-        cert /etc/openvpn/keys/server.crt
-        key /etc/openvpn/keys/server.key
-        dh /etc/openvpn/keys/dh1024.pem
-        server 10.8.0.0 255.255.255.0
-        push "route 192.168.18.0 255.255.255.0"
-        ifconfig-pool-persist ipp.txt
-        keepalive 10 120
-        comp-lzo
-        persist-key
-        persist-tun
-        status openvpn-status.log
-        log /var/log/openvpn.log
-        duplicate-cn
-        client-to-client
-        verb 3
-
-        local 本地监听的IP地址
-        port 本地监听的端口，默认为1194，安全起见，建议修改
-        proto 协议，这里使用tcp协议，稳定性更好
-        dev tun,使用tunnel接口，另外还有一种为tap
-        ca CA证书文件路径
-        cert 服务端证书路径
-        key 服务端密钥文件路径
-        dh 证书密钥交换文件路径
-        server 分配给客户端的IP地址，即客户端拔号成功后获取到的IP地址
-        push 推送到客户端的路由信息，一般这里推送的是vpnserver端的本地子网
-        ifconfig-pool-persist 记录客户端所获取到的IP地址信息列表，客户端重启后获取到与上次分配的IP相同的IP地址信息
-        keepalive 10 120 每隔10秒客户端ping服务端，确保服务端没有离线，超长为120秒
-        comp-lzo 允许压缩传输
-        status openvpn-status.log 连接状态日志
-        log 连接日志信息
-        duplicate-cn 允许同一账号多人同时使用
-        client-to-client 允许客户端与客户端之间通信
-        verb 日志级别
-        ;max-clients 100 最大客户端数量默认为100个
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- ./clean-all
- ll keys/
- ./build-ca                 制作CA证书
- ls -l keys/
- ./build-key-server server   生产服务端证书
- ll keys/server*
+    添加一条SNAT规则，让源地址是10.8.0.0/24网段的地址进来转换成vpn服务器的内网地址(192.172.1.49)，
+    这样vpn客户端访问公司内网服务器的时候伪装成vpn服务器去访问
+    # iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source 192.172.1.49
