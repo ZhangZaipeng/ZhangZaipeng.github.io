@@ -1,0 +1,22 @@
+MR原理
+https://www.geek-share.com/detail/2764656032.html
+
+
+Hadoop之本地运行WordCount
+https://www.jianshu.com/p/762ebf8f9af7
+
+Hadoop之集群运行WordCount
+https://www.jianshu.com/p/c08c9ee2e32e
+
+
+MR 作业练习
+https://www.cnblogs.com/shishanyuan/p/4190403.html
+https://www.zybuluo.com/songlaf/note/375228
+
+
+Hadoop分布式缓存使用
+https://www.cnblogs.com/loveling-0239/p/7884195.html
+
+
+Spark 文档 （还要很多相关大数据资料）
+https://www.cnblogs.com/jifengblog/default.html?page=6
