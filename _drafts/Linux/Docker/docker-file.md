@@ -21,7 +21,7 @@
    
 #### Dockerfile基本结构
   - 1.文件的名称一定要为   Dockerfile
-#### Dockerfile指令介绍   
+#### Dockerfile指令介绍
   - 1.FROM 镜像 :
     指定新的镜像所基于的镜像
   - 2.MAINTAINER 名称 :

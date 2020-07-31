@@ -20,6 +20,8 @@
 		mysqldump -u root 用户名 -p [密码] [选项] 数据库名 表名 > /备份路径/备份文件名(备份到安全的位置)
 		例子：mysqldump -uroot -p jm_test  test > /opt/back/jm_test_db.sql
 
+		mysqldump -uroot -p app_db > > /opt/app_db.sql
+
 		多个数据库
 		mysqldump -u 用户名 -p [密码] [选项] --databases [数据库1] [数据库2] > /opt/back/many_db.sql
 

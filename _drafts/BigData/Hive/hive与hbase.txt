@@ -1,0 +1,26 @@
+
+
+create table hive_table(
+deptid int,
+deptname string,
+sal string
+)
+--固定格式，什么跟hive映射，就是XXXStorageHandler
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+--这里字段要跟上面的保持一致，意思为deptid作为rowkey，deptname作为info列族中的deptname列
+WITH SERDEPROPERTIES ("hbase.columns.mapping" = ":key,info:deptname,info:num")
+--Hbase中的表名
+TBLPROPERTIES ("hbase.table.name" = "dept2");
+
+
+create EXTERNAL table hive_user_external(
+id string,
+name string,
+age int,
+addr string,
+email string
+)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES ("hbase.columns.mapping" = ":key,info:name,info:age,ship:addr,ship:email")
+--Hbase中的表名
+TBLPROPERTIES ("hbase.table.name" = "user");

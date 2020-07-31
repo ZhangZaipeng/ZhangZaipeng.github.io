@@ -45,6 +45,7 @@
 三、Hive表测试操作
     1.创建表helloworld：
         create table helloworld(id int,name string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
+        create table helloworld(id int,name string,int age,string class) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
 
     2.将本地数据插入到表helloworld中：
         load data local inpath '/home/hadoop/data/helloworld.txt' overwrite into table helloworld;
