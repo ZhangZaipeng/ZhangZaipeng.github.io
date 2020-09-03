@@ -1,0 +1,32 @@
+编写MR模板
+  1.map类实现
+  2.reduce类实现
+  3.driver(组装所有的过程到job)
+    1)get conf
+    2)create job
+    3)input
+    4)map
+      4.1)map-combine
+      4.2)map-partition
+      4.3)map-sort
+      4.4)map-compress
+    5)reduce
+    6)output
+    7)commit
+
+
+
+1.input  -> 如何变成<key,value>
+
+   default  ->  <0, hadoop spark>
+
+
+2.map   ->数据如何处理并变成<key,value>
+   <0, hadoop  spark>  ->   split  ->  <hadoop,1>  <spark,1>
+
+
+3.reduce -> 数据如何处理并变成<key,value>
+
+   <hadoop,List(1)>
+   <spark,List(1,1,1,1)>
+   <java,List(1,1)

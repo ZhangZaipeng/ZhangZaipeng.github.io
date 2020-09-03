@@ -1,0 +1,80 @@
+在实际项目开发中，hive表的数据：
+  >>存储格式: orc/parquet
+  >>数据压缩：snappy
+
+测试不同的文件格式
+
+  CREATE  TABLE movie (
+    movie_id string,
+    movie_name string,
+    movie_type string
+    )
+  ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ','
+  STORED AS TEXTFILE;
+
+  >>>>447.63 KB
+  >>>>Time taken: 25.888 seconds, Fetched: 1 row(s)
+
+  1.orc格式
+  CREATE TABLE ... STORED AS ORC
+  ALTER TABLE ... [PARTITION partition_spec] SET FILEFORMAT ORC
+  SET hive.default.fileformat=Orc
+  ############# orc ###############
+  CREATE  TABLE movie_orc (
+    movie_id string,
+    movie_name string,
+    movie_type string
+    )
+  ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ','
+  STORED AS ORC;
+
+  insert into movie_parquet select * from movie;
+
+  ############# orc +  snappy ###############
+  CREATE  TABLE movie_orc_snappy (
+    movie_id string,
+    movie_name string,
+    movie_type string
+    )
+  ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ','
+  STORED AS ORC tblproperties ("orc.compress"="SNAPPY");
+
+  insert into movie_orc_snappy select * from movie;
+
+
+  >>>>144.34 KB
+  >>>>Time taken: 24.774 seconds, Fetched: 1 row(s)
+
+
+  2.parquet格式
+
+  ############# parquet ###############
+  CREATE  TABLE movie_parquet (
+    movie_id string,
+    movie_name string,
+    movie_type string
+    )
+  ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ','
+  STORED AS PARQUET;
+
+  insert into movie_parquet select * from movie;
+  >>>>363.09 KB
+  >>>>Time taken: 27.116 seconds, Fetched: 1 row(s)
+
+  ############# parquet +  snappy ###############
+
+  CREATE  TABLE movie_parquet_snappy (
+    movie_id string,
+    movie_name string,
+    movie_type string
+    )
+  ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ','
+  STORED AS PARQUET;
+
+  set parquet.compression=SNAPPY;
+  insert into movie_parquet_snappy select * from movie;

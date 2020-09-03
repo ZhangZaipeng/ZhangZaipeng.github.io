@@ -1,0 +1,15 @@
+-master: 指定运行模式，spark://host:port, mesos://host:port, yarn, or local[n].
+-deploy-mode: 指定将driver端运行在client 还是在cluster.
+-class: 指定运行程序main方法类名，一般是应用程序的包名+类名
+-name: 运用程序名称
+-jars: 需要在driver端和executor端运行的jar,如mysql驱动包
+-packages: maven管理的项目坐标GAV，多个以逗号分隔
+-conf: 以key=value的形式传入sparkconf参数，所传入的参数必须是以spark.开头
+-properties-file: 指定新的conf文件，默认使用spark-default.conf
+-driver-memory:指定driver端运行内存，默认1G
+-driver-cores：指定driver端cpu数量，默认1，仅在Standalone和Yarn的cluster模式下
+-executor-memory：指定executor端的内存，默认1G
+-total-executor-cores：所有executor使用的cores
+-executor-cores: 每个executor使用的cores
+-driver-class-path: driver端的classpath
+-executor-class-path:executor端的classpath

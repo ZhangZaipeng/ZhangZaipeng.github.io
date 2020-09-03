@@ -92,7 +92,3 @@
     第三个参数：窗口滑动距离
     demo（KafkaWordCount.scala ）
 
-
-作业
-改写NetworkWordCount 换成文件
-kafka整合streaming

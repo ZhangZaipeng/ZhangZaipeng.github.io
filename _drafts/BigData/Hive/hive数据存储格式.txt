@@ -25,9 +25,10 @@
     1）减少磁盘IO
     2）磁盘空间
     查询性能：向量化查询
+
 三、Storage Format详解
     1.TextFile是Hive默认的存储格式，是一种纯文本的存储格式；
-    SequenceFile以键值对的形式存储，支持压缩（RECORD、BLOCK）和不压缩
+      SequenceFile以键值对的形式存储，支持压缩（RECORD、BLOCK）和不压缩
         创建一个以键值对形式存储的表
         create table page_views_seq(
             track_time string,
@@ -41,8 +42,9 @@
         ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
         stored as sequencefile;
 
-        加载本地纯文本数据到page_views_seq表中
+        加载本地纯文本数据到 page_views_seq 表中
         load data local inpath '/home/hadoop/data/page_views.dat' into table page_views_seq;
+
         出现如下错误：
         Loading data to table default.page_views_seq
         Failed with exception Wrong file format. Please check the file's format.
@@ -140,3 +142,4 @@
 
         查询表page_views_parquet_gzip在hdfs上占用空间的大小
         hadoop fs -du -h /user/hive/warehouse/page_views_parquet_gzip
+

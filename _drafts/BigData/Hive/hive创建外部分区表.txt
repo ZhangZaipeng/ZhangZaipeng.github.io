@@ -1,0 +1,62 @@
+四、内部表和外部表的区别
+    内部表：managed_table
+    	在删除时，HDFS数据被删除，MySQL元数据也被删除
+    外部表：EXTERNAL
+    create EXTERNAL table emp_external(
+    empno int, ename string, job string, mgr int,
+    hiredate string, sal double, comm double, deptno int
+    )ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+    location '/hive_external/emp/';
+    	在删除时，HDFS数据不被删除，MySQL元数据被删除
+
+六、Hive分区表(静态分区：单级分区、多级分区，动态分区：...)
+  1.静态分区创建
+  CREATE EXTERNAL TABLE IF NOT EXISTS hive_user_logs(
+    access_time string,
+    user_id string,
+    search_word string,
+    rank int, click_order int,
+    url string
+  )
+  PARTITIONED BY(dt string)
+  ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+  LOCATION '/user/hive/warehouse/data/userlogs';
+
+
+分区数据（metastore元数据）
+  alter table hive_user_logs add partition (dt='2020-08-17') location '/user/hive/warehouse/data/userlogs/dt=2020-08-17';
+  alter table hive_user_logs add partition (dt='2020-08-18') location '/user/hive/warehouse/data/userlogs/dt=2020-08-18';
+  alter table hive_user_logs add partition (dt='2020-08-19') location '/user/hive/warehouse/data/userlogs/dt=2020-08-19';
+  alter table hive_user_logs add partition (dt='2020-08-20') location '/user/hive/warehouse/data/userlogs/dt=2020-08-20';
+
+  alter table hive_user_logs add partition (dt='2020-08-22') location '/user/hive/warehouse/data/userlogs/dt=2020-08-22';
+  alter table hive_user_logs add partition (dt='2020-08-23') location '/user/hive/warehouse/data/userlogs/dt=2020-08-23';
+  alter table hive_user_logs add partition (dt='2020-08-24') location '/user/hive/warehouse/data/userlogs/dt=2020-08-24';
+  alter table hive_user_logs add partition (dt='2020-08-25') location '/user/hive/warehouse/data/userlogs/dt=2020-08-25';
+  alter table hive_user_logs add partition (dt='2020-08-26') location '/user/hive/warehouse/data/userlogs/dt=2020-08-26';
+
+数据加载
+  load data local inpath '/opt/datas/order_201809.txt' into  table  order_partition partition(month = '201809')
+  load data local inpath '/opt/datas/order_201810.txt' into  table  order_partition partition(month = '201810')
+
+
+外部表的使用方式
+  1)hdfs上创建数据表目录
+     dfs -mkdir -p /user/hive/warehouse/db_hive.db/order_part/month=201809/day=01/time=00;
+     dfs -mkdir -p /user/hive/warehouse/db_hive.db/order_part/month=201809/day=01/time=01;
+     dfs -mkdir -p /user/hive/warehouse/db_hive.db/order_part/month=201809/day=01/time=02;
+     dfs -mkdir -p /user/hive/warehouse/db_hive.db/order_part/month=201809/day=01/time=03;
+  2)加载数据
+     dfs -put /opt/datas/order_201809.txt /user/hive/warehouse/db_hive.db/order_part/month=201809/day=01/time=00;
+     dfs -put /opt/datas/order_201809.txt /user/hive/warehouse/db_hive.db/order_part/month=201809/day=01/time=01;
+     dfs -put /opt/datas/order_201809.txt /user/hive/warehouse/db_hive.db/order_part/month=201809/day=01/time=02;
+     dfs -put /opt/datas/order_201809.txt /user/hive/warehouse/db_hive.db/order_part/month=201809/day=01/time=03;
+  3)分区数据（metastore元数据）
+     alter table 数据表 add partition(month = '201809',day='01',time='00');
+     alter table 数据表 add partition(month = '201809',day='01',time='01');
+     alter table 数据表 add partition(month = '201809',day='01',time='02');
+     alter table 数据表 add partition(month = '201809',day='01',time='03');
+     alter table 数据表 add partition(month = '201809',day='01',time='04');
+     alter table 数据表 add partition(month = '201809',day='01',time='05');
+     alter table 数据表 add partition(month = '201809',day='01',time='06');
+  4)数据分析

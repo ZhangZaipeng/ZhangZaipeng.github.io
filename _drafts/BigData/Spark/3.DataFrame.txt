@@ -1,0 +1,12 @@
+一、是什么
+  跟关系数据库的表(Table)一样，DataFrame是Spark中对带模式(schema)行列数据的抽象。
+
+二、作用
+  SparkSession支持从不同的数据源加载数据，并把数据转换成DataFrame。
+  并且支持把DataFrame转换成SQLContext自身中的表，然后使用SQL语句来操作数据。
+
+三、创建
+  1.文件方式
+    SparkSession
+    sparkSession.read.textFile(logFile)
+  2.RDD, DataSet转换

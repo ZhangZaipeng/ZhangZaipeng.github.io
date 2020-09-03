@@ -1,0 +1,15 @@
+1.Reduce Task Number
+  1)根据业务需求
+  2.测试
+
+2.Maptask 输出压缩
+
+3.shuffle数据处理过程中的参数
+
+   mapreduce.task.io.sort.mb  环形缓冲区大小
+   mapreduce.map.sort.spill.percent  环形缓冲区使用百分比
+   mapreduce.task.io.sort.factor
+   mapreduce.map.cpu.vcores
+   mapreduce.reduce.cpu.vcores
+   mapreduce.map.memory.mb
+   mapreduce.reduce.memory.mb

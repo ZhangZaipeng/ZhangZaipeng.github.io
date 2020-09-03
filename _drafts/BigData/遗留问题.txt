@@ -1,0 +1,33 @@
+大数据
+	MapReduce 二次排序
+	MapReduce Join
+	分区
+	分组
+	排序
+
+
+
+数据源准备
+hbase javaAPI 熟悉 --> 确定rowKey设计
+Flume 代码二次开发 写入Hbase
+
+spark shell方式运行wordcount
+spark 本地开发环境搭建
+spark 本地环境运行wordcount
+spark 集群方式运行wordcount
+
+local shell standalone yarn 模式的区别
+spark RDD 五大特性
+spark RDD 操作列表
+
+DirectStream
+
+机器学习
+	算法
+
+
+
+
+交易所 k 线 使用大数据计算
+学习笔记整理
+spark 流式计算  -->  mysql

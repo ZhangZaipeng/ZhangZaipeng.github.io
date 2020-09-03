@@ -79,13 +79,13 @@
 五、压缩的Hive中的应用
     在hive中创建表page_views
     create table page_views(
-    track_time string,
-    url string,
-    session_id string,
-    referer string,
-    ip string,
-    end_user_id string,
-    city_id string
+      track_time string,
+      url string,
+      session_id string,
+      referer string,
+      ip string,
+      end_user_id string,
+      city_id string
     )
     ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n';
 
@@ -98,8 +98,17 @@
 
     在hive中使用压缩，需要设置如下按两个参数
     设置是否压缩和使用的压缩格式
-    SET hive.exec.compress.output=true;
-    set mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.BZip2Codec;
+      1.Map端数据输出压缩
+      SET hive.exec.compress.intermediate = true;
+      SET mapreduce.map.output.compress = true;
+      SET mapreduce.map.output.compress.codec  = org.apache.hadoop.io.compress.SnappyCodec;
+
+
+      2.Reduce端数据输出压缩
+
+      SET hive.exec.compress.output = true;
+      SET mapreduce.output.fileoutputformat.compress = true;
+      SET mapreduce.output.fileoutputformat.compress.codec = org.apache.hadoop.io.compress.SnappyCodec;
 
     再创建一张表page_views2并将表page_views中的数据拷贝进去
     create table page_views2  ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' as select * from page_views;

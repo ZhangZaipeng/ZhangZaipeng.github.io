@@ -1,0 +1,7 @@
+1.order by （只有一个reduce ,全局排序）
+
+2.sort by（对每一个reduce内部的数据进行排序，最后的全局结果不排序）
+
+3.distribute by（作用类似于partition, 一般与 sort by一起使用）
+
+4.cluster by（distribute by 与 sort by相同的时候）

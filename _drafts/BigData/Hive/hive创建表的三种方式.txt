@@ -1,0 +1,30 @@
+第一种：
+	CREATE  TABLE IF NOT EXISTS db_name.table_name
+	  (col_name data_type  )
+	  ROW FORMAT DELIMITED
+	  FIELDS TERMINATED BY ','
+	  STORED AS TEXTFILE;
+eg:
+
+	CREATE TABLE student (
+	  userid string,
+	  username string)
+	ROW FORMAT DELIMITED
+	FIELDS TERMINATED BY ','
+	STORED AS TEXTFILE;
+
+第二种：
+	CREATE  TABLE IF NOT EXISTS db_name.table_name
+	  LIKE existing_table_or_view_name
+
+eg:
+	CREATE  TABLE IF NOT EXISTS db_hive.stu
+	  LIKE db_hive.student
+
+第三种：
+	CREATE  TABLE IF NOT EXISTS db_name.table_name
+	AS select * from table
+
+	eg：
+	  CREATE  TABLE IF NOT EXISTS db_hive.stu
+	AS select * from db_hive.student

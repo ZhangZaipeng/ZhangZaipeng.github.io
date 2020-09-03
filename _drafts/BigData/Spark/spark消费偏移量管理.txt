@@ -1,0 +1,2 @@
+如何管理Spark Streaming消费Kafka的偏移量（一）
+https://blog.csdn.net/u010454030/article/details/78535003
