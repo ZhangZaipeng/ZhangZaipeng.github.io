@@ -136,6 +136,8 @@
             eg: val num = sc.parallelize(1 to 10 ,2)
                 num.reduce((x,y) => x + y)
                 res Int = 55
+
+        def saveAsTextFile()
     3.RDD的RDD转化谱系图
         见图
 

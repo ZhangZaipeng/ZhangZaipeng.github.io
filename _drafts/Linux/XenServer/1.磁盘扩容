@@ -1,0 +1,128 @@
+修改分区大小
+fdisk /dev/xvda
+
+  The number of cylinders for this disk is set to 5221.
+  There is nothing wrong with that, but this is larger than 1024,
+  and could in certain setups cause problems with:
+  1) software that runs at boot time (e.g., old versions of LILO)
+  2) booting and partitioning software from other OSs
+     (e.g., DOS FDISK, OS/2 FDISK)
+
+  Command (m for help): p
+
+  Disk /dev/xvda: 42.9 GB, 42949672960 bytes
+  255 heads, 63 sectors/track, 5221 cylinders
+  Units = cylinders of 16065 * 512 = 8225280 bytes
+
+      Device Boot      Start         End      Blocks   Id  System
+  /dev/xvda1   *           1          13      104391   83  Linux
+  /dev/xvda2              14        2610   20860402+  8e  Linux LVM
+
+  Command (m for help): Command (m for help): p
+  DOS Compatibility flag is not set
+
+  Command (m for help): d
+  Partition number (1-4): 2
+
+  Command (m for help): n
+  Command action
+     e   extended
+     p   primary partition (1-4)
+  p
+  Partition number (1-4): 2
+  First cylinder (14-5221, default 14):
+  Using default value 14
+  Last cylinder or +size or +sizeM or +sizeK (14-5221, default 5221):
+  Using default value 5221
+
+  Command (m for help): t
+  Partition number (1-4): 2
+  Hex code (type L to list codes): 8e
+  Changed system type of partition 2 to 8e (Linux LVM)
+
+  Command (m for help): p
+
+  Disk /dev/xvda: 42.9 GB, 42949672960 bytes
+  255 heads, 63 sectors/track, 5221 cylinders
+  Units = cylinders of 16065 * 512 = 8225280 bytes
+
+      Device Boot      Start         End      Blocks   Id  System
+  /dev/xvda1   *           1          13      104391   83  Linux
+  /dev/xvda2              14        5221   41833260   8e  Linux LVM
+
+  Command (m for help): w
+  The partition table has been altered!
+
+  Calling ioctl() to re-read partition table.
+
+  WARNING: Re-reading the partition table failed with error 16: Device or resource busy.
+  The kernel still uses the old table.
+  The new table will be used at the next reboot.
+  Syncing disks.
+
+5.重启虚拟机：reboot
+
+6.调整PV大小
+  pvs
+    PV         VG         Fmt  Attr PSize  PFree
+    /dev/xvda2 VolGroup00 lvm2 a-  19.88G    0
+
+
+  pvresize -v /dev/xvda2
+      Using physical volume(s) on command line
+      Archiving volume group "VolGroup00" metadata (seqno 3).
+      Resizing physical volume /dev/xvda2 from 636 to 1276 extents.
+      Resizing volume "/dev/xvda2" to 83666136 sectors.
+      Updating physical volume "/dev/xvda2"
+      Creating volume group backup "/etc/lvm/backup/VolGroup00" (seqno 4).
+    Physical volume "/dev/xvda2" changed
+    1 physical volume(s) resized / 0 physical volume(s) not resized
+
+  pvs
+    PV         VG         Fmt  Attr PSize  PFree
+    /dev/xvda2 VolGroup00 lvm2 a-  39.88G 20.00G
+
+调整LV大小
+  lvs
+    LV       VG         Attr   LSize  Origin Snap%  Move Log Copy%  Convert
+    LogVol00 VolGroup00 -wi-ao 17.84G
+    LogVol01 VolGroup00 -wi-ao  2.03G
+
+  lvextend -l +100%FREE /dev/VolGroup00/LogVol00
+
+或者 lvextend -l +100%FREE /dev/cl/root
+
+9.Extending logical volume LogVol00 to 37.84 GB
+  Logical volume LogVol00 successfully resized
+
+  lvs
+    LV       VG         Attr   LSize  Origin Snap%  Move Log Copy%  Convert
+    LogVol00 VolGroup00 -wi-ao 37.84G
+    LogVol01 VolGroup00 -wi-ao  2.03G
+10.调整分区大小
+  df -h
+  Filesystem            Size  Used Avail Use% Mounted on
+  /dev/mapper/VolGroup00-LogVol00
+                       5.7G  4.5G  950M  83% /
+  /dev/xvda1             99M   22M   73M  24% /boot
+  tmpfs                 2.0G     0  2.0G   0% /dev/shm
+
+  resize2fs /dev/mapper/VolGroup00-LogVol00
+
+11.或者  xfs_growfs /dev/mapper/cl-root
+  resize2fs 1.39 (29-May-2006)
+  Filesystem at /dev/mapper/VolGroup00-LogVol00 is mounted on /; on-line resizing required
+  Performing an on-line resize of /dev/mapper/VolGroup00-LogVol00 to 9920512 (4k) blocks.
+  The filesystem on /dev/mapper/VolGroup00-LogVol00 is now 9920512 blocks long.
+
+  df -h
+  Filesystem            Size  Used Avail Use% Mounted on
+  /dev/mapper/VolGroup00-LogVol00
+                         37G  4.5G   31G  13% /
+  /dev/xvda1             99M   22M   73M  24% /boot
+  tmpfs                 2.0G     0  2.0G   0% /dev/shm
+  任务完成
+
+12.遇到的问题
+  linux系统为centos7 时， 用 resize2fs 命令出现报错 resize2fs: Bad magic number in super-block while trying to open
+  xfs_growfs /dev/root_vg/root 用 xfs_growfs 代替命令 resize2fs
