@@ -43,3 +43,156 @@
   Geo datatypes（地理数据类型）
   Geo-point datatype
   Geo-Shape datatype
+
+
+PUT tb_order
+{
+  "mappings":{
+    "tb_order": {
+        "properties": {
+            "orderId": {
+                "type": "keyword"
+            },
+            "userId": {
+                "type": "long"
+            },
+            "merchantId": {
+                "type": "long"
+            },
+            "orderType": {
+                "type": "integer"
+            },
+            "orderAmt": {
+                "type": "double"
+            },
+            "orderStatus": {
+                "type": "integer"
+            },
+            "orderResult": {
+                "type": "integer"
+            },
+            "orderIsPostage": {
+                "type": "integer"
+            },
+            "orderPostageAmt": {
+                "type": "double"
+            },
+            "scoreReturn": {
+                "type": "integer"
+            },
+            "mark": {
+                "type": "text"
+            },
+            "createdAt": {
+                "type": "date",
+                "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+            },
+            "updatedAt": {
+                "type": "date",
+                "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+            }
+        }
+    }
+  }
+
+}
+
+
+PUT tb_movie
+{
+  "mappings":{
+    "tb_movie": {
+        "properties": {
+            "movie_id": {
+                "type": "integer"
+            },
+            "movie_title": {
+                "type": "text",
+                "analyzer": "ik_smart"
+            },
+            "play_url": {
+                "type": "keyword"
+            },
+            "img": {
+                "type": "keyword"
+            },
+            "author": {
+                "type": "text",
+                "analyzer": "ik_smart"
+            },
+            "director": {
+                "type": "text",
+                "analyzer": "ik_smart"
+            },
+            "type": {
+                "type": "keyword"
+            },
+            "region": {
+                "type": "keyword"
+            },
+            "year": {
+                "type": "keyword"
+            },
+            "date": {
+                "type": "date",
+                "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+            },
+            "description": {
+                "type": "text",
+                "analyzer": "ik_smart"
+            },
+            "createdAt": {
+                "type": "date",
+                "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+            },
+            "updatedAt": {
+                "type": "date",
+                "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+            }
+        }
+    }
+  }
+
+}
+
+
+
+PUT tb_relation
+{
+  "mappings":{
+    "tb_relation": {
+        "properties": {
+            "user_id": {
+                "type": "long"
+            },
+            "v1": {
+                "type": "long"
+            },
+             "v2": {
+                 "type": "long"
+             },
+             "v3": {
+                 "type": "long"
+             },
+            "v4": {
+                "type": "long"
+            },
+            "v5": {
+                "type": "long"
+            },
+            "v6": {
+                "type": "long"
+            },
+            "v7": {
+                "type": "long"
+            },
+            "v8": {
+                "type": "long"
+            },
+            "v9": {
+                "type": "long"
+            }
+        }
+    }
+  }
+}

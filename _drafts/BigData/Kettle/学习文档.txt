@@ -1,1 +1,9 @@
 https://www.cnblogs.com/zhangchenliang/p/4179775.html
+
+Pentaho文档 ElasticSearch批量插入
+https://help.pentaho.com/Documentation/9.1/Products/ElasticSearch_Bulk_Insert
+
+https://www.xiaominfo.com/2019/08/08/kettle-1/
+
+kettle官方文档
+https://help.pentaho.com/

@@ -1,0 +1,11 @@
+mysql  <---> elasticsearch
+
+smallint	    integer
+bigint	      long
+int(11)	      integer
+decimal(12,2)	double
+varchar	      text/keyword
+datetime(3)	  date
+double(5,2)	  double
+timestamp	    date
+tinyint(2)	  integer

@@ -1,0 +1,4 @@
+有赞订单管理的三生三世与“十面埋伏”
+https://mp.weixin.qq.com/s?__biz=MzAxOTY5MDMxNA==&mid=2455759181&idx=2&sn=46cb80df394bfa73cc23ae1e2bba8c12&chksm=8c686f68bb1fe67e02597e1a47ba2fb1f9d6526ca5841a9f81f5d7234965f9309d5b8115fd65&scene=21#wechat_redirect%22
+有赞亿级订单同步的探索与实践
+https://www.infoq.cn/article/QxFxSOt5UuH1-WqJwMQg
