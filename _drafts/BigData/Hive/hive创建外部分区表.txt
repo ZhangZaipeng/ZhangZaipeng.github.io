@@ -60,3 +60,15 @@
      alter table 数据表 add partition(month = '201809',day='01',time='05');
      alter table 数据表 add partition(month = '201809',day='01',time='06');
   4)数据分析
+
+
+  CREATE EXTERNAL TABLE IF NOT EXISTS spark_news(
+    cdate string,
+    ctimestamp string,
+    userid string,
+    pageid string,
+    section string,
+    action string
+  )
+  ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' ;
+  LOCATION '/spark/datas/new_access_2020-12-13.log';

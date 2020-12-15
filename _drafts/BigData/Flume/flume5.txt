@@ -1,0 +1,45 @@
+tier1.sources  = source1
+tier1.channels = channelHbase channelKafka channelHDFS
+tier1.sinks    = sinkHbase sinkKafka sinkHDFS
+
+tier1.sources.source1.type     = avro
+tier1.sources.source1.bind     = 0.0.0.0
+tier1.sources.source1.port     = 54141
+tier1.sources.source1.channels = channelHbase channelKafka channelHDFS
+
+# HDFS
+tier1.channels.channelHDFS.type   = memory
+tier1.channels.channelHDFS.capacity = 1000
+
+tier1.sinks.sinkHDFS.channel = channelHDFS
+tier1.sinks.sinkHDFS.type = hdfs
+tier1.sinks.sinkHDFS.hdfs.path = /hdfs/flume/logs/dt=%Y-%m-%d
+tier1.sinks.sinkHDFS.hdfs.filePrefix = events
+tier1.sinks.sinkHDFS.hdfs.fileSuffix = .log
+tier1.sinks.sinkHDFS.hdfs.useLocalTimeStamp = true
+tier1.sinks.sinkHDFS.hdfs.roundValue = 10
+tier1.sinks.sinkHDFS.hdfs.roundUnit = minute
+tier1.sinks.sinkHDFS.hdfs.writeFormat=Text
+tier1.sinks.sinkHDFS.hdfs.fileType=DataStream
+tier1.sinks.sinkHDFS.hdfs.rollSize=54288000
+tier1.sinks.sinkHDFS.hdfs.rollCount=0
+tier1.sinks.sinkHDFS.hdfs.rollInterval=0
+
+# Hbase
+tier1.channels.channelHbase.type   = memory
+tier1.channels.channelHbase.capacity = 1000
+
+tier1.sinks.sinkHbase.type = hbase
+tier1.sinks.sinkHbase.table = test
+tier1.sinks.sinkHbase.columnFamily = message
+tier1.sinks.sinkHbase.serializer = org.apache.flume.sink.hbase.RegexHbaseEventSerializer
+tier1.sinks.sinkHbase.channel      = channelHbase
+
+# Kafka
+tier1.channels.channelKafka.type   = memory
+tier1.channels.channelKafka.capacity = 1000
+
+tier1.sinks.sinkKafka.channel      = channelKafka
+tier1.sinks.sinkKafka.type = org.apache.flume.sink.kafka.KafkaSink
+tier1.sinks.sinkKafka.kafka.topic= test
+tier1.sinks.sinkKafka.kafka.bootstrap.servers= hadoop2:9092,hadoop4:9092,hadoop6:9092

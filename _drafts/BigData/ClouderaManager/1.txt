@@ -2,6 +2,8 @@ mysql5.7
 root
 WV0Djimi
 
+admin
+WV0Djimi
 
 
 https://archive.cloudera.com/cm6/6.2.0/redhat7/yum/RPMS/x86_64/
