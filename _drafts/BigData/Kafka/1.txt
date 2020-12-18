@@ -1,0 +1,5 @@
+生产命令：
+kafka-console-producer --broker-list hadoop2:9092,hadoop4:9092,hadoop6:9092 --topic test
+
+消费命令:
+kafka-console-consumer --bootstrap-server hadoop6:9092 --topic test --from-beginning
