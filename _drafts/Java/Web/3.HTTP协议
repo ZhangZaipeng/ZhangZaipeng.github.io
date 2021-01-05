@@ -80,6 +80,7 @@
   Vary                 代理服务器缓存的管理信息
   WWW-Authenticate     服务器对客户端的认证信息
   Set-Cookie           开始状态管理所使用的Cookie信息
+
 四、实体首部字段
   Allow                资源可支持的HTTP方 法
   Content-Encoding     实体主体适用的编码方式
