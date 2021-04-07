@@ -1,0 +1,1 @@
+xe sr-create name-label=iso_image type=iso device-config:location=/iso-boot device-config:legacy_mode=true content-type=iso

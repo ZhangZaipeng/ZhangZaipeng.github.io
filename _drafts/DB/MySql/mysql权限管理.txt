@@ -8,6 +8,12 @@
 	    grant all on *.* to 'hadoop'@'%' identified by 'LxY7wQfJs_jsX';
 	    FLUSH PRIVILEGES;
 
+grant all on *.* to 'admin'@'%' identified by 'LxY7wQfJs_jsX';
+	    FLUSH PRIVILEGES;
+
+	    grant all on ypyy.* to 'app'@'%' identified by 'Oju67GnZYpNbSkKf';
+      	    FLUSH PRIVILEGES;
+
 三、撤销权限
 	revoke 权限列表 on 库名。表名 from '用户名'@'链接地址'
 	例子：revoke all on jm_test.test from 'select'@'100.100.100.1';
